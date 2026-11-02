@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Teemoitettu kuvake: etualan muodot yhdellä värillä; raot erottavat reitin neulasta. -->
+    <path
+        android:pathData="M42,75.5 H58 a7.75,7.75 0 0 0 0,-15.5 H45 a12.25,12.25 0 0 1 0,-24.5 H46.69"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5.5" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M38,69.5 a6,6 0 1,0 0.01,0 Z M38,73.1 a2.4,2.4 0 1,1 -0.01,0 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M72.92,31.65 A13,13 0 1,0 50.62,43.95 L60.5,55.5 L70.38,43.95 A13,13 0 0,0 72.92,39.35 L67.17,39.35 A7.7,7.7 0 1,1 67.17,31.65 Z" />
+    <path
+        android:pathData="M54.41,35.5 H77.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeWidth="5.5" />
+</vector>

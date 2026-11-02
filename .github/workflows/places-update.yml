@@ -1,0 +1,61 @@
+name: Yrityshaun päivitys
+
+# Overture julkaisee Places-aineiston noin kerran kuussa vaihtelevana päivänä: viikoittainen tarkistus tuo aineiston
+# vain, kun julkaisu on uudempi kuin kannassa (server/pipeline/places.py).
+on:
+  schedule:
+    - cron: "0 4 * * 3"
+  workflow_dispatch:
+    inputs:
+      import_anyway:
+        description: "Tuo, vaikka kannassa on jo sama julkaisu"
+        type: boolean
+        required: false
+        default: false
+      force:
+        description: "Hyväksy yli puolen pudotus rivimäärässä (vain tarkistetun syyn jälkeen)"
+        type: boolean
+        required: false
+        default: false
+
+concurrency: places-update
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Putken testit
+        run: python -m unittest discover -s server/pipeline/test -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - name: Workerin testit
+        working-directory: server
+        run: |
+          npm ci
+          npm test
+
+  update:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      POI_BASE_URL: ${{ vars.POI_BASE_URL }}
+      POI_ADMIN_TOKEN: ${{ secrets.POI_ADMIN_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: DuckDB
+        run: pip install duckdb==2.0.0
+      - name: Tuonti
+        env:
+          POI_FORCE: ${{ inputs.force && '1' || '' }}
+        run: python server/pipeline/places.py ${{ inputs.import_anyway && '--import-anyway' || '' }}

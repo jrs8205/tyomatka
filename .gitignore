@@ -1,0 +1,21 @@
+*.iml
+.gradle/
+/local.properties
+.idea/
+.DS_Store
+build/
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+*.keystore
+*.jks
+keystore.properties
+
+# Laitteiden kantojen varmuuskopiot (henkilökohtaista dataa)
+tyomatka-varmuuskopiot/
+
+# Pythonin käännöstiedostot
+__pycache__/
+*.pyc

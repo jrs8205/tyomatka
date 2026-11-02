@@ -1,0 +1,14 @@
+{
+  "pagination": { "limit": 4 },
+  "modifiedAt": "2026-10-23T04:00:56.947Z",
+  "tariffs": [
+    { "countryCode": "FI", "partyId": "TSL", "id": "T-DC", "currency": "EUR", "type": "AD_HOC_PAYMENT", "taxIncluded": "NO",
+      "elements": [{ "priceComponents": [{ "type": "ENERGY", "price": 0.51, "vat": 25.5, "stepSize": 1 }] }] },
+    { "countryCode": "FI", "partyId": "TSL", "id": "T-AC", "currency": "EUR", "type": "AD_HOC_PAYMENT", "taxIncluded": "NO",
+      "elements": [{ "priceComponents": [{ "type": "ENERGY", "price": 0.30, "vat": 25.5, "stepSize": 1 }] }] },
+    { "countryCode": "FI", "partyId": "IOY", "id": "T-PARK", "currency": "EUR", "taxIncluded": "NO",
+      "elements": [{ "priceComponents": [{ "type": "ENERGY", "price": 0.25, "vat": 25.5, "stepSize": 1 }, { "type": "PARKING_TIME", "price": 2.0, "vat": 25.5, "stepSize": 60 }] }] },
+    { "countryCode": "FI", "partyId": "IOY", "id": "T-NOVAT", "currency": "EUR", "taxIncluded": "NO",
+      "elements": [{ "priceComponents": [{ "type": "ENERGY", "price": 0.40, "stepSize": 1 }] }] }
+  ]
+}

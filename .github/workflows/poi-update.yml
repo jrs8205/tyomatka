@@ -1,0 +1,70 @@
+name: Karttakohteiden päivitys
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+    inputs:
+      countries:
+        description: "ISO-koodit pilkulla eroteltuina (tyhjä = countries.txt:n maat, nyt vain Suomi)"
+        required: false
+        default: ""
+      force:
+        description: "Hyväksy yli puolen pudotus maan rivimäärässä (vain tarkistetun syyn jälkeen)"
+        type: boolean
+        required: false
+        default: false
+  push:
+    paths:
+      - "server/**"
+      - ".github/workflows/poi-update.yml"
+
+concurrency: poi-update
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Putken testit
+        run: python -m unittest discover -s server/pipeline/test -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - name: Workerin testit
+        working-directory: server
+        run: |
+          npm ci
+          npm test
+
+  update:
+    needs: test
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      POI_BASE_URL: ${{ vars.POI_BASE_URL }}
+      POI_ADMIN_TOKEN: ${{ secrets.POI_ADMIN_TOKEN }}
+      DIGITRANSIT_KEY: ${{ secrets.DIGITRANSIT_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: osmium-tool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y osmium-tool
+      - name: Savutesti Liechtensteinin otteella
+        run: |
+          printf 'LI europe/liechtenstein\n' > /tmp/li.txt
+          POI_COUNTRIES_FILE=/tmp/li.txt bash server/pipeline/run.sh --dry-run LI
+      - name: Karttakohteiden päivitys
+        env:
+          POI_FORCE: ${{ inputs.force && '1' || '' }}
+        run: bash server/pipeline/run.sh "${{ inputs.countries }}"

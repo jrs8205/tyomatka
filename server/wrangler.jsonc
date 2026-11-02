@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "tyomatka-poi",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  // Vain oma verkkotunnus: ei workers.dev-osoitetta (päätös 10).
+  "workers_dev": false,
+  "routes": [{ "pattern": "poi.jrs8205.com", "custom_domain": true }],
+  // Tunnisteet käyttöönotosta 22.10.2026 (`wrangler d1 create`, `wrangler kv namespace create`); ne eivät ole salaisuuksia.
+  "d1_databases": [{ "binding": "DB", "database_name": "tyomatka-poi", "database_id": "02f1324d-861c-4e05-84d0-ea29bc0e8eab" }],
+  // Vanhojen ilmoitusten laitetunnukset pois kerran vuorokaudessa (src/reports.ts).
+  "triggers": { "crons": ["17 3 * * *"] },
+  "kv_namespaces": [{ "binding": "KV", "id": "52c518b9346c4ba19656e8e41fd6f449" }],
+  // Kustannussuoja: osoitetta kohti 60/min, yhteensä 1 200/min sijaintia kohti; ilmoituksia osoitetta kohti 10/min;
+  // yrityshaku kirjoitettaessa osoitetta kohti 120/min omalla rajallaan; osoitehaku osoitetta kohti 120/min ja 600/min
+  // sijaintia kohti omilla rajoillaan.
+  "ratelimits": [
+    { "name": "RATE_IP", "namespace_id": "1001", "simple": { "limit": 60, "period": 60 } },
+    { "name": "RATE_GLOBAL", "namespace_id": "1002", "simple": { "limit": 1200, "period": 60 } },
+    { "name": "RATE_REPORT", "namespace_id": "1003", "simple": { "limit": 10, "period": 60 } },
+    { "name": "RATE_SEARCH", "namespace_id": "1004", "simple": { "limit": 120, "period": 60 } },
+    { "name": "RATE_GEOCODE_IP", "namespace_id": "1005", "simple": { "limit": 120, "period": 60 } },
+    { "name": "RATE_GEOCODE", "namespace_id": "1006", "simple": { "limit": 600, "period": 60 } }
+  ]
+}

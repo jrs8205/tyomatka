@@ -1,0 +1,71 @@
+{
+  "pagination": { "limit": 4 },
+  "modifiedAt": "2026-10-23T04:07:38.268Z",
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [25.0400, 60.2950] },
+      "properties": {
+        "id": "46e8271d-b83e",
+        "name": "Lataus Kylätie ",
+        "openingTimes": { "twentyFourSeven": true, "regularHours": [] },
+        "parkingType": "PARKING_LOT",
+        "operator": { "id": "FI*TSL", "partyId": "TSL", "countryCode": "FI", "details": { "name": "Testilataus Oy", "logo": { "url": "https://example.invalid/logo.png" } } },
+        "address": { "street": "9A, Kylätie", "city": " Vantaa ", "postalCode": "01620", "countryCode": "FIN" },
+        "evses": [
+          { "id": "FI*TSL*E1", "connectors": [{ "powerType": "DC", "standard": "IEC_62196_T2_COMBO", "maxElectricPower": 150000, "tariffIds": ["T-DC"] }] },
+          { "id": "FI*TSL*E2", "connectors": [{ "powerType": "DC", "standard": "IEC_62196_T2_COMBO", "maxElectricPower": 150000, "tariffIds": ["T-DC"] }] },
+          { "id": "FI*TSL*E3", "connectors": [{ "powerType": "DC", "standard": "IEC_62196_T2_COMBO", "maxElectricPower": 120000, "tariffIds": ["T-DC"] }] },
+          { "id": "FI*TSL*E4", "connectors": [{ "powerType": "DC", "standard": "IEC_62196_T2_COMBO", "maxElectricPower": 150000, "tariffIds": ["T-DC"] }] },
+          { "id": "FI*TSL*E5", "connectors": [{ "powerType": "AC_3_PHASE", "standard": "IEC_62196_T2", "maxElectricPower": 22000, "tariffIds": ["T-AC"] }] },
+          { "id": "FI*TSL*E6", "connectors": [{ "powerType": "AC_3_PHASE", "standard": "IEC_62196_T2", "maxElectricPower": 11000, "tariffIds": ["T-AC"] }] }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [21.311367, 59.664184] },
+      "properties": {
+        "id": "meri-1",
+        "name": "Rakennus 7",
+        "operator": { "id": "FI*TSL", "partyId": "TSL", "countryCode": "FI", "details": { "name": "Testilataus Oy" } },
+        "address": { "street": "Satamatie 1", "city": "Hanko", "postalCode": "10900", "countryCode": "FIN" },
+        "evses": [{ "id": "FI*TSL*E9", "connectors": [{ "powerType": "AC_3_PHASE", "standard": "IEC_62196_T2", "maxElectricPower": 11000, "tariffIds": [] }] }]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [23.7610, 61.4980] },
+      "properties": {
+        "id": "f1a23c26-05fe",
+        "name": "Kauppakeskus P2",
+        "openingTimes": { "twentyFourSeven": false, "regularHours": [
+          { "weekday": "MONDAY", "periodBegin": "07:00", "periodEnd": "21:00" },
+          { "weekday": "TUESDAY", "periodBegin": "07:00", "periodEnd": "21:00" },
+          { "weekday": "WEDNESDAY", "periodBegin": "07:00", "periodEnd": "21:00" },
+          { "weekday": "THURSDAY", "periodBegin": "07:00", "periodEnd": "21:00" },
+          { "weekday": "FRIDAY", "periodBegin": "07:00", "periodEnd": "21:00" },
+          { "weekday": "SATURDAY", "periodBegin": "09:00", "periodEnd": "18:00" }
+        ] },
+        "parkingType": "PARKING_GARAGE",
+        "operator": { "id": "FI*IOY", "partyId": "IOY", "countryCode": "FI", "details": { "name": "Toinen Lataus" } },
+        "address": { "street": "Hämeenkatu 1", "city": "Tampere", "postalCode": "33100", "countryCode": "FIN" },
+        "evses": [
+          { "id": "FI*IOY*E1", "connectors": [{ "powerType": "AC_3_PHASE", "standard": "IEC_62196_T2", "maxElectricPower": 11000, "tariffIds": ["T-PARK"] }] },
+          { "id": "FI*IOY*E2", "connectors": [{ "powerType": "AC_3_PHASE", "standard": "IEC_62196_T2", "maxElectricPower": 11000, "tariffIds": ["T-PARK"] }] }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [25.4700, 65.0120] },
+      "properties": {
+        "id": "8f4db7d8-0cc7",
+        "operator": { "id": "FI*IOY", "partyId": "IOY", "countryCode": "FI", "details": null },
+        "address": { "street": "Rantatie 3", "city": "Oulu", "postalCode": "90100", "countryCode": "FIN" },
+        "evses": [{ "id": "FI*IOY*E3", "connectors": [{ "powerType": "DC", "standard": "IEC_62196_T2_COMBO", "maxElectricPower": 60000, "tariffIds": ["T-NOVAT"] }] }]
+      }
+    }
+  ]
+}

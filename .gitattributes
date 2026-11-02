@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.jar binary
+*.png binary
+# Tuonnin testitiedostot tavuina: rivinvaihdot ja merkistöt ovat osa testiä
+core/src/test/resources/tuonti/** -text

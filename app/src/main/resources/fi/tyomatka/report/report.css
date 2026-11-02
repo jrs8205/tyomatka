@@ -1,0 +1,256 @@
+/* Työmatka-raportti. Teema seuraa laitteen asetusta, ja tekstin kontrasti on vähintään 7:1 molemmissa teemoissa. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff; --ink: #1c1b1f; --muted: #49454f; --line: #d6d3dc; --edge: #79747e; --soft: #f3f1f6; --card: #ffffff;
+  --primary: #0b3d91; --primary-soft: #dfe8fb; --bar: #0b3d91; --on-bar: #ffffff; --on-bar-2: #e8eefb;
+  --warn: #8c1d18; --warn-soft: #fde7e4; --scrim: rgba(0, 0, 0, .45);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #121016; --ink: #ece6f0; --muted: #cac4d0; --line: #36343b; --edge: #938f99; --soft: #26232b; --card: #1c1a21;
+    --primary: #a8c7ff; --primary-soft: #1b2d4d; --bar: #0d2f6b; --on-bar: #ffffff; --on-bar-2: #dbe5fb;
+    --warn: #ffb4ab; --warn-soft: #3d1714; --scrim: rgba(0, 0, 0, .6);
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html:not(.js) .js-only { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, "Segoe UI", Roboto, sans-serif; }
+html.modal-open, html.modal-open body { overflow: hidden; }
+
+.report { container-type: inline-size; font-size: 1rem; line-height: 1.5; min-height: 100vh; overflow-wrap: break-word; }
+/* Rivitys: luku ja yksikkö, päivämäärä, kellonaika ja rekisterinumero eivät katkea; rivi vaihtuu erottimen kohdalta. */
+.nw { white-space: nowrap; }
+h1, h2, h3, h4 { hyphens: auto; }
+.vh, .js .ptitle {
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap;
+}
+.skip {
+  position: absolute; left: 8px; top: -200px; z-index: 30; background: var(--card); color: var(--primary); font-weight: 700;
+  padding: 12px 16px; border-radius: 10px; border: 3px solid var(--primary);
+}
+.skip:focus { top: 8px; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.bar :focus-visible { outline-color: var(--on-bar); }
+
+.bar { z-index: 20; background: var(--bar); color: var(--on-bar); display: flex; align-items: center; gap: 4px; padding: 8px 16px 8px 4px; }
+html:not(.js) .bar { padding-left: 16px; }
+.bar h1 { font-size: 1.2rem; margin: 0; line-height: 1.25; }
+.bar p { margin: 0; }
+.bar .period, .bar .where { font-size: .875rem; color: var(--on-bar-2); }
+.iconbtn {
+  width: 48px; height: 48px; flex: none; display: inline-grid; place-items: center; border: 0; background: transparent;
+  color: inherit; border-radius: 50%; cursor: pointer;
+}
+.iconbtn:hover { background: rgba(127, 127, 127, .18); }
+.iconbtn svg { width: 26px; height: 26px; }
+
+.searchwrap { z-index: 19; background: var(--bg); border-bottom: 1px solid var(--line); padding: 6px 16px 10px; display: block; }
+.searchwrap label { display: block; font-size: .875rem; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.search {
+  display: flex; align-items: center; gap: 8px; border: 2px solid var(--edge); border-radius: 12px; padding: 0 2px 0 12px;
+  min-height: 48px; background: var(--card);
+}
+/* Yksi kohdistuskehys koko kentälle: reuna ja 2 px rengas samaa väriä; kentän oma rengas pois. */
+.search:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
+.search input:focus, .search input:focus-visible { outline: none; }
+.search input {
+  flex: 1; border: 0; outline: 0; font: inherit; font-size: 1.0625rem; min-width: 0; background: transparent; padding: 10px 0;
+  color: var(--ink);
+}
+.search input::placeholder { color: var(--muted); opacity: 1; }
+.search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.search > svg { width: 22px; height: 22px; color: var(--muted); flex: none; }
+.search .iconbtn { width: 44px; height: 44px; color: var(--ink); }
+/* Suuren kontrastin tilassa varjo katoaa: kohdistus näkyy ääriviivana. */
+@media (forced-colors: active) { .search:focus-within { outline: 2px solid Highlight; outline-offset: 2px; } }
+.found { font-size: .9375rem; color: var(--muted); margin-top: 6px; }
+.found:empty { display: none; }
+.found a { color: var(--primary); font-weight: 600; }
+/* Kiinnitetty yläpalkki ja haku vain, kun näytössä on korkeutta: suurella zoomauksella ne eivät peitä sisältöä. */
+@media screen and (min-height: 560px) {
+  html { scroll-padding-top: 170px; }
+  .bar { position: sticky; top: 0; }
+  .searchwrap { position: sticky; top: var(--bar-height, 64px); }
+}
+
+main { display: block; padding: 4px 16px 32px; }
+main:focus { outline: none; }
+h2 { font-size: 1.3rem; margin: 24px 0 10px; line-height: 1.3; }
+h2:focus { outline: none; }
+h2 .count { font-size: .9375rem; font-weight: 500; color: var(--muted); }
+.note { color: var(--muted); font-size: .9375rem; }
+ul.plain { list-style: none; margin: 0; padding: 0; }
+.card { background: var(--card); border: 1px solid var(--edge); border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+.card:focus { outline: 3px solid var(--primary); outline-offset: 2px; }
+.card.hit { outline: 3px solid var(--primary); outline-offset: 2px; background: var(--primary-soft); }
+.row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; align-items: baseline; }
+.row + .row { margin-top: 4px; }
+.card h3, .card h4 { font-size: 1.0625rem; margin: 0; }
+.km { font-weight: 700; white-space: nowrap; }
+.sub { color: var(--muted); font-size: .9375rem; }
+.tags { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 4px; }
+/* Merkintä on lause eikä sitova lohko: kapealla näytöllä se rivittyy sanojen välistä. */
+.tag {
+  display: inline-block; font-size: .875rem; font-weight: 600; padding: 1px 8px; border-radius: 12px; background: var(--soft);
+  color: var(--ink); border: 1px solid var(--edge);
+}
+.tag.warn { background: var(--warn-soft); color: var(--warn); border-color: var(--warn); }
+.fill { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--edge); display: flex; gap: 8px 10px; align-items: center; flex-wrap: wrap; }
+/* Lisätiedot: kuljettajan vapaa teksti rivinvaihtoineen; pitkä sana katkeaa, ettei kortti levene. */
+.memo { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9375rem; }
+td.memo { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 12em; max-width: 24em; }
+.fill.first { border-top: 0; margin-top: 2px; padding-top: 2px; }
+.fill .what { flex: 1 1 160px; }
+.photo-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; min-width: 44px; padding: 4px 14px; border-radius: 999px;
+  border: 2px solid var(--primary); color: var(--primary); background: var(--card); font: inherit; font-weight: 600;
+  font-size: .9375rem; cursor: pointer; white-space: nowrap;
+}
+.photo-btn:hover { background: var(--primary-soft); }
+.photo-btn svg { width: 20px; height: 20px; flex: none; }
+
+dl.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.stat { background: var(--soft); border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column-reverse; }
+.stat dd { margin: 0; font-size: 1.2rem; font-weight: 700; }
+.stat dt { font-size: .875rem; color: var(--muted); }
+.carline { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+
+[role="tablist"] { display: flex; border: 2px solid var(--edge); border-radius: 999px; overflow: hidden; margin: 6px 0 4px; }
+[role="tab"] {
+  flex: 1 1 0; min-width: 0; min-height: 48px; padding: 4px; border: 0; background: var(--card); font: inherit; font-weight: 600;
+  cursor: pointer; color: var(--ink);
+}
+[role="tab"] + [role="tab"] { border-left: 2px solid var(--edge); }
+[role="tab"][aria-selected="true"] {
+  background: var(--primary-soft); color: var(--primary); text-decoration: underline; text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+/* Valintamerkki ei kuulu välilehden nimeen; kapeimmalla näytöllä se jää pois, ettei "Kuukaudet" katkea. */
+[role="tab"][aria-selected="true"]::before { content: "\2713\00a0"; content: "\2713\00a0" / ""; }
+@container (max-width: 400px) { [role="tab"] { font-size: .9375rem; } }
+@container (max-width: 350px) { [role="tab"][aria-selected="true"]::before { content: none; } }
+[role="tab"]:focus-visible { outline-offset: -5px; }
+.panel h3.ptitle { font-size: 1.125rem; margin: 18px 0 4px; }
+
+ul.gallery { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.thumb {
+  width: 100%; height: 100%; border: 1px solid var(--edge); border-radius: 10px; overflow: hidden; background: var(--card);
+  cursor: pointer; padding: 0; text-align: left; font: inherit; color: var(--ink); display: block;
+}
+/* Esikatselu näyttää koko kuvan (contain), ettei kuitin reuna katkea. */
+.thumb .tn { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: contain; background: var(--soft); }
+.thumb .ph { display: grid; place-items: center; color: var(--muted); }
+.thumb .ph svg { width: 40%; height: auto; }
+.thumb .t { display: block; padding: 4px 6px; font-size: .875rem; color: var(--muted); line-height: 1.3; }
+/* Pitkä rekisterinumero rivittyy kapeassa ruudussa eikä leikkaudu. */
+.thumb .t .plate { overflow-wrap: anywhere; }
+
+.jump a, .drawer a { display: flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; }
+.jump { margin-top: 12px; }
+.jump a {
+  min-height: 56px; padding: 8px 14px; margin: 8px 0; border: 1px solid var(--edge); border-radius: 14px; font-size: 1.0625rem;
+  font-weight: 600; background: var(--card);
+}
+.jump a:hover { background: var(--soft); }
+.jump a .l, .drawer a .l { flex: 1; min-width: 0; }
+.jump a .n, .drawer a .n { color: var(--muted); font-weight: 500; font-size: .9375rem; }
+.jump a::after { content: "\203a"; content: "\203a" / ""; font-size: 1.6rem; line-height: 1; color: var(--primary); }
+.explain h3 { margin-bottom: 4px; }
+.explain p { margin: 8px 0 0; }
+.more {
+  display: block; width: 100%; min-height: 48px; margin-top: 6px; border: 2px dashed var(--edge); border-radius: 12px;
+  background: var(--card); font: inherit; font-weight: 600; color: var(--primary); cursor: pointer;
+}
+/* Taulukko vasta, kun sarakkeet mahtuvat; kapeammalla kortit. Säiliö vierittää poikkeuksellisen leveän taulukon. */
+.table-scroll { display: none; overflow-x: auto; }
+table.wide { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+table.wide th, table.wide td { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+table.wide thead th { background: var(--soft); font-weight: 600; }
+table.wide tbody th { font-weight: 600; white-space: nowrap; }
+table.wide .n { text-align: right; white-space: nowrap; }
+table.wide tr:focus { outline: 3px solid var(--primary); outline-offset: -3px; }
+table.wide tr.hit { background: var(--primary-soft); }
+
+@container (min-width: 360px) { ul.gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (min-width: 700px) {
+  dl.stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  ul.gallery { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  main { padding: 4px 28px 40px; }
+  .searchwrap { padding: 6px 28px 10px; }
+}
+@container (min-width: 940px) {
+  .cards-when-narrow { display: none; }
+  .table-scroll { display: block; }
+}
+
+/* Osio kerrallaan: Yhteenveto on etusivu, ja valikko vaihtaa näkyvän osion. Haku näyttää päivät ja kirjaukset. */
+@media screen {
+  .js .report main > section { display: none; }
+  .js .report main > section.active { display: block; }
+  .js .report:not(.ready) main > section:target { display: block; }
+  .js .report.searching main > section { display: none; }
+  .js .report.searching main > #s-days, .js .report.searching main > #s-fills { display: block; }
+  .report:not(.searching) .later { display: none; }
+  .report.searching .nomatch { display: none; }
+  .report.searching #s-days .more { display: none; }
+  .js .panel.inactive { display: none; }
+}
+
+/* Valikko: suljettuna piilossa myös ruudunlukijalta ja näppäimistöltä. */
+.scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 40; display: none; }
+.drawer {
+  position: fixed; top: 0; left: 0; bottom: 0; width: min(320px, 88%); background: var(--card); color: var(--ink); z-index: 41;
+  transform: translateX(-105%); visibility: hidden; transition: transform .18s ease, visibility 0s linear .18s;
+  box-shadow: 4px 0 18px rgba(0, 0, 0, .3); padding: 8px 0; overflow-y: auto;
+}
+html.menu-open .scrim { display: block; }
+html.menu-open .drawer { transform: none; visibility: visible; transition: transform .18s ease; }
+.drawer .head { display: flex; align-items: center; gap: 8px; padding: 4px 8px 10px 20px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+.drawer .head div { flex: 1; min-width: 0; }
+.drawer .head b { font-size: 1.125rem; display: block; }
+.drawer .head .sub { display: block; }
+.drawer .iconbtn { color: var(--ink); }
+.drawer ul { list-style: none; margin: 0; padding: 0; }
+.drawer a { min-height: 52px; padding: 6px 20px; font-size: 1.0625rem; }
+.drawer a:hover { background: var(--soft); }
+.drawer a[aria-current="page"] {
+  background: var(--primary-soft); color: var(--primary); font-weight: 700; border-left: 6px solid var(--primary);
+  padding-left: 14px;
+}
+.drawer :focus-visible { outline-offset: -3px; }
+
+/* Kuvanäkymä (modaali), aina tumma. */
+.lightbox { position: fixed; inset: 0; z-index: 60; background: #0d0d10; color: #ffffff; display: flex; flex-direction: column; }
+.lightbox :focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; }
+.lb-top { display: flex; align-items: center; gap: 8px; padding: 8px; }
+.lb-top .cap { flex: 1; min-width: 0; font-size: .9375rem; }
+.lb-title { font-size: 1rem; font-weight: 700; }
+/* Kuva sovitetaan alueeseen kokonaan: pystykuitti ei leikkaudu eikä peitä nappeja leveällä näytöllä. */
+.lb-img {
+  flex: 1; display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; min-height: 0; padding: 8px 56px;
+  position: relative;
+}
+.lb-img img { width: 100%; height: 100%; object-fit: contain; }
+.lb-nav { position: absolute; top: 50%; transform: translateY(-50%); background: #3a3940; color: #ffffff; }
+.lb-nav:hover { background: #55535c; }
+.lb-nav.prev { left: 4px; }
+.lb-nav.next { right: 4px; }
+.lb-nav[disabled] { visibility: hidden; }
+.lb-bottom { padding: 10px 16px 16px; display: flex; justify-content: center; }
+.lb-bottom button {
+  min-height: 48px; border-radius: 999px; border: 2px solid #ffffff; background: transparent; color: #ffffff; font: inherit;
+  font-weight: 600; padding: 0 20px; cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) { .drawer, html.menu-open .drawer { transition: none; } }
+
+/* Tulostus: kaikki osiot ja päivät pitkänä sivuna ilman ohjaimia. */
+@media print {
+  .js-only, .skip, .searchwrap, .drawer, .scrim, .lightbox, .more, .jump, .bar .where { display: none !important; }
+  .bar { position: static; background: none; color: #000000; padding: 0; }
+  .bar .period { color: #000000; }
+  .card { break-inside: avoid; }
+  .js .ptitle { position: static !important; width: auto; height: auto; overflow: visible; clip: auto; clip-path: none; }
+}
