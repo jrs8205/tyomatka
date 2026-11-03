@@ -861,5 +861,6 @@
     <string name="license_foursquare">Foursquare Places NOTICE</string>
     <string name="license_odbl">OpenStreetMap: ODbL 1.0</string>
     <string name="license_cc_by">Digitransit, Fintraffic: CC BY 4.0</string>
+    <string name="license_rust">Ferrostar navigation core: Rust crates</string>
     <string name="reminder_devices_unavailable">Paired devices cannot be read because Bluetooth is off or the permission is missing. Your choices are kept.</string>
 </resources>

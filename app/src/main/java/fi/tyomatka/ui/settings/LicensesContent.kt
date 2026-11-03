@@ -3,12 +3,9 @@ package fi.tyomatka.ui.settings
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,6 +35,11 @@ internal val DATA_LICENSES = listOf(
     DataLicense("cdla", R.string.license_cdla, R.raw.license_cdla_permissive_2_0),
     DataLicense("apache", R.string.license_apache, R.raw.license_apache_2_0),
     DataLicense("foursquare", R.string.license_foursquare, R.raw.notice_foursquare_places),
+)
+
+/** Natiivikirjastojen merkinnät, jotka eivät näy Gradlen riippuvuusluettelossa. */
+internal val NATIVE_LICENSES = listOf(
+    DataLicense("rust", R.string.license_rust, R.raw.notice_ferrostar_rust),
 )
 
 private data class ShownText(val title: String, val text: String)
@@ -76,6 +78,9 @@ internal fun LicensesContent(modifier: Modifier = Modifier) {
             ActionRow(stringResource(R.string.license_cc_by), onClick = { runCatching { uriHandler.openUri(CC_BY_URL) } })
         }
         item { Text(stringResource(R.string.license_section_libraries), style = MaterialTheme.typography.titleMedium) }
+        items(NATIVE_LICENSES, key = { it.key }) { license ->
+            ActionRow(stringResource(license.title)) { openRaw = license }
+        }
         items(libraries, key = { it.id }) { library ->
             val licenses = library.licenseNames.joinToString()
             ActionRow(library.name, listOfNotNull(library.version, licenses.ifBlank { null }).joinToString(" · ")) {
@@ -93,8 +98,11 @@ internal fun LicensesContent(modifier: Modifier = Modifier) {
             onDismissRequest = { shown = null },
             title = { Text(text.title) },
             text = {
-                Column(Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState())) {
-                    Text(text.text, style = MaterialTheme.typography.bodySmall)
+                // Kappaleittain laiskana listana: Rust-kirjastojen merkinnät ovat satoja kilotavuja, ja yhtenä
+                // tekstinä niiden asettelu pysäyttäisi käyttöliittymän avattaessa.
+                val paragraphs = remember(text.text) { text.text.split("\n\n") }
+                LazyColumn(Modifier.heightIn(max = 480.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(paragraphs) { Text(it, style = MaterialTheme.typography.bodySmall) }
                 }
             },
             confirmButton = { TextButton(onClick = Tap { shown = null }) { Text(stringResource(R.string.ok)) } },

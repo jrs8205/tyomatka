@@ -40,8 +40,8 @@ Add the day's stops (a typical day has 20–25, but there is no limit) and the a
 
 - shows them numbered on the map with the route line and lets you reorder
   them by dragging,
-- navigates with spoken guidance from stop to stop and moves on
-  automatically after each arrival,
+- navigates with spoken guidance from stop to stop, detects the arrival and
+  continues to the next stop with one tap,
 - predicts the arrival time at every stop and the finish time of the whole
   day, updating the forecast while you drive,
 - warns when a "deliver by" deadline is no longer realistic,
@@ -109,6 +109,20 @@ Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributor
 ## Requirements
 
 Android 8.0 (API 26) or newer, 64-bit device.
+
+## Verifying the APK
+
+Every release on GitHub is signed with the same key. The SHA-256 fingerprint
+of the signing certificate is
+
+```
+54:67:D2:D8:1F:44:33:5A:5A:0C:ED:95:B9:49:C7:98:3F:80:58:99:AD:CE:10:26:A5:6F:F9:4B:C2:FD:89:5B
+```
+
+Check a downloaded file with `apksigner verify --print-certs tyomatka-<version>.apk`
+(Android SDK build tools), which prints the same value in lower case without
+colons (`5467d2d81f44335a5a0ced95b949c7983f805899adce1026a56ff94bc2fd895b`), or with an app such as AppVerifier. Each release also
+lists the SHA-256 checksum of the APK file itself.
 
 ## Development
 

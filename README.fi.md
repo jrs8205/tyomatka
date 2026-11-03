@@ -40,8 +40,8 @@ Sovellukseen lisätään päivän stopit (tyypillisesti 20–25, mutta määrä�
 
 - näyttää stopit numeroituina kartalla reittiviivan kanssa ja antaa järjestää
   ne raahaamalla,
-- navigoi puheohjeineen stopilta seuraavalle ja siirtyy saapumisen jälkeen
-  automaattisesti eteenpäin,
+- navigoi puheohjeineen stopilta seuraavalle, tunnistaa saapumisen ja jatkaa
+  seuraavalle yhdellä napautuksella,
 - laskee jokaiselle stopille arvioidun saapumisajan ja koko päivän
   valmistumisajan ja päivittää ennustetta ajon aikana,
 - varoittaa, jos "perillä viimeistään" -aikaraja ei ole realistinen,
@@ -110,6 +110,20 @@ Karttadata © [OpenStreetMap](https://www.openstreetmap.org/copyright) -yhteisö
 ## Vaatimukset
 
 Android 8.0 (API 26) tai uudempi, 64-bittinen laite.
+
+## APK:n tarkistus
+
+Jokainen GitHubin julkaisu allekirjoitetaan samalla avaimella.
+Allekirjoitusvarmenteen SHA-256-sormenjälki on
+
+```
+54:67:D2:D8:1F:44:33:5A:5A:0C:ED:95:B9:49:C7:98:3F:80:58:99:AD:CE:10:26:A5:6F:F9:4B:C2:FD:89:5B
+```
+
+Ladatun tiedoston voi tarkistaa komennolla `apksigner verify --print-certs tyomatka-<versio>.apk`
+(Android SDK:n build tools), joka tulostaa saman arvon pienillä kirjaimilla ilman
+kaksoispisteitä (`5467d2d81f44335a5a0ced95b949c7983f805899adce1026a56ff94bc2fd895b`), tai esimerkiksi AppVerifier-sovelluksella. Jokaisen
+julkaisun kuvauksessa on myös itse APK-tiedoston SHA-256-tarkistussumma.
 
 ## Kehitys
 

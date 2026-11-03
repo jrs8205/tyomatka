@@ -41,8 +41,8 @@ Lägg till dagens stopp (en vanlig dag har 20–25, men antalet är inte begrän
 
 - visar appen dem numrerade på kartan med ruttlinje och låter dig ordna om
   dem genom att dra,
-- navigerar med röstinstruktioner från stopp till stopp och går vidare
-  automatiskt efter varje ankomst,
+- navigerar med röstinstruktioner från stopp till stopp, känner av ankomsten
+  och fortsätter till nästa stopp med ett tryck,
 - beräknar ankomsttid för varje stopp och sluttid för hela dagen och
   uppdaterar prognosen medan du kör,
 - varnar när en "framme senast"-deadline inte längre är realistisk,
@@ -112,6 +112,20 @@ OpenStreetMap-bidragsgivare.
 ## Krav
 
 Android 8.0 (API 26) eller nyare, 64-bitars enhet.
+
+## Verifiera APK-filen
+
+Varje version på GitHub signeras med samma nyckel. Signeringscertifikatets
+SHA-256-fingeravtryck är
+
+```
+54:67:D2:D8:1F:44:33:5A:5A:0C:ED:95:B9:49:C7:98:3F:80:58:99:AD:CE:10:26:A5:6F:F9:4B:C2:FD:89:5B
+```
+
+Kontrollera en nedladdad fil med `apksigner verify --print-certs tyomatka-<version>.apk`
+(Android SDK build tools), som skriver ut samma värde med gemener utan kolon
+(`5467d2d81f44335a5a0ced95b949c7983f805899adce1026a56ff94bc2fd895b`), eller med en app som AppVerifier. Varje version anger
+också SHA-256-kontrollsumman för själva APK-filen.
 
 ## Utveckling
 

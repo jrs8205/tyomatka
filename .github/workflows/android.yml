@@ -1,0 +1,48 @@
+name: Sovelluksen testit
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "server/**"
+      - "**.md"
+      - ".github/workflows/poi-update.yml"
+      - ".github/workflows/places-update.yml"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  jvm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+      # Tarkistaa myös gradle-wrapper.jar-tiedoston aitouden. Välimuisti on avoimen lähdekoodin perustoteutus
+      # (GitHubin välimuisti), ei oletuksena käytettävä kaupallinen palvelu käyttöehtoineen.
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: basic
+      - name: JVM-testit
+        run: ./gradlew :core:test :app:testDebugUnitTest
+      - name: Debug-APK
+        run: ./gradlew :app:assembleDebug
+      - name: Testiraportit
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: testiraportit
+          path: |
+            core/build/reports/tests/
+            app/build/reports/tests/
+          retention-days: 7

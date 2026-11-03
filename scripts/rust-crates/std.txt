@@ -1,0 +1,21 @@
+# cargo tree -e normal, aarch64-linux-android, x86_64-linux-android, rustc 1.99.0 (b940084d7 2026-09-28)
+addr2line 0.27.1
+adler2 2.0.1
+alloc 1.99.0
+cfg-if 1.0.4
+compiler_builtins 0.1.160
+core 1.99.0
+gimli 0.34.0
+hashbrown 0.17.1
+libc 0.2.189
+memchr 2.8.3
+miniz_oxide 0.9.1
+object 0.39.1
+panic_abort 1.99.0
+panic_unwind 1.99.0
+rustc-demangle 0.1.28
+rustc-std-workspace-alloc 1.99.0
+rustc-std-workspace-core 1.99.0
+std 1.99.0
+std_detect 0.1.5
+unwind 1.99.0

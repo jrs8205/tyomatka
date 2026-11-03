@@ -33,8 +33,9 @@ android {
         applicationId = "fi.tyomatka"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        // versionCode = major * 10000 + minor * 100 + patch, jotta jokainen julkaisu on edellistä suurempi.
+        versionCode = 10000
+        versionName = "1.0.0"
 
         // Vain 64-bittiset ABI:t: karttamoottorin ja navigointiytimen
         // natiivikirjastot tarvitaan vain arm64-laitteille ja x86_64-emulaattorille.
@@ -95,9 +96,12 @@ android {
         unitTests.all {
             it.systemProperty("user.language", "fi")
             it.systemProperty("user.country", "FI")
+            // Kellonajat näytetään laitteen aikavyöhykkeessä: GitHubin ajurit ovat UTC-ajassa.
+            it.systemProperty("user.timezone", "Europe/Helsinki")
             // Testit lukevat nämä polusta: Gradle ei muuten aja niitä uudelleen, kun tiedostot muuttuvat.
             it.inputs.file("src/main/AndroidManifest.xml").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.dir("src/main/res").withPathSensitivity(PathSensitivity.RELATIVE)
+            it.inputs.dir("../scripts/rust-crates").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.files(tasks.named("prepareLibraryDefinitionsDebug")).withPathSensitivity(PathSensitivity.RELATIVE)
         }
     }
@@ -105,6 +109,13 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    // Riippuvuusluettelo salattuna APK:ssa on vain Google Playn luettavissa; F-Droid ja muut kaupat edellyttävät,
+    // ettei APK:ssa ole lukukelvotonta sisältöä.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 

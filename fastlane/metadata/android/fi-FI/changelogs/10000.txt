@@ -1,0 +1,8 @@
+Ensimmäinen julkinen versio.
+
+• Päivän stopit kartalla, saapumisajat ja päivän valmistumisaika
+• Puheohjattu navigointi stopilta seuraavalle, Nopein tai Lyhin reitti
+• Työpäivät, mittarilukemat ja tankkaukset kulutuksineen ja kuvineen
+• Lähellä olevat huoltoasemat, latauspisteet, kaasuasemat ja levähdysalueet
+• HTML-raportti ja koko varmuuskopio
+• Suomi, ruotsi ja englanti

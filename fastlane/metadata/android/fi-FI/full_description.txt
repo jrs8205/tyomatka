@@ -1,0 +1,20 @@
+Työmatka on kuljettajan reitti-, navigointi- ja työmatkasovellus, joka toimii kokonaan avoimilla karttapalveluilla. Se ei tarvitse tiliä eikä API-avaimia.
+
+Sovellukseen lisätään päivän stopit, ja se
+• näyttää stopit numeroituina kartalla reittiviivan kanssa ja antaa järjestää ne raahaamalla
+• navigoi puheohjeineen stopilta seuraavalle, tunnistaa saapumisen ja jatkaa seuraavalle yhdellä napautuksella
+• laskee jokaiselle stopille arvioidun saapumisajan ja koko päivän valmistumisajan ja päivittää ennustetta ajon aikana
+• varoittaa, jos "perillä viimeistään" -aikaraja ei ole realistinen
+• oppii toteutuneista ajoista henkilökohtaisen nopeuskertoimen ja stoppiparien väliajat
+• kirjaa työpäivät (mittarilukemat, työaika, auto) ja tankkaukset ja laskee kulutuksen täydestä tankista seuraavaan: diesel, bensiini, kaasu, sähkö ja AdBlue
+• liittää tankkaukseen kuvia todisteeksi: kuitti, automaatin näyttö tai latausapin kuvakaappaus
+• näyttää lähellä olevat huoltoasemat, latauspisteet, kaasuasemat, levähdysalueet ja rekkaparkit
+• vie kaiken HTML-raporttina, joka toimii myös varmuuskopiona
+
+Sovellus toimii Suomessa (myös Ahvenanmaalla) suomeksi, ruotsiksi ja englanniksi.
+
+Avoimet palvelut: reitit FOSSGIS Valhallasta ja OSRM:stä, joita ylläpitävät vapaaehtoiset; karttatiilet OpenFreeMapista; kartta-aineisto © OpenStreetMapin tekijät; osoitehaku Digitransitista ja Photonista; yritysten nimet Overture Maps Foundationilta.
+
+Tietosuojaseloste: https://poi.jrs8205.com/privacy?lang=fi
+Lähdekoodi: https://github.com/jrs8205/tyomatka
+Yhteystieto: jrs8205@pm.me

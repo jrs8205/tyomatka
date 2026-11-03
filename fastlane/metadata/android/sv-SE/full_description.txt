@@ -1,0 +1,20 @@
+Körjournal är en rutt-, navigations- och körjournalsapp för förare, byggd helt på öppna karttjänster. Den behöver inget konto och inga API-nycklar.
+
+Lägg till dagens stopp så
+• visar appen dem numrerade på kartan med ruttlinje och låter dig ordna om dem genom att dra
+• navigerar den med röstinstruktioner från stopp till stopp, känner av ankomsten och fortsätter till nästa stopp med ett tryck
+• beräknar den ankomsttid för varje stopp och sluttid för hela dagen och uppdaterar prognosen medan du kör
+• varnar den när en "framme senast"-deadline inte längre är realistisk
+• lär den sig av verkliga körtider en personlig hastighetsfaktor och restiderna mellan stopp
+• loggar den arbetsdagar (mätarställningar, arbetstid, fordon) och tankningar och beräknar förbrukningen från full tank till nästa: diesel, bensin, gas, el och AdBlue
+• bifogar den foton till en tankning som bevis: kvitto, pumpens display eller skärmbild från en laddningsapp
+• visar den bensinstationer, laddningspunkter, gasstationer, rastplatser och lastbilsparkeringar i närheten
+• exporterar den allt som en HTML-rapport som också fungerar som säkerhetskopia
+
+Appen fungerar i Finland (även på Åland) på finska, svenska och engelska.
+
+Öppna tjänster: rutter från FOSSGIS Valhalla och OSRM som drivs av frivilliga; kartplattor från OpenFreeMap; kartdata © OpenStreetMaps bidragsgivare; adressökning från Digitransit och Photon; företagsnamn från Overture Maps Foundation.
+
+Integritetspolicy: https://poi.jrs8205.com/privacy?lang=sv
+Källkod: https://github.com/jrs8205/tyomatka
+Kontakt: jrs8205@pm.me

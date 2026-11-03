@@ -849,5 +849,6 @@
     <string name="license_foursquare">Foursquare Places NOTICE</string>
     <string name="license_odbl">OpenStreetMap: ODbL 1.0</string>
     <string name="license_cc_by">Digitransit, Fintraffic: CC BY 4.0</string>
+    <string name="license_rust">Ferrostars navigeringskärna: Rust-bibliotek</string>
     <string name="reminder_devices_unavailable">Parkopplade enheter kan inte läsas eftersom Bluetooth är avstängt eller behörighet saknas. Dina val sparas.</string>
 </resources>

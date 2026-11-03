@@ -1,0 +1,8 @@
+First public release.
+
+• Day's stops on the map with arrival times and the finish time of the day
+• Spoken navigation from stop to stop, Fastest or Shortest route
+• Work days, odometer readings and fill-ups with consumption and photos
+• Nearby fuel stations, charging points, gas stations and rest areas
+• HTML report and full backup
+• Finnish, Swedish and English

@@ -1,0 +1,8 @@
+Första offentliga versionen.
+
+• Dagens stopp på kartan med ankomsttider och dagens sluttid
+• Röstnavigering från stopp till stopp, rutten Snabbast eller Kortast
+• Arbetsdagar, mätarställningar och tankningar med förbrukning och foton
+• Bensinstationer, laddningspunkter, gasstationer och rastplatser i närheten
+• HTML-rapport och fullständig säkerhetskopia
+• Finska, svenska och engelska

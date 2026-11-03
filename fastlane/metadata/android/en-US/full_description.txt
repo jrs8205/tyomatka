@@ -1,0 +1,20 @@
+Work Trip is a route, navigation and work-log app for drivers, built entirely on open map services. It needs no account and no API keys.
+
+Add the day's stops and the app
+• shows them numbered on the map with the route line and lets you reorder them by dragging
+• navigates with spoken guidance from stop to stop, detects the arrival and continues to the next stop with one tap
+• predicts the arrival time at every stop and the finish time of the whole day, and updates the forecast while you drive
+• warns when a "deliver by" deadline is no longer realistic
+• learns a personal speed factor and the travel times between stop pairs from your actual driving
+• logs work days (odometer readings, work time, vehicle) and fill-ups, and calculates consumption from one full tank to the next: diesel, petrol, gas, electricity and AdBlue
+• attaches photos to a fill-up as proof: receipt, pump display or a charging app's screenshot
+• lists fuel stations, charging points, gas stations, rest areas and truck parks nearby
+• exports everything as an HTML report that also works as a backup
+
+The app works in Finland (Åland included) in Finnish, Swedish and English.
+
+Open services: routes from FOSSGIS Valhalla and OSRM, run by volunteers; map tiles from OpenFreeMap; map data © OpenStreetMap contributors; address search from Digitransit and Photon; business names from Overture Maps Foundation.
+
+Privacy policy: https://poi.jrs8205.com/privacy?lang=en
+Source code: https://github.com/jrs8205/tyomatka
+Contact: jrs8205@pm.me
