@@ -76,6 +76,7 @@ import org.maplibre.compose.sources.rememberGeoJsonSource
 import org.maplibre.compose.style.BaseStyle
 import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.units.extensions.inMeters
+import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
 
 private val RouteBlue = Color(0xFF1A73E8)
@@ -228,8 +229,15 @@ fun OverviewMap(
                 // ajossa vaikealukuinen, ja vaalea vastaa edeltäjän karttaa.
                 baseStyle = BaseStyle.Uri(LocalMapStyleUrl.current),
                 cameraState = cameraState,
-                // Oma näkyvä merkintä korvaa kartan i-napin ja logon, jotka jäisivät nappien alle.
-                options = MapOptions(ornamentOptions = OrnamentOptions(isLogoEnabled = false, isAttributionEnabled = false)),
+                // Oma näkyvä merkintä korvaa kartan i-napin ja logon, jotka jäisivät nappien alle. Mittakaavapalkki
+                // lukee yksikkönsä oletuskielestä, joten se näytetään vain metrisenä.
+                options = MapOptions(
+                    ornamentOptions = OrnamentOptions(
+                        isLogoEnabled = false,
+                        isAttributionEnabled = false,
+                        isScaleBarEnabled = scaleBarIsMetric(Locale.getDefault()),
+                    ),
+                ),
             ) {
                 // Lähteet luodaan kartan tyylikompositiossa — sen ulkopuolella ei ole tyylisolmua.
                 val stopSource = rememberGeoJsonSource(GeoJsonData.Features(MapGeometry.stopFeatures(stops)))
