@@ -153,17 +153,17 @@ class TodaySummaryTest {
     fun `tilarivi vaihtuu vain erottimen kohdalta eikä rekisterinumero katkea`() {
         // Osien välilyönnit ovat sitovia ja rekisterinumeron yhdysmerkki sitova (U+2011).
         assertEquals(
-            "Käynnissä\u00A0alkaen\u00A07.12 · 2\u00A0h\u00A010\u00A0min · ABC\u2011123",
+            "Käynnissä\u00A0alkaen\u00A07.12\u00A0· 2\u00A0h\u00A010\u00A0min\u00A0· ABC\u2011123",
             todayStatusLine("Käynnissä alkaen 7.12 · 2 h 10 min", "ABC-123"),
         )
         assertEquals(
-            "Päättynyt\u00A015.03 · työaika\u00A07\u00A0h\u00A051\u00A0min · ABC\u2011123",
+            "Päättynyt\u00A015.03\u00A0· työaika\u00A07\u00A0h\u00A051\u00A0min\u00A0· ABC\u2011123",
             todayStatusLine("Päättynyt 15.03 · työaika 7 h 51 min", "ABC-123"),
         )
-        assertEquals("Työpäivä\u00A0aloittamatta · ABC\u2011123", todayStatusLine("Työpäivä aloittamatta", "ABC-123"))
+        assertEquals("Työpäivä\u00A0aloittamatta\u00A0· ABC\u2011123", todayStatusLine("Työpäivä aloittamatta", "ABC-123"))
         // Ilman autoa rivi on pelkkä tila.
         assertEquals("Työpäivä\u00A0aloittamatta", todayStatusLine("Työpäivä aloittamatta", null))
         // Ulkomainen rekisterinumero välilyönnein pysyy myös yhdessä.
-        assertEquals("Päättynyt\u00A015.03 · AB\u00A0123\u00A0CD", todayStatusLine("Päättynyt 15.03", "AB 123 CD"))
+        assertEquals("Päättynyt\u00A015.03\u00A0· AB\u00A0123\u00A0CD", todayStatusLine("Päättynyt 15.03", "AB 123 CD"))
     }
 }

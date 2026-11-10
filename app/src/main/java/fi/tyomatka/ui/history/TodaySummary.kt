@@ -2,6 +2,8 @@ package fi.tyomatka.ui.history
 
 import fi.tyomatka.data.db.WorkSegmentEntity
 import fi.tyomatka.data.repo.latestWorkSegment
+import fi.tyomatka.ui.RAW_PART_SEPARATOR
+import fi.tyomatka.ui.boundParts
 import fi.tyomatka.ui.history.forms.WorkDayStatus
 import fi.tyomatka.ui.history.forms.workDayStatus
 
@@ -22,18 +24,13 @@ data class TodaySummary(
     val statusPlate: String? = null,
 )
 
-/** Tilarivin osien erotin: ainoa kohta, josta rivi saa vaihtua. */
-private const val STATUS_SEPARATOR = " · "
-
 /**
  * Tänään-kortin tilarivi: tilan teksti ("Käynnissä alkaen 7.12 · 2 h 10 min") ja sen perässä auton rekisterinumero.
  * Rivi saa vaihtua vain " · "-erottimen kohdalta: osien välilyönnit ovat sitovia (U+00A0) ja
  * yhdysmerkit sitovia (U+2011), ettei rekisterinumero katkea muotoon "ABC-" / "123".
  */
 fun todayStatusLine(statusText: String, plate: String?): String =
-    (statusText.split(STATUS_SEPARATOR) + listOfNotNull(plate)).joinToString(STATUS_SEPARATOR) { part ->
-        part.replace(' ', '\u00A0').replace('-', '\u2011')
-    }
+    boundParts(*(statusText.split(RAW_PART_SEPARATOR) + plate).toTypedArray())
 
 /**
  * Yhden auton mittarilukemat päivältä: ensimmäisen jakson alku ja viimeisen päättyneen jakson loppu. Avoin jakso ei

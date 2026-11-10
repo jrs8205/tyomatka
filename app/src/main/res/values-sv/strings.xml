@@ -851,4 +851,7 @@
     <string name="license_cc_by">Digitransit, Fintraffic: CC BY 4.0</string>
     <string name="license_rust">Ferrostars navigeringskärna: Rust-bibliotek</string>
     <string name="reminder_devices_unavailable">Parkopplade enheter kan inte läsas eftersom Bluetooth är avstängt eller behörighet saknas. Dina val sparas.</string>
+    <string name="odometer_span_description">Mätare %1$s – %2$s</string>
+    <string name="odometer_missing">saknas</string>
+    <string name="odometer_invalid">avläsningarna stämmer inte</string>
 </resources>

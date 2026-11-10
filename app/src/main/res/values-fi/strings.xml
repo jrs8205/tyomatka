@@ -863,4 +863,7 @@
     <string name="license_cc_by">Digitransit, Fintraffic: CC BY 4.0</string>
     <string name="license_rust">Ferrostarin navigointiydin: Rust-kirjastot</string>
     <string name="reminder_devices_unavailable">Parilaitteita ei voi lukea, koska Bluetooth on pois päältä tai lupa puuttuu. Valintasi säilyvät.</string>
+    <string name="odometer_span_description">Mittari %1$s – %2$s</string>
+    <string name="odometer_missing">puuttuu</string>
+    <string name="odometer_invalid">lukemat ristiriidassa</string>
 </resources>

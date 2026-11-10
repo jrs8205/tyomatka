@@ -162,3 +162,26 @@ fun formatCostPerKm(costPerKm: Double?, currency: String?): String =
     if (costPerKm != null && currency != null) "${formatDecimal(costPerKm, 2)} ${currencySymbol(currency)}/km" else "–"
 
 fun formatPercent(value: Double): String = "${formatDecimal(value, 1)} %"
+
+/**
+ * Rivin osien erotin näytöllä: sitova väli ennen pistettä, joten seuraava rivi ei ala erottimella. Rivi saa vaihtua
+ * vain pisteen jälkeen.
+ */
+const val PART_SEPARATOR = "\u00A0· "
+
+/** Merkkijonoresurssien ja ohjelman omien tekstien erotin, josta osat jaetaan ennen [boundParts]ia. */
+const val RAW_PART_SEPARATOR = " · "
+
+/**
+ * Rivin osat näytölle: osan välilyönnit ovat sitovia (U+00A0), yhdysmerkit sitovia (U+2011) ja kauttaviivan sekä
+ * ajatusviivan ympärillä on sanaliitos (U+2060), joten luku ja yksikkö ("1,859 €/l"), kellonaikaväli tai
+ * rekisterinumero eivät jakaudu kahdelle riville; rivi vaihtuu vain [PART_SEPARATOR]in kohdalta. Tyhjät ja puuttuvat
+ * osat jätetään pois, jotta erotin ei jää roikkumaan.
+ */
+fun boundParts(vararg parts: String?): String =
+    parts.filterNotNull().filter { it.isNotEmpty() }.joinToString(PART_SEPARATOR) { part ->
+        part.replace(' ', '\u00A0')
+            .replace('-', '\u2011')
+            .replace("/", "/\u2060")
+            .replace("–", "\u2060–\u2060")
+    }

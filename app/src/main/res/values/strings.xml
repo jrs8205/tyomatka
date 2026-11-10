@@ -863,4 +863,7 @@
     <string name="license_cc_by">Digitransit, Fintraffic: CC BY 4.0</string>
     <string name="license_rust">Ferrostar navigation core: Rust crates</string>
     <string name="reminder_devices_unavailable">Paired devices cannot be read because Bluetooth is off or the permission is missing. Your choices are kept.</string>
+    <string name="odometer_span_description">Odometer %1$s – %2$s</string>
+    <string name="odometer_missing">missing</string>
+    <string name="odometer_invalid">readings inconsistent</string>
 </resources>

@@ -112,4 +112,20 @@ class FormatTest {
         assertEquals("30,00 USD", formatMoney(30.0, "USD"))
         assertEquals("3,1 %", formatPercent(3.14))
     }
+
+    @Test
+    fun `osat sitoviksi ja rivinvaihto vain erottimessa`() {
+        assertEquals("48,6\u00A0l\u00A0· 87,48\u00A0€", boundParts("48,6 l", "87,48 €"))
+        assertEquals("ABC\u2011123\u00A0· 125\u00A0412\u00A0km", boundParts("ABC-123", null, "125 412 km"))
+        assertEquals("1,859\u00A0€/\u2060l", boundParts("1,859 €/l"))
+        assertEquals("7.12\u2060–\u206015.30", boundParts("7.12–15.30"))
+    }
+
+    @Test
+    fun `tyhjat osat eivat tuota erotinta`() {
+        assertEquals("", boundParts())
+        assertEquals("", boundParts(null, null))
+        assertEquals("ABC", boundParts("", "ABC", ""))
+        assertEquals("7\u00A0h\u00A043\u00A0min", boundParts(null, "7 h 43 min"))
+    }
 }
