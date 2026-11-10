@@ -49,6 +49,8 @@ class WorkPeriodsTest {
         val days = history(listOf(segment(1, "2020-12-31"), segment(2, "2021-01-01")), listOf(fuel(1, "2021-01-03")))
         val week = rows(days, WorkPeriod.WEEK).single()
         assertEquals("Vko 53 / 2020", week.label)
+        assertEquals("w2020-53", week.key)
+        assertEquals(date("2020-12-28").toEpochDay()..date("2021-01-03").toEpochDay(), periodDayRange(week.key))
         assertEquals(400, week.km)
         assertEquals(16 * 3600, week.durationSec)
         assertEquals(50.0, week.fuel!![FuelKind.DIESEL]!!.liters)

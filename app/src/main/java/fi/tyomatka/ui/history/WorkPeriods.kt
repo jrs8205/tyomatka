@@ -36,6 +36,14 @@ data class WorkPeriodRow(
     val hasNote: Boolean = false,
 )
 
+/** Rivin avain: päivä, ISO-viikko vuosineen, kuukausi tai vuosi. [periodDayRange] jäsentää saman muodon. */
+fun workPeriodKey(period: WorkPeriod, date: LocalDate): String = when (period) {
+    WorkPeriod.DAY -> "d${date.toEpochDay()}"
+    WorkPeriod.WEEK -> "w${date.get(WeekFields.ISO.weekBasedYear())}-${date.get(WeekFields.ISO.weekOfWeekBasedYear())}"
+    WorkPeriod.MONTH -> "m${YearMonth.from(date)}"
+    WorkPeriod.YEAR -> "y${date.year}"
+}
+
 /**
  * Kalenterijaksot; ISO-viikon vuosi voi erota päivämäärän vuodesta. [fuelOf] antaa auton polttoaineen, kun jakson
  * kilometrit jaetaan lajeittain ([periodKmByKind]).
@@ -47,12 +55,7 @@ fun workPeriodRows(
     fuelOf: (String) -> FuelKind?,
     weekLabel: (week: Int, year: Int) -> String,
 ): List<WorkPeriodRow> {
-    fun key(date: LocalDate): String = when (period) {
-        WorkPeriod.DAY -> "d${date.toEpochDay()}"
-        WorkPeriod.WEEK -> "w${date.get(WeekFields.ISO.weekBasedYear())}-${date.get(WeekFields.ISO.weekOfWeekBasedYear())}"
-        WorkPeriod.MONTH -> "m${YearMonth.from(date)}"
-        WorkPeriod.YEAR -> "y${date.year}"
-    }
+    fun key(date: LocalDate): String = workPeriodKey(period, date)
     fun label(date: LocalDate): String = when (period) {
         WorkPeriod.DAY -> formatShortDate(date.toEpochDay())
         WorkPeriod.WEEK -> weekLabel(date.get(WeekFields.ISO.weekOfWeekBasedYear()), date.get(WeekFields.ISO.weekBasedYear()))
