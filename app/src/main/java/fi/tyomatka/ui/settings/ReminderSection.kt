@@ -29,7 +29,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,6 +55,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.format.TextStyle
+import fi.tyomatka.ui.components.AppTimePicker
 
 /** Asetussivua ei välttämättä ole kaikissa puhelimissa, eikä se saa kaataa sovellusta. */
 internal fun Context.openSafely(intent: Intent) {
@@ -235,7 +235,7 @@ private fun ReminderTimeDialog(minuteOfDay: Int, onSet: (Int) -> Unit, onDismiss
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.reminder_time_at)) },
-        text = { Column(Modifier.verticalScroll(rememberScrollState())) { TimePicker(state = state) } },
+        text = { Column(Modifier.verticalScroll(rememberScrollState())) { AppTimePicker(state = state) } },
         confirmButton = {
             TextButton(onClick = Tap { onSet(state.hour * 60 + state.minute) }) { Text(stringResource(R.string.ok)) }
         },

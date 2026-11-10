@@ -54,6 +54,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.util.Locale
+import fi.tyomatka.ui.components.mapCardColors
 
 /**
  * Ajonäkymä ajosession ajaksi: ajokartta koko näytöllä ja alapaneeli, jonka kurkistusosassa ovat nykyinen kohde ja
@@ -145,6 +146,7 @@ fun DriveLayer(
                 hint?.let {
                     Card(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = mapCardColors(),
                         modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = peekHeight + BottomRowHeight + 8.dp),
                     ) {
                         Text(it, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))

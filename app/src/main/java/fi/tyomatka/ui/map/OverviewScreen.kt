@@ -77,6 +77,7 @@ import fi.tyomatka.ui.formatDuration
 import fi.tyomatka.ui.formatKm
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import fi.tyomatka.ui.components.mapCardColors
 
 /** Etäisyys listan reunasta (px), jonka sisällä raahaus alkaa vierittää listaa. */
 private const val AUTOSCROLL_ZONE_PX = 160f
@@ -133,7 +134,7 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (state.stops.isEmpty()) {
-                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
                     Text(
                         stringResource(
                             if (state.hasHandledStops) R.string.all_stops_done_map else R.string.no_stops
@@ -148,7 +149,7 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
                 Spacer(Modifier.padding(2.dp))
             }
             if (state.totalDistanceM > 0) {
-                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
                     Column(
                         Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -180,7 +181,7 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
             }
             state.error?.let { error ->
                 Spacer(Modifier.padding(4.dp))
-                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
                     Column(
                         Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -294,7 +295,7 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
 @Composable
 private fun HintCard(text: String) {
     Spacer(Modifier.padding(4.dp))
-    Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+    Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
         Text(
             text,
             style = MaterialTheme.typography.bodyMedium,
@@ -532,7 +533,7 @@ private fun ReorderOverlay(
 @Composable
 private fun RouteChoiceCard(comparison: RouteComparison, onChoice: (RouteChoice) -> Unit) {
     val options = listOf(RouteChoice.NORMAL to R.string.route_choice_normal, RouteChoice.SHORTEST to R.string.route_choice_shortest)
-    Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+    Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(8.dp)) {
             options.forEachIndexed { index, (option, labelRes) ->
                 val preview = comparison.previews.getValue(option)

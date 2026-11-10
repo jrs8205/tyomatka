@@ -49,7 +49,6 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -104,6 +103,7 @@ import fi.tyomatka.ui.formatClock
 import fi.tyomatka.ui.formatDuration
 import fi.tyomatka.ui.formatMinutesOfDay
 import kotlinx.coroutines.launch
+import fi.tyomatka.ui.components.AppTimePicker
 
 /**
  * Suunnittelunäkymä: stoppien lisäys (osoitehaku / liitetty lista), aikarajat,
@@ -956,7 +956,7 @@ private fun DeadlineDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.set_deadline)) },
-        text = { Column(Modifier.verticalScroll(rememberScrollState())) { TimePicker(state = timeState) } },
+        text = { Column(Modifier.verticalScroll(rememberScrollState())) { AppTimePicker(state = timeState) } },
         confirmButton = {
             TextButton(onClick = Tap { onSet(timeState.hour * 60 + timeState.minute) }) {
                 Text(stringResource(R.string.ok))
