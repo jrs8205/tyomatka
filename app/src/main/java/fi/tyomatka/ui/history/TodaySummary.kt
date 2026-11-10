@@ -41,7 +41,15 @@ data class CarReadings(
     val plate: String?,
     val startKm: Long?,
     val endKm: Long?,
+    /**
+     * Autolla on avoin jakso: ajo jatkuu, joten janan loppu on kesken. [endKm] voi silti olla aiemman, päättyneen
+     * jakson loppulukema (töitä jatkettiin samalla autolla).
+     */
+    val open: Boolean = false,
 )
+
+/** Janan loppulukema: avoimella autolla ei mitään (jana on kesken), muuten viimeisen päättyneen jakson lukema. */
+val CarReadings.spanEndKm: Long? get() = endKm.takeUnless { open }
 
 /** [nextPlate]: seuraavan ajon auto ([fi.tyomatka.data.repo.defaultPlateWithChoice]) tilariville, kun päivä on aloittamatta. */
 fun todaySummary(segments: List<WorkSegmentEntity>, nowEpochSec: Long, nextPlate: String? = null): TodaySummary {
@@ -66,6 +74,7 @@ fun todaySummary(segments: List<WorkSegmentEntity>, nowEpochSec: Long, nextPlate
                 plate = plate,
                 startKm = own.first().odometerStartKm,
                 endKm = own.lastOrNull { it.endEpochSec != null }?.odometerEndKm,
+                open = own.any { it.endEpochSec == null },
             )
         },
         missingReadings = missing,

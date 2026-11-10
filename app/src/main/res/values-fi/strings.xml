@@ -396,10 +396,6 @@
     <string name="today_not_started">Työpäivä aloittamatta</string>
     <string name="today_ongoing">Käynnissä alkaen %1$s · %2$s</string>
     <string name="today_ended">Päättynyt %1$s · työaika %2$s</string>
-    <string name="today_odometer_range">Mittari %1$s → %2$s</string>
-    <string name="today_odometer_start">Mittari %1$s</string>
-    <string name="today_car_odometer_range">%1$s: %2$s → %3$s</string>
-    <string name="today_car_odometer_start">%1$s: %2$s</string>
     <string name="today_car_without_plate">Auto ilman rekisterinumeroa</string>
     <string name="period_km">km</string>
     <string name="period_work_time">Työaika</string>

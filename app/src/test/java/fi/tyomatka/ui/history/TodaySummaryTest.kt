@@ -49,11 +49,54 @@ class TodaySummaryTest {
         assertEquals(listOf("ABC-123", "XYZ-987"), summary.plates)
         // Lukemat autoittain: ensimmäisen auton avoin jakso ei anna loppulukemaa, eikä toisen auton lukema sekoitu.
         assertEquals(
-            listOf(CarReadings("ABC-123", 1000, 1100), CarReadings("XYZ-987", 5000, 5050)),
+            listOf(CarReadings("ABC-123", 1000, 1100, open = true), CarReadings("XYZ-987", 5000, 5050)),
             summary.readings,
         )
         assertTrue(summary.status.ongoing)
         assertFalse(summary.missingReadings)
+    }
+
+    @Test
+    fun `avoimen jakson auto on auki ilman loppulukemaa`() {
+        val summary = todaySummary(listOf(segment(1, 7, null, 1000, null)), nowEpochSec = day + 9 * 3600)
+        assertEquals(listOf(CarReadings("ABC-123", 1000, null, open = true)), summary.readings)
+    }
+
+    @Test
+    fun `jatketun paivan avoimella autolla janan loppu on kesken`() {
+        val segments = listOf(
+            segment(1, 7, 12, 1000, 1100),
+            segment(2, 13, null, 1100, null),
+        )
+        val car = todaySummary(segments, nowEpochSec = day + 14 * 3600).readings.single()
+        assertEquals(1100, car.endKm)
+        assertNull(car.spanEndKm)
+    }
+
+    @Test
+    fun `paattyneella autolla janan loppu on loppulukema`() {
+        val car = todaySummary(listOf(segment(1, 7, 12, 1000, 1100)), nowEpochSec = day + 13 * 3600).readings.single()
+        assertEquals(1100, car.spanEndKm)
+    }
+
+    @Test
+    fun `autonvaihdossa vain avoimen jakson auto on auki`() {
+        val segments = listOf(
+            segment(1, 7, 12, 1000, 1100, "ABC-123"),
+            segment(2, 12, null, 5000, null, "XYZ-987"),
+        )
+        val summary = todaySummary(segments, nowEpochSec = day + 13 * 3600)
+        assertEquals(listOf(false, true), summary.readings.map { it.open })
+    }
+
+    @Test
+    fun `päättyneellä päivällä mikään auto ei ole auki`() {
+        val segments = listOf(
+            segment(1, 7, 12, 1000, 1100, "ABC-123"),
+            segment(2, 12, 16, 5000, 5050, "XYZ-987"),
+        )
+        val summary = todaySummary(segments, nowEpochSec = day + 17 * 3600)
+        assertEquals(listOf(false, false), summary.readings.map { it.open })
     }
 
     @Test
@@ -70,7 +113,7 @@ class TodaySummaryTest {
         assertEquals(listOf(CarReadings("ABC-123", 12_300, 12_350)), closed.readings)
 
         val open = todaySummary(listOf(segment(1, 7, null, 12_300, null)), nowEpochSec = day + 8 * 3600)
-        assertEquals(listOf(CarReadings("ABC-123", 12_300, null)), open.readings)
+        assertEquals(listOf(CarReadings("ABC-123", 12_300, null, open = true)), open.readings)
     }
 
     @Test
@@ -81,7 +124,7 @@ class TodaySummaryTest {
         )
         val summary = todaySummary(segments, nowEpochSec = day + 13 * 3600)
         assertEquals(
-            listOf(CarReadings("ABC-123", 12_300, 12_350), CarReadings("XYZ-789", 45_000, null)),
+            listOf(CarReadings("ABC-123", 12_300, 12_350), CarReadings("XYZ-789", 45_000, null, open = true)),
             summary.readings,
         )
         assertEquals(50, summary.km)
@@ -105,7 +148,7 @@ class TodaySummaryTest {
             segment(2, 12, null, 5000, null, "ABC-123"),
         )
         val summary = todaySummary(segments, nowEpochSec = day + 13 * 3600)
-        assertEquals(listOf(CarReadings(null, 1000, 1100), CarReadings("ABC-123", 5000, null)), summary.readings)
+        assertEquals(listOf(CarReadings(null, 1000, 1100), CarReadings("ABC-123", 5000, null, open = true)), summary.readings)
         assertEquals(listOf("ABC-123"), summary.plates)
 
         // Pelkkä auto ilman rekisterinumeroa on yhden auton päivä.

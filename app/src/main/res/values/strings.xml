@@ -396,10 +396,6 @@
     <string name="today_not_started">Working day not started</string>
     <string name="today_ongoing">In progress since %1$s · %2$s</string>
     <string name="today_ended">Finished %1$s · working time %2$s</string>
-    <string name="today_odometer_range">Odometer %1$s → %2$s</string>
-    <string name="today_odometer_start">Odometer %1$s</string>
-    <string name="today_car_odometer_range">%1$s: %2$s → %3$s</string>
-    <string name="today_car_odometer_start">%1$s: %2$s</string>
     <string name="today_car_without_plate">Car without registration number</string>
     <string name="period_km">km</string>
     <string name="period_work_time">Working time</string>

@@ -391,10 +391,6 @@
     <string name="today_not_started">Arbetsdagen har inte startats</string>
     <string name="today_ongoing">Pågår sedan %1$s · %2$s</string>
     <string name="today_ended">Avslutad %1$s · arbetstid %2$s</string>
-    <string name="today_odometer_range">Mätare %1$s → %2$s</string>
-    <string name="today_odometer_start">Mätare %1$s</string>
-    <string name="today_car_odometer_range">%1$s: %2$s → %3$s</string>
-    <string name="today_car_odometer_start">%1$s: %2$s</string>
     <string name="today_car_without_plate">Bil utan registreringsnummer</string>
     <string name="period_km">km</string>
     <string name="period_work_time">Arbetstid</string>
