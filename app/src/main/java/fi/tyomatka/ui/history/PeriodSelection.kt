@@ -37,21 +37,40 @@ fun newerKey(keys: List<String>, selectedKey: String?): String? {
  * Nuolirivin ja pagerin valinta: rivien avaimet uusimmasta vanhimpaan ja valittu avain. Pagerin sivu on rivin indeksi.
  * Ilman valintaa (tai tuntemattomalla avaimella) valittuna on uusin.
  */
-data class PeriodChoice(val keys: List<String>, private val selectedKey: String? = null) {
+data class PeriodChoice(
+    val keys: List<String>,
+    private val selectedKey: String? = null,
+    /** Nuolen tai listan valinta, jonka pager-animaatio on vielä kesken; [settled] ei kumoa sitä. */
+    private val pendingKey: String? = null,
+) {
     val selected: String? get() = selectedKey?.takeIf { it in keys } ?: keys.firstOrNull()
     val page: Int get() = keys.indexOf(selected).coerceAtLeast(0)
     val older: String? get() = olderKey(keys, selected)
     val newer: String? get() = newerKey(keys, selected)
 
-    /** Nuoli tai muiden jaksojen rivi; tuntematon avain ei muuta valintaa. */
+    /** Valinta ilman odotusta; tuntematon avain ei muuta valintaa. */
     fun select(key: String): PeriodChoice = if (key in keys) copy(selectedKey = key) else this
 
-    /** Pyyhkäisy asettui sivulle. */
-    fun settled(page: Int): PeriodChoice = keys.getOrNull(page)?.let(::select) ?: this
+    /**
+     * Nuoli tai muiden jaksojen rivi: valinta heti ja odottamaan, kunnes pager on siirtynyt ([requestDone]). Sillä välin
+     * aiemman pyyhkäisyn tai animaation asettuminen ([settled]) ei vie valintaa väärään jaksoon.
+     */
+    fun request(key: String): PeriodChoice = if (key in keys) copy(selectedKey = key, pendingKey = key) else this
 
-    /** Rivit muuttuivat: [followSelection]. */
+    /** Pager siirtyi [key]:n valintaan tai siirto keskeytyi; uudempi odottava valinta pysyy. */
+    fun requestDone(key: String): PeriodChoice = if (pendingKey == key) copy(pendingKey = null) else this
+
+    /** Pyyhkäisy asettui sivulle; ohitetaan, kun nuolen tai listan valinta odottaa pageria. */
+    fun settled(page: Int): PeriodChoice =
+        if (pendingKey != null) this else keys.getOrNull(page)?.let(::select) ?: this
+
+    /** Rivit muuttuivat: [followSelection]; odottava valinta säilyy, jos sen rivi on yhä mukana. */
     fun rowsChanged(newKeys: List<String>): PeriodChoice =
-        if (newKeys == keys) this else PeriodChoice(newKeys, followSelection(keys, newKeys, selected))
+        if (newKeys == keys) {
+            this
+        } else {
+            PeriodChoice(newKeys, followSelection(keys, newKeys, selected), pendingKey?.takeIf { it in newKeys })
+        }
 }
 
 /** Muut jaksot: kaikki rivit valittua lukuun ottamatta, uusimmasta vanhimpaan. */

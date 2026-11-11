@@ -66,6 +66,7 @@ import fi.tyomatka.ui.formatMoneyByCurrency
 import fi.tyomatka.ui.formatWhole
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 
@@ -92,8 +93,10 @@ class PeriodPagerState internal constructor(keys: List<String>, private val scop
      * vieritys nuoliriviin, jotta pager on näkyvissä animoidessaan).
      */
     fun select(key: String, before: (suspend () -> Unit)? = null) {
-        choice = choice.select(key)
-        scope.launch {
+        // Valinta odottaa pageria: aiemman pyyhkäisyn asettuminen vierityksen tai animaation aikana ei kumoa sitä.
+        choice = choice.request(key)
+        selectJob?.cancel()
+        selectJob = scope.launch {
             // Kosketus voi keskeyttää vierityksen; pager siirtyy silti valittuun, silloin ilman animaatiota. Sivu luetaan
             // vasta vierityksen jälkeen, koska rivit voivat muuttua sen aikana.
             val scrolled = try {
@@ -103,9 +106,19 @@ class PeriodPagerState internal constructor(keys: List<String>, private val scop
                 ensureActive()
                 false
             }
-            if (scrolled) pager.animateScrollToPage(choice.page) else pager.requestScrollToPage(choice.page)
+            try {
+                if (scrolled) pager.animateScrollToPage(choice.page) else pager.requestScrollToPage(choice.page)
+                choice = choice.requestDone(key)
+            } catch (e: CancellationException) {
+                choice = choice.requestDone(key)
+                // Uusi pyyhkäisy keskeytti animaation ja on voinut jo asettua: valinta seuraa sitä.
+                if (!pager.isScrollInProgress) choice = choice.settled(pager.settledPage)
+                throw e
+            }
         }
     }
+
+    private var selectJob: Job? = null
 
     internal fun rowsChanged(keys: List<String>) {
         val next = choice.rowsChanged(keys)

@@ -159,4 +159,38 @@ class PeriodChoiceTest {
         val adBlue = fuel(FuelKind.ADBLUE, 1.9)
         assertEquals(listOf(adBlue), listFuelLines(PeriodFuels(listOf(adBlue))))
     }
+
+    private val weeks = listOf("w2026-46", "w2026-45", "w2026-44")
+
+    @Test
+    fun `listavalinta kestaa aiemman pyyhkaisyn asettumisen`() {
+        // Pyyhkäisy viikkoon 45 asettuu vasta, kun listasta on jo valittu viikko 44.
+        val choice = PeriodChoice(weeks).request("w2026-44").settled(1)
+        assertEquals("w2026-44", choice.selected)
+        assertEquals(2, choice.page)
+    }
+
+    @Test
+    fun `valinnan valmistuttua pyyhkaisy valitsee taas`() {
+        val choice = PeriodChoice(weeks).request("w2026-44").requestDone("w2026-44").settled(1)
+        assertEquals("w2026-45", choice.selected)
+    }
+
+    @Test
+    fun `vanhan valinnan valmistuminen ei vapauta uudempaa`() {
+        val choice = PeriodChoice(weeks).request("w2026-44").request("w2026-45").requestDone("w2026-44").settled(0)
+        assertEquals("w2026-45", choice.selected)
+    }
+
+    @Test
+    fun `odottava valinta sailyy rivien muuttuessa`() {
+        val choice = PeriodChoice(weeks).request("w2026-44").rowsChanged(listOf("w2026-47") + weeks).settled(1)
+        assertEquals("w2026-44", choice.selected)
+    }
+
+    @Test
+    fun `tuntematon avain ei jaa odottamaan`() {
+        val choice = PeriodChoice(weeks).request("w2020-1").settled(1)
+        assertEquals("w2026-45", choice.selected)
+    }
 }
