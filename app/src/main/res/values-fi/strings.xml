@@ -407,7 +407,7 @@
     <string name="fuel_stat_filled">Täytetty</string>
     <string name="fuel_stat_percent_of_diesel">Osuus dieselistä</string>
     <string name="fuel_percent_of_diesel">%1$s dieselistä</string>
-    <string name="fuel_tanked_kind">%1$s %2$s · %3$s</string>
+    <string name="fuel_tanked_kind">%1$s yhteensä %2$s · %3$s</string>
     <string name="fuel_stat_cost">Kustannus</string>
     <string name="fuel_stat_avg_price">Keskihinta</string>
     <string name="fuel_stat_per_work_km">Kulutus / työkilometrit</string>
@@ -876,4 +876,13 @@
     <string name="period_others_month">Muut kuukaudet</string>
     <string name="period_others_year">Muut vuodet</string>
     <string name="period_show">Näytä</string>
+    <string name="day_fillups_title">Tankkaukset</string>
+    <string name="day_charges_title">Lataukset</string>
+    <string name="day_gas_title">Täytöt</string>
+    <string name="day_drives_title">Ajot</string>
+    <string name="period_yesterday">Eilen</string>
+    <plurals name="period_days_ago">
+        <item quantity="one">%d päivä sitten</item>
+        <item quantity="other">%d päivää sitten</item>
+    </plurals>
 </resources>

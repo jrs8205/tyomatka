@@ -407,7 +407,7 @@
     <string name="fuel_stat_filled">Refilled</string>
     <string name="fuel_stat_percent_of_diesel">Share of diesel</string>
     <string name="fuel_percent_of_diesel">%1$s of diesel</string>
-    <string name="fuel_tanked_kind">%1$s %2$s · %3$s</string>
+    <string name="fuel_tanked_kind">%1$s total %2$s · %3$s</string>
     <string name="fuel_stat_cost">Cost</string>
     <string name="fuel_stat_avg_price">Average price</string>
     <string name="fuel_stat_per_work_km">Consumption / working km</string>
@@ -876,4 +876,13 @@
     <string name="period_others_month">Other months</string>
     <string name="period_others_year">Other years</string>
     <string name="period_show">Show</string>
+    <string name="day_fillups_title">Fill-ups</string>
+    <string name="day_charges_title">Charges</string>
+    <string name="day_gas_title">Refills</string>
+    <string name="day_drives_title">Drives</string>
+    <string name="period_yesterday">Yesterday</string>
+    <plurals name="period_days_ago">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
 </resources>

@@ -115,25 +115,27 @@ class PeriodChoiceTest {
         val week = row("w2026-46").copy(ongoing = true)
         val parts = subtitleParts(week, WorkPeriod.WEEK, todayEpochDay = 20_403, showOngoing = true)
         assertEquals(periodDayRange("w2026-46"), parts.range)
-        assertEquals(false, parts.today)
+        assertNull(parts.daysAgo)
         assertEquals(true, parts.ongoing)
     }
 
     @Test
-    fun `paivan alarivi kertoo vain taman paivan`() {
+    fun `paivan alarivi kertoo lahipaivan etaisyyden`() {
         val today = row("d20403").copy(date = 20_403, ongoing = true)
         val parts = subtitleParts(today, WorkPeriod.DAY, todayEpochDay = 20_403, showOngoing = false)
         assertNull(parts.range)
-        assertEquals(true, parts.today)
+        assertEquals(0, parts.daysAgo)
         assertEquals(false, parts.ongoing)
-        val earlier = row("d20402").copy(date = 20_402)
-        assertEquals(false, subtitleParts(earlier, WorkPeriod.DAY, todayEpochDay = 20_403, showOngoing = true).today)
+        val yesterday = row("d20402").copy(date = 20_402)
+        assertEquals(1, subtitleParts(yesterday, WorkPeriod.DAY, todayEpochDay = 20_403, showOngoing = true).daysAgo)
+        val old = row("d20390").copy(date = 20_390)
+        assertNull(subtitleParts(old, WorkPeriod.DAY, todayEpochDay = 20_403, showOngoing = true).daysAgo)
     }
 
     @Test
     fun `kuukauden alarivilla ei ole valia`() {
         val parts = subtitleParts(row("m2026-11"), WorkPeriod.MONTH, todayEpochDay = 20_403, showOngoing = true)
-        assertEquals(SubtitleParts(range = null, today = false, ongoing = false), parts)
+        assertEquals(SubtitleParts(range = null, daysAgo = null, ongoing = false), parts)
     }
 
     @Test

@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -200,12 +201,12 @@ fun LazyListScope.periodPagerItems(
     }
 }
 
-/** Alarivin osat: viikon päivät, onko rivi tämä päivä, ja näytetäänkö "kesken" ([showOngoing]). */
-internal data class SubtitleParts(val range: LongRange?, val today: Boolean, val ongoing: Boolean)
+/** Alarivin osat: viikon päivät, päivän etäisyys tästä päivästä ([daysAgo]) ja näytetäänkö "kesken" ([showOngoing]). */
+internal data class SubtitleParts(val range: LongRange?, val daysAgo: Int?, val ongoing: Boolean)
 
 internal fun subtitleParts(row: WorkPeriodRow, period: WorkPeriod, todayEpochDay: Long, showOngoing: Boolean) = SubtitleParts(
     range = if (period == WorkPeriod.WEEK) periodDayRange(row.key) else null,
-    today = period == WorkPeriod.DAY && row.date == todayEpochDay,
+    daysAgo = if (period == WorkPeriod.DAY) row.date?.let { daysAgo(it, todayEpochDay) } else null,
     ongoing = showOngoing && row.ongoing,
 )
 
@@ -221,15 +222,23 @@ internal fun boundRange(range: String): String {
 }
 
 /**
- * Jakson alarivi: viikolla päivämääräväli, tämän päivän rivillä "Tänään" ja keskeneräisellä jaksolla "kesken"
- * ([showOngoing]; päivän sisältö näyttää keskeneräisyyden itse).
+ * Jakson alarivi: viikolla päivämääräväli, viimeisen viikon päivillä "Tänään", "Eilen" tai "3 päivää sitten" ja
+ * keskeneräisellä jaksolla "kesken" ([showOngoing]; päivän sisältö näyttää keskeneräisyyden itse).
  */
 @Composable
 private fun periodSubtitle(row: WorkPeriodRow, period: WorkPeriod, todayEpochDay: Long, showOngoing: Boolean): String {
     val parts = subtitleParts(row, period, todayEpochDay, showOngoing)
     return listOfNotNull(
         parts.range?.let { boundRange(formatDayRange(it.first, it.last)) },
-        if (parts.today) boundParts(stringResource(R.string.today_title)) else null,
+        parts.daysAgo?.let { days ->
+            boundParts(
+                when (days) {
+                    0 -> stringResource(R.string.today_title)
+                    1 -> stringResource(R.string.period_yesterday)
+                    else -> pluralStringResource(R.plurals.period_days_ago, days, days)
+                },
+            )
+        },
         if (parts.ongoing) boundParts(stringResource(R.string.work_in_progress)) else null,
     ).joinToString(PART_SEPARATOR)
 }

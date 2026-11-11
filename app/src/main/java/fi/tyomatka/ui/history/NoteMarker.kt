@@ -1,9 +1,7 @@
 package fi.tyomatka.ui.history
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -17,22 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fi.tyomatka.R
-import fi.tyomatka.ui.Tap
 
 /**
- * Päiväkortin Lisätiedot-merkki kuvamerkin tapaan: teksti itse ei näy kortissa, vaan merkki kertoo,
- * että päivällä tai kirjauksella on lisätietoa. [onClick] avaa korjauslomakkeen päivän merkistä; tankkausrivillä
- * null, koska koko rivi avaa lomakkeen.
+ * Tankkausrivin Lisätiedot-merkki kuvamerkin tapaan: teksti itse ei näy rivillä, vaan merkki kertoo, että kirjauksella
+ * on lisätietoa. Koko rivi avaa lomakkeen, jossa teksti näkyy; päivän lisätiedot avaa päivänäkymän chip.
  */
 @Composable
-fun NoteMarker(onClick: (() -> Unit)?, modifier: Modifier = Modifier) {
-    val openLabel = stringResource(R.string.note_marker_open)
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.then(
-            if (onClick != null) Modifier.heightIn(min = 48.dp).clickable(onClickLabel = openLabel, onClick = Tap(onClick)) else Modifier
-        ),
-    ) {
+fun NoteMarker(modifier: Modifier = Modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Icon(
             Icons.Outlined.Notes,
             contentDescription = null,

@@ -402,7 +402,7 @@
     <string name="fuel_stat_filled">Påfyllt</string>
     <string name="fuel_stat_percent_of_diesel">Andel av diesel</string>
     <string name="fuel_percent_of_diesel">%1$s av diesel</string>
-    <string name="fuel_tanked_kind">%1$s %2$s · %3$s</string>
+    <string name="fuel_tanked_kind">%1$s totalt %2$s · %3$s</string>
     <string name="fuel_stat_cost">Kostnad</string>
     <string name="fuel_stat_avg_price">Medelpris</string>
     <string name="fuel_stat_per_work_km">Förbrukning / arbetskilometer</string>
@@ -864,4 +864,13 @@
     <string name="period_others_month">Andra månader</string>
     <string name="period_others_year">Andra år</string>
     <string name="period_show">Visa</string>
+    <string name="day_fillups_title">Tankningar</string>
+    <string name="day_charges_title">Laddningar</string>
+    <string name="day_gas_title">Påfyllningar</string>
+    <string name="day_drives_title">Körningar</string>
+    <string name="period_yesterday">I går</string>
+    <plurals name="period_days_ago">
+        <item quantity="one">för %d dag sedan</item>
+        <item quantity="other">för %d dagar sedan</item>
+    </plurals>
 </resources>
