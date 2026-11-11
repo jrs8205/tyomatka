@@ -35,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
@@ -126,6 +128,16 @@ fun NearbyPage(state: NearbyUiState, viewModel: NearbyViewModel, onAdd: (PoiItem
     }
 }
 
+/** Listan alun valitsinalkiot (etäisyys ja lajit); tulokset alkavat niiden jälkeen. */
+internal const val SELECTOR_ITEMS = 2
+
+/**
+ * Hakua kirjoitettaessa näppäimistö on auki: valitsimet ohitetaan vain, jos ne veisivät yli puolet listan korkeudesta
+ * (iso fontti, kapea näyttö). Muuten ne jäävät näkyviin, koska vyöhykkeiden ja lajien osumamäärät näkyvät niissä.
+ */
+internal fun nearbyQueryScrollTarget(selectorsPx: Int, viewportPx: Int): Int =
+    if (viewportPx > 0 && selectorsPx * 2 > viewportPx) SELECTOR_ITEMS else 0
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NearbyContent(
@@ -138,53 +150,70 @@ private fun NearbyContent(
     val choices = state.choices
     val data = session.data
     Column(modifier) {
-        // Etäisyysvyöhyke ja sen kohteiden määrä; ahtaassa tilassa vyöhykkeet asettuvat allekkain eivätkä katkea.
-        ConnectedChoiceGroup(
-            options = NearbyBand.entries,
-            selected = choices.band,
-            label = { band -> stringResource(bandRes(band)) },
-            // Hakuosumien määrä toisella rivillä: sarakejako ratkeaa vyöhykkeen nimestä, joten ryhmä ei hypi haun aikana.
-            supportingText = if (state.bandCounts != null) { band -> state.bandCounts?.get(band)?.toString() } else null,
-            onSelect = viewModel::setBand,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-        ) {
-            CATEGORIES.forEach { category ->
-                val name = stringResource(categoryRes(category))
-                AppFilterChip(
-                    selected = category == choices.category,
-                    onClick = Tap { viewModel.setCategory(category) },
-                    label = { Text(state.categoryCounts[category]?.let { stringResource(R.string.nearby_chip_count, name, it) } ?: name) },
+        val categoryLoaded = choices.category in data.items
+        // Lähin ensin: valintojen vaihtuessa lista alkuun, ja alussa ollessa uusi lähin (esim. alisoluista) näkyviin.
+        // Valitsimet ovat listan ensimmäiset alkiot, joten uusi lähin (esim. alisoluista) tulee näkyviin niiden alle.
+        val listState = rememberLazyListState()
+        var bandPx by remember { mutableIntStateOf(0) }
+        var chipsPx by remember { mutableIntStateOf(0) }
+        LaunchedEffect(choices.band, choices.category, choices.heavyOnly) { listState.scrollToItem(0) }
+        LaunchedEffect(choices.query) {
+            val target = if (choices.query.isBlank()) 0 else nearbyQueryScrollTarget(bandPx + chipsPx, listState.layoutInfo.viewportSize.height)
+            listState.scrollToItem(target)
+        }
+        // Lataus näkyy aina listan yläpuolella, myös kun lista on vieritetty valitsimien ohi.
+        if (data.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
+        // Valitsimet vierivät tulosten mukana: isolla fontilla ja kapealla näytöllä ne vievät monta riviä, eikä avoin
+        // näppäimistö saa jättää tuloksille tilaa nollaan.
+        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
+            item(key = "band") {
+                // Etäisyysvyöhyke ja sen kohteiden määrä; ahtaassa tilassa vyöhykkeet asettuvat allekkain eivätkä katkea.
+                ConnectedChoiceGroup(
+                    options = NearbyBand.entries,
+                    selected = choices.band,
+                    label = { band -> stringResource(bandRes(band)) },
+                    // Hakuosumien määrä toisella rivillä: sarakejako ratkeaa vyöhykkeen nimestä, joten ryhmä ei hypi haun aikana.
+                    supportingText = if (state.bandCounts != null) { band -> state.bandCounts?.get(band)?.toString() } else null,
+                    onSelect = viewModel::setBand,
+                    modifier = Modifier
+                        .onSizeChanged { bandPx = it.height }
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                 )
             }
-            AppFilterChip(
-                selected = choices.heavyOnly,
-                onClick = Tap(viewModel::toggleHeavy),
-                label = { Text(stringResource(R.string.nearby_heavy)) },
-            )
-        }
-        if (data.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
-        val categoryLoaded = choices.category in data.items
-        if (categoryLoaded) {
-            Text(
-                pluralStringResource(countRes(choices.category), state.rows.size, state.rows.size),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-        }
-        // Lähin ensin: valintojen vaihtuessa lista alkuun, ja alussa ollessa uusi lähin (esim. alisoluista) näkyviin.
-        val listState = rememberLazyListState()
-        LaunchedEffect(choices.band, choices.category, choices.heavyOnly, choices.query) { listState.scrollToItem(0) }
-        val firstId = state.rows.firstOrNull()?.item?.id
-        LaunchedEffect(firstId) { if (listState.firstVisibleItemIndex == 0) listState.scrollToItem(0) }
-        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
+            item(key = "categories") {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onSizeChanged { chipsPx = it.height }
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp),
+                ) {
+                    CATEGORIES.forEach { category ->
+                        val name = stringResource(categoryRes(category))
+                        AppFilterChip(
+                            selected = category == choices.category,
+                            onClick = Tap { viewModel.setCategory(category) },
+                            label = { Text(state.categoryCounts[category]?.let { stringResource(R.string.nearby_chip_count, name, it) } ?: name) },
+                        )
+                    }
+                    AppFilterChip(
+                        selected = choices.heavyOnly,
+                        onClick = Tap(viewModel::toggleHeavy),
+                        label = { Text(stringResource(R.string.nearby_heavy)) },
+                    )
+                }
+            }
+            if (categoryLoaded) {
+                item(key = "count") {
+                    Text(
+                        pluralStringResource(countRes(choices.category), state.rows.size, state.rows.size),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
+                }
+            }
             items(state.rows, key = { it.item.id }) { row ->
                 NearbyRowItem(row, onOpen = { viewModel.select(row.item.id) }, onAdd = { onAdd(row.item) })
                 HorizontalDivider()
