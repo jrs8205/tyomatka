@@ -894,4 +894,5 @@
     <string name="plan_stop_skipped">Ohitettu</string>
     <string name="plan_no_stops">Ei stoppeja. Lisää päivän stopit Lisää stoppi -napilla.</string>
     <string name="field_error">Virheellinen arvo</string>
+    <string name="notice_dismiss">Sulje ilmoitus</string>
 </resources>

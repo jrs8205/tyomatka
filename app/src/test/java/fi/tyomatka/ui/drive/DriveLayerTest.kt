@@ -38,4 +38,15 @@ class DriveLayerTest {
         assertEquals(SHEET_PEEK_HEIGHT, sheetPeekHeight(handle = 48.dp, content = 0.dp))
         assertEquals(SHEET_PEEK_HEIGHT, sheetPeekHeight(handle = 0.dp, content = 0.dp))
     }
+
+    @Test
+    fun `nopeuspaneeli on kurkistuspaneelin ylapuolella`() {
+        assertTrue(speedPanelBottomInset(180.dp) >= 180.dp + 12.dp)
+        assertTrue(speedPanelBottomInset(SHEET_PEEK_HEIGHT) >= SHEET_PEEK_HEIGHT + 12.dp)
+    }
+
+    @Test
+    fun `nopeuspaneeli seuraa mitattua kurkistuskorkeutta`() {
+        assertTrue(speedPanelBottomInset(260.dp) > speedPanelBottomInset(180.dp))
+    }
 }

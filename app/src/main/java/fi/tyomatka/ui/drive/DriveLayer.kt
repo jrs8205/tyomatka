@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,6 +54,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.util.Locale
 import fi.tyomatka.ui.components.mapCardColors
+import fi.tyomatka.ui.components.AppDragHandle
+import fi.tyomatka.ui.components.AppSnackbar
 
 /**
  * Ajonäkymä ajosession ajaksi: ajokartta koko näytöllä ja alapaneeli, jonka kurkistusosassa ovat nykyinen kohde ja
@@ -105,11 +106,11 @@ fun DriveLayer(
         sheetPeekHeight = peekHeight,
         sheetDragHandle = {
             Box(Modifier.onSizeChanged { handleHeight = with(density) { it.height.toDp() } }) {
-                BottomSheetDefaults.DragHandle()
+                AppDragHandle()
             }
         },
         sheetContent = { DriveSheet(state, viewModel, onPeekContentHeight = { peekContentHeight = it }) },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) { AppSnackbar(it) } },
     ) { _ ->
         Box(Modifier.fillMaxSize()) {
             // Kartta täyttää koko näytön ja jatkuu paneelin alle.
@@ -129,7 +130,7 @@ fun DriveLayer(
             PoiButton(
                 activeCount = poiState.settings.categories.size,
                 onClick = { showPoiMenu = true },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 12.dp, bottom = peekHeight + BottomRowHeight + 64.dp),
+                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 12.dp, bottom = peekHeight + bottomRowHeight(density.fontScale) + 64.dp),
             )
             if (!tracking) {
                 val hint = when {
@@ -147,7 +148,12 @@ fun DriveLayer(
                     Card(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         colors = mapCardColors(),
-                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = peekHeight + BottomRowHeight + 8.dp),
+                        // Oikealla tilaa Kohteet-napille (12 + 48 dp + väli), jottei monirivinen vihje peitä sitä;
+                        // vasemmalla vain reunus, jotta pisinkin sana ("kohdepalvelimeen") mahtuu 150 %:lla.
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(start = 16.dp, end = 68.dp)
+                            .padding(bottom = peekHeight + bottomRowHeight(density.fontScale) + 8.dp),
                     ) {
                         Text(it, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
                     }

@@ -61,6 +61,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.icons.rounded.DirectionsCar
 import androidx.compose.ui.text.style.TextAlign
+import fi.tyomatka.ui.components.AppSnackbar
 
 /**
  * Autot: tunnetut autot polttoaineineen ([carListRows]); napautus avaa auton lomakkeen, ja
@@ -172,7 +173,7 @@ fun CarsScreen(
                         }
                     }
                 }
-                SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
+                SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter)) { AppSnackbar(it) }
             }
         }
     }

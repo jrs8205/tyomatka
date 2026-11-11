@@ -60,8 +60,21 @@ private val RouteBlue = Color(0xFF1A73E8)
 /** Kohteen nasta. */
 private val DestinationRed = Color(0xFFD93025)
 
-/** Nopeuspaneelin ja tietolähdenapin rivi kurkistusosan yläpuolella; Ferrostarin napit nousevat sen yläpuolelle. */
-internal val BottomRowHeight = 72.dp
+/** Nopeuspaneelin korkein osa 100 %:n fontilla: rajoituskyltti (Ferrostarin Wienin sopimuksen kyltti, mitattu 64 dp). */
+internal val SpeedPanelSize = 64.dp
+
+/**
+ * Nopeuspaneelin ja tietolähdenapin rivi kurkistusosan yläpuolella: väli ja paneeli samalla skaalalla kuin
+ * [signDensity] piirtää sen, joten Ferrostarin napit, Kohteet-nappi ja vihjekortti nousevat aina paneelin yläpuolelle.
+ */
+internal fun bottomRowHeight(fontScale: Float): Dp = 12.dp + SpeedPanelSize * fontScale.coerceAtLeast(1f)
+
+/**
+ * Nopeuspaneelin ja tietolähdenapin etäisyys alareunasta: mitatun kurkistuskorkeuden yläpuolella väljästi, joten
+ * nopeus ja rajoitus näkyvät kokonaan aina, kun alapaneeli on kiinni (myös 150 %:n fontilla ja pitkällä nimellä, kun
+ * paneeli kasvaa). Paneelin pyöristetyt yläkulmat jäävät tämän alle.
+ */
+internal fun speedPanelBottomInset(sheetPeekHeight: Dp): Dp = sheetPeekHeight + 12.dp
 
 /**
  * Ajokartta Ferrostarin navigointinäkymällä: kamera seuraa ajosuuntaa kallistettuna, otsikko on oma vihreä
@@ -115,7 +128,7 @@ fun DriveMap(
     var headerHeight by remember { mutableStateOf(0.dp) }
     LaunchedEffect(showHeader) { if (!showHeader) headerHeight = 0.dp }
     // Ferrostarin omat napit (keskitys) otsikon alle ja alarivin yläpuolelle.
-    val overlayPadding = PaddingValues(top = headerHeight, bottom = sheetPeekHeight + BottomRowHeight)
+    val overlayPadding = PaddingValues(top = headerHeight, bottom = sheetPeekHeight + bottomRowHeight(density.fontScale))
     val views = remember {
         NavigationViewComponentBuilder.Default()
             .withInstructionsView { _, _ -> }
@@ -157,7 +170,7 @@ fun DriveMap(
                     .onSizeChanged { headerHeight = with(density) { it.height.toDp() } },
             )
         }
-        val bottomInset = sheetPeekHeight + 12.dp
+        val bottomInset = speedPanelBottomInset(sheetPeekHeight)
         SpeedPanel(
             speedKmh = guidance.speedKmh,
             limitKmh = guidance.limitKmh,

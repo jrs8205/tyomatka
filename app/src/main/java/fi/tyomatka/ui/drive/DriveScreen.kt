@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -36,9 +35,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -56,7 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.tyomatka.R
@@ -74,9 +69,17 @@ import fi.tyomatka.ui.history.StartReadingField
 import fi.tyomatka.ui.history.forms.WorkStartForm
 import kotlinx.coroutines.flow.StateFlow
 import fi.tyomatka.BuildConfig
+import fi.tyomatka.ui.components.AdaptiveButtonRow
+import fi.tyomatka.ui.components.ConnectedChoiceGroup
+import fi.tyomatka.ui.components.AppButtonDefaults
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 
 /** Bottom sheetin kurkistuskorkeus ennen mittausta — sama arvo nostaa kartan sisällön paneelin yläpuolelle. */
 internal val SHEET_PEEK_HEIGHT = 160.dp
+
+/** Ajon alapaneelin toimintonappien korkeus (Perillä, Ohita, Merkitse käydyksi). */
+private val ActionHeight = 56.dp
 
 /**
  * Kurkistuskorkeus mitatusta kahvasta ja kurkistussisällöstä, jotta Perillä ja Ohita eivät jää paneelin alle
@@ -199,7 +202,7 @@ private fun WorkStartBeforeDriveDialog(
             }
         },
         confirmButton = {
-            TextButton(enabled = form.canSave, onClick = Tap { onStartAndDrive(form.kmValue, form.plate) }) {
+            TextButton(colors = AppButtonDefaults.textColors(), enabled = form.canSave, onClick = Tap { onStartAndDrive(form.kmValue, form.plate) }) {
                 Text(stringResource(R.string.work_start_and_drive))
             }
         },
@@ -228,13 +231,23 @@ private fun IdleContent(
             Spacer(Modifier.height(16.dp))
             RouteChoiceRow(routeChoice, onRouteChoice)
             Spacer(Modifier.height(16.dp))
-            Button(onClick = Tap(onStart), enabled = stopCount > 0) {
-                Text(stringResource(R.string.start_driving), style = MaterialTheme.typography.titleMedium)
+            Button(
+                onClick = Tap(onStart),
+                enabled = stopCount > 0,
+                colors = AppButtonDefaults.filledColors(),
+                modifier = Modifier.heightIn(min = 56.dp),
+            ) {
+                Text(stringResource(R.string.start_driving), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
             if (BuildConfig.DEBUG) {
                 // Pöytätesti ilman autoa: vain debug-versiossa.
                 Spacer(Modifier.height(8.dp))
-                OutlinedButton(onClick = Tap(onStartSimulated), enabled = stopCount > 0) {
+                OutlinedButton(
+                    onClick = Tap(onStartSimulated),
+                    enabled = stopCount > 0,
+                    colors = AppButtonDefaults.outlinedColors(),
+                    border = AppButtonDefaults.border(enabled = stopCount > 0),
+                ) {
                     Text("Simuloi ajo")
                 }
             }
@@ -256,24 +269,13 @@ private fun RouteChoiceRow(choice: RouteChoice, onChoice: (RouteChoice) -> Unit)
     val options = listOf(RouteChoice.NORMAL to R.string.route_choice_normal, RouteChoice.SHORTEST to R.string.route_choice_shortest)
     Text(stringResource(R.string.route_choice_title), style = MaterialTheme.typography.titleSmall)
     Spacer(Modifier.height(4.dp))
-    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-        options.forEachIndexed { index, (option, labelRes) ->
-            SegmentedButton(
-                selected = choice == option,
-                onClick = Tap { onChoice(option) },
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                // Teksti yhdellä rivillä tarvittaessa pienempänä, jottei sana katkea suurella fontilla.
-                label = {
-                    Text(
-                        stringResource(labelRes),
-                        maxLines = 1,
-                        softWrap = false,
-                        autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = MaterialTheme.typography.labelLarge.fontSize),
-                    )
-                },
-            )
-        }
-    }
+    // Ahtaassa tilassa vaihtoehdot asettuvat allekkain eivätkä kutistu tai katkea.
+    ConnectedChoiceGroup(
+        options = options.map { it.first },
+        selected = choice,
+        label = { option -> stringResource(options.first { it.first == option }.second) },
+        onSelect = onChoice,
+    )
     if (choice == RouteChoice.SHORTEST) {
         Spacer(Modifier.height(4.dp))
         Text(
@@ -368,44 +370,74 @@ internal fun DriveSheet(state: DriveState, viewModel: DriveViewModel, onPeekCont
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (state.phase == DrivePhase.AT_STOP) {
-                        // Viimeisellä stopilla ei ole "seuraavaa" — sama kuittaus
-                        // päättää päivän, ja tekstin pitää kertoa se.
-                        // remaining sisältää nykyisen stopin; == 1 (ei <= 1), jottei
-                        // teksti väläytä päivän päättämistä ennen kuin tarkkailija
-                        // on ehtinyt täyttää listan prosessin palautuessa henkiin.
-                        val isLastStop = state.remaining.size == 1
-                        Button(
-                            onClick = guarded(guard) { viewModel.departCurrentStop() },
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            Text(
-                                stringResource(
-                                    if (isLastStop) R.string.arrived_finish_day
-                                    else R.string.arrived_mark_done
-                                )
-                            )
-                        }
-                    } else {
-                        val arriveUnlocked = isArriveUnlocked(state.liveDistanceM, state.fallbackDistanceM)
-                        Button(
-                            onClick = guarded(guard) { viewModel.markArrived() },
-                            enabled = arriveUnlocked,
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            if (!arriveUnlocked) {
-                                Icon(
-                                    Icons.Filled.Lock,
-                                    contentDescription = stringResource(R.string.at_stop_locked),
-                                    modifier = Modifier.size(16.dp),
-                                )
-                                Spacer(Modifier.width(6.dp))
+                val actionStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                if (state.phase == DrivePhase.AT_STOP) {
+                    // Viimeisellä stopilla ei ole "seuraavaa" — sama kuittaus
+                    // päättää päivän, ja tekstin pitää kertoa se.
+                    // remaining sisältää nykyisen stopin; == 1 (ei <= 1), jottei
+                    // teksti väläytä päivän päättämistä ennen kuin tarkkailija
+                    // on ehtinyt täyttää listan prosessin palautuessa henkiin.
+                    val isLastStop = state.remaining.size == 1
+                    Button(
+                        onClick = guarded(guard) { viewModel.departCurrentStop() },
+                        colors = AppButtonDefaults.filledColors(),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = ActionHeight),
+                    ) {
+                        Text(
+                            stringResource(
+                                if (isLastStop) R.string.arrived_finish_day
+                                else R.string.arrived_mark_done
+                            ),
+                            style = actionStyle,
+                        )
+                    }
+                } else {
+                    val arriveUnlocked = isArriveUnlocked(state.liveDistanceM, state.fallbackDistanceM)
+                    val arriveLabel = stringResource(R.string.at_stop)
+                    val skipLabel = stringResource(R.string.skip_stop)
+                    // Rinnakkain Perillä täyttää rivin ja Ohita on tekstinsä levyinen; jos tekstit eivät mahdu
+                    // kokonaisina, napit allekkain, jottei "Framme" tai "Hoppa över" katkea kesken sanan.
+                    AdaptiveButtonRow(
+                        labels = listOf(arriveLabel, skipLabel),
+                        // Lukon tila mitataan aina, jottei rivi vaihdu allekkaisesta rinnakkaiseksi lukon avautuessa.
+                        hasIcon = listOf(true, false),
+                        style = actionStyle,
+                        gap = 8.dp,
+                        fillIndex = 0,
+                    ) { index, buttonModifier ->
+                        if (index == 0) {
+                            // Lukittuna ääriviivallinen, lukko ja teksti täydellä kontrastilla; auki täytetty primary.
+                            Button(
+                                onClick = guarded(guard) { viewModel.markArrived() },
+                                enabled = arriveUnlocked,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    disabledContainerColor = Color.Transparent,
+                                    disabledContentColor = MaterialTheme.colorScheme.onSurface,
+                                ),
+                                border = if (arriveUnlocked) null else AppButtonDefaults.border(enabled = true),
+                                modifier = buttonModifier.heightIn(min = ActionHeight),
+                            ) {
+                                if (!arriveUnlocked) {
+                                    Icon(
+                                        Icons.Filled.Lock,
+                                        contentDescription = stringResource(R.string.at_stop_locked),
+                                        modifier = Modifier.size(18.dp),
+                                    )
+                                    Spacer(Modifier.width(6.dp))
+                                }
+                                Text(arriveLabel, style = actionStyle)
                             }
-                            Text(stringResource(R.string.at_stop))
-                        }
-                        OutlinedButton(onClick = guarded(guard) { viewModel.skipCurrentStop() }) {
-                            Text(stringResource(R.string.skip_stop))
+                        } else {
+                            OutlinedButton(
+                                onClick = guarded(guard) { viewModel.skipCurrentStop() },
+                                colors = AppButtonDefaults.outlinedColors(),
+                                border = AppButtonDefaults.border(enabled = true),
+                                modifier = buttonModifier.heightIn(min = ActionHeight),
+                            ) {
+                                Text(skipLabel, style = actionStyle)
+                            }
                         }
                     }
                 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DragHandle
@@ -27,9 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,7 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -79,6 +74,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import fi.tyomatka.ui.components.mapCardColors
 import fi.tyomatka.ui.components.AppButtonDefaults
+import fi.tyomatka.ui.components.ConnectedChoiceGroup
+import fi.tyomatka.ui.boundParts
 
 /** Etäisyys listan reunasta (px), jonka sisällä raahaus alkaa vierittää listaa. */
 private const val AUTOSCROLL_ZONE_PX = 160f
@@ -239,6 +236,8 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
         if (state.stops.isNotEmpty()) {
             ExtendedFloatingActionButton(
                 onClick = Tap { showReorder = true },
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 icon = { Icon(Icons.Filled.SwapVert, null) },
                 text = { Text(stringResource(R.string.reorder_stops)) },
                 modifier = Modifier
@@ -535,34 +534,17 @@ private fun ReorderOverlay(
 private fun RouteChoiceCard(comparison: RouteComparison, onChoice: (RouteChoice) -> Unit) {
     val options = listOf(RouteChoice.NORMAL to R.string.route_choice_normal, RouteChoice.SHORTEST to R.string.route_choice_shortest)
     Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
-        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(8.dp)) {
-            options.forEachIndexed { index, (option, labelRes) ->
+        // Valinta muodosta ja väristä; matka ja aika toisella rivillä. Ahtaassa tilassa vaihtoehdot allekkain.
+        ConnectedChoiceGroup(
+            options = options.map { it.first },
+            selected = comparison.choice,
+            label = { option -> stringResource(options.first { it.first == option }.second) },
+            onSelect = onChoice,
+            supportingText = { option ->
                 val preview = comparison.previews.getValue(option)
-                SegmentedButton(
-                    selected = comparison.choice == option,
-                    onClick = Tap { onChoice(option) },
-                    shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                    // Ei valintamerkkiä: tila näkyy värissä, ja tila riittää matkalle ja ajalle.
-                    icon = {},
-                    label = {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                stringResource(labelRes),
-                                maxLines = 1,
-                                softWrap = false,
-                                autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = MaterialTheme.typography.labelLarge.fontSize),
-                            )
-                            Text(
-                                stringResource(R.string.route_total, formatKm(preview.distanceM), formatDuration(preview.durationSec)),
-                                style = MaterialTheme.typography.bodySmall,
-                                maxLines = 1,
-                                softWrap = false,
-                                autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = MaterialTheme.typography.bodySmall.fontSize),
-                            )
-                        }
-                    },
-                )
-            }
-        }
+                boundParts(formatKm(preview.distanceM), formatDuration(preview.durationSec))
+            },
+            modifier = Modifier.padding(8.dp),
+        )
     }
 }

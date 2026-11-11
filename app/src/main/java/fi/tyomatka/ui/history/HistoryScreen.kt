@@ -75,6 +75,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.CancellationException
 import androidx.compose.material3.IconButtonDefaults
+import fi.tyomatka.ui.components.AppSnackbar
 
 /** LazyColumnin alkio, jossa valitun jakson nuolirivi ja pager ovat: Tänään-kortin ja jaksovalitsimen jälkeen. */
 private const val PERIOD_ITEM_INDEX = 2
@@ -163,7 +164,7 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) { AppSnackbar(it) } },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.tab_history)) },

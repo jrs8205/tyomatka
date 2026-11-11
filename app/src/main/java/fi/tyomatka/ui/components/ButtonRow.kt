@@ -14,14 +14,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Montako nappia samalle riville: kaikki rinnakkain, jos jokainen mahtuu tasaosuuteensa kokonaisena, muuten jokainen
- * omalle rivilleen. Näin napin teksti ei koskaan katkea kesken sanan isolla fontilla tai pitkällä kielellä.
+ * Montako nappia samalle riville: kaikki rinnakkain, jos jokainen mahtuu kokonaisena, muuten jokainen omalle
+ * rivilleen. Tasaleveinä ([equalWidths]) jokaisen pitää mahtua tasaosuuteensa; muuten riittää, että leveyksien summa
+ * väleineen mahtuu (yksi nappi täyttää loput). Näin napin teksti ei koskaan katkea kesken sanan isolla fontilla tai
+ * pitkällä kielellä.
  */
-fun buttonsPerRow(widthsPx: List<Int>, availableWidthPx: Int, gapPx: Int): Int {
+fun buttonsPerRow(widthsPx: List<Int>, availableWidthPx: Int, gapPx: Int, equalWidths: Boolean = true): Int {
     val count = widthsPx.size
     if (count <= 1) return 1
-    val share = (availableWidthPx - gapPx * (count - 1)).toDouble() / count
-    return if (widthsPx.all { it <= share }) count else 1
+    val free = availableWidthPx - gapPx * (count - 1)
+    val fits = if (equalWidths) widthsPx.all { it <= free.toDouble() / count } else widthsPx.sum() <= free
+    return if (fits) count else 1
 }
 
 /** Napin vaakareunus kummallakin puolella sekä ikonin leveys ja väli tekstiin. */
@@ -31,7 +34,8 @@ private val IconGap = 8.dp
 
 /**
  * Nappirivi, joka mittaa nappien tekstit: napit ovat rinnakkain tasaleveinä, jos tekstit mahtuvat kokonaisina, ja
- * muuten allekkain täysleveinä ([buttonsPerRow]). [button] saa napin indeksin ja leveyden määräävän modifierin.
+ * muuten allekkain täysleveinä ([buttonsPerRow]). Kun [fillIndex] on annettu, rinnakkain vain se nappi täyttää
+ * jäljelle jäävän tilan ja muut ovat tekstinsä levyisiä. [button] saa napin indeksin ja leveyden määräävän modifierin.
  */
 @Composable
 fun AdaptiveButtonRow(
@@ -40,6 +44,7 @@ fun AdaptiveButtonRow(
     style: TextStyle,
     modifier: Modifier = Modifier,
     gap: Dp = 10.dp,
+    fillIndex: Int? = null,
     button: @Composable (index: Int, modifier: Modifier) -> Unit,
 ) {
     val measurer = rememberTextMeasurer()
@@ -52,12 +57,15 @@ fun AdaptiveButtonRow(
                 text + 2 * SidePadding.roundToPx() + 1 +
                     if (hasIcon.getOrElse(i) { false }) IconSize.roundToPx() + IconGap.roundToPx() else 0
             }
-            buttonsPerRow(widths, constraints.maxWidth, gap.roundToPx())
+            buttonsPerRow(widths, constraints.maxWidth, gap.roundToPx(), equalWidths = fillIndex == null)
         }
         Column(verticalArrangement = Arrangement.spacedBy(gap)) {
             labels.indices.chunked(perRow).forEach { row ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(gap)) {
-                    row.forEach { index -> button(index, Modifier.weight(1f)) }
+                    row.forEach { index ->
+                        val fills = fillIndex == null || perRow == 1 || index == fillIndex
+                        button(index, if (fills) Modifier.weight(1f) else Modifier)
+                    }
                 }
             }
         }
