@@ -1,5 +1,7 @@
 package fi.tyomatka.ui.history
 
+import fi.tyomatka.data.repo.PeriodFuel
+import fi.tyomatka.data.repo.PeriodFuels
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.IsoFields
@@ -29,6 +31,37 @@ fun olderKey(keys: List<String>, selectedKey: String?): String? {
 fun newerKey(keys: List<String>, selectedKey: String?): String? {
     val index = indexOf(keys, selectedKey) ?: return null
     return keys.getOrNull(index - 1)
+}
+
+/**
+ * Nuolirivin ja pagerin valinta: rivien avaimet uusimmasta vanhimpaan ja valittu avain. Pagerin sivu on rivin indeksi.
+ * Ilman valintaa (tai tuntemattomalla avaimella) valittuna on uusin.
+ */
+data class PeriodChoice(val keys: List<String>, private val selectedKey: String? = null) {
+    val selected: String? get() = selectedKey?.takeIf { it in keys } ?: keys.firstOrNull()
+    val page: Int get() = keys.indexOf(selected).coerceAtLeast(0)
+    val older: String? get() = olderKey(keys, selected)
+    val newer: String? get() = newerKey(keys, selected)
+
+    /** Nuoli tai muiden jaksojen rivi; tuntematon avain ei muuta valintaa. */
+    fun select(key: String): PeriodChoice = if (key in keys) copy(selectedKey = key) else this
+
+    /** Pyyhkäisy asettui sivulle. */
+    fun settled(page: Int): PeriodChoice = keys.getOrNull(page)?.let(::select) ?: this
+
+    /** Rivit muuttuivat: [followSelection]. */
+    fun rowsChanged(newKeys: List<String>): PeriodChoice =
+        if (newKeys == keys) this else PeriodChoice(newKeys, followSelection(keys, newKeys, selected))
+}
+
+/** Muut jaksot: kaikki rivit valittua lukuun ottamatta, uusimmasta vanhimpaan. */
+fun otherPeriodRows(rows: List<WorkPeriodRow>, selectedKey: String?): List<WorkPeriodRow> =
+    rows.filter { it.key != selectedKey }
+
+/** Muiden jaksojen rivin polttoaineet: lajit ilman AdBluea, tai AdBlue, jos muuta ei tankattu. */
+fun listFuelLines(fuel: PeriodFuels?): List<PeriodFuel> {
+    val tiles = periodFuelTiles(fuel)
+    return tiles.main.ifEmpty { listOfNotNull(tiles.adBlue) }
 }
 
 private fun indexOf(keys: List<String>, selectedKey: String?): Int? {

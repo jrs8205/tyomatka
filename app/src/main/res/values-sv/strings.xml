@@ -850,4 +850,18 @@
     <string name="odometer_span_description">Mätare %1$s – %2$s</string>
     <string name="odometer_missing">saknas</string>
     <string name="odometer_invalid">avläsningarna stämmer inte</string>
+    <string name="period_km_driven">körda i arbetet</string>
+    <string name="period_prev_day">Föregående dag</string>
+    <string name="period_prev_week">Föregående vecka</string>
+    <string name="period_prev_month">Föregående månad</string>
+    <string name="period_prev_year">Föregående år</string>
+    <string name="period_next_day">Nästa dag</string>
+    <string name="period_next_week">Nästa vecka</string>
+    <string name="period_next_month">Nästa månad</string>
+    <string name="period_next_year">Nästa år</string>
+    <string name="period_others_day">Andra dagar</string>
+    <string name="period_others_week">Andra veckor</string>
+    <string name="period_others_month">Andra månader</string>
+    <string name="period_others_year">Andra år</string>
+    <string name="period_show">Visa</string>
 </resources>

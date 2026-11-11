@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.EvStation
@@ -37,9 +37,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -79,9 +76,7 @@ import fi.tyomatka.data.db.FuelFillupEntity
 import fi.tyomatka.data.db.FuelKind
 import fi.tyomatka.data.db.FuelPhotoEntity
 import fi.tyomatka.data.db.WorkSegmentEntity
-import fi.tyomatka.data.repo.CarPeriodFuel
 import fi.tyomatka.data.repo.FuelInterval
-import fi.tyomatka.data.repo.PeriodFuel
 import fi.tyomatka.data.repo.defaultFuelPlate
 import fi.tyomatka.data.repo.suggestionPlates
 import fi.tyomatka.data.report.ExportPeriod
@@ -94,7 +89,6 @@ import fi.tyomatka.ui.formatClock
 import fi.tyomatka.ui.history.forms.CarsScreen
 import fi.tyomatka.ui.history.forms.FuelFormScreen
 import fi.tyomatka.ui.history.forms.carListRows
-import fi.tyomatka.ui.history.forms.carPeriodNote
 import fi.tyomatka.ui.history.forms.defaultFillWord
 import fi.tyomatka.ui.history.forms.fillWord
 import fi.tyomatka.ui.history.forms.fuelKindName
@@ -104,17 +98,21 @@ import fi.tyomatka.ui.history.forms.WorkFixFormScreen
 import fi.tyomatka.ui.history.forms.WorkStartFormScreen
 import fi.tyomatka.ui.history.forms.rememberNowEpochSec
 import fi.tyomatka.ui.formatConsumption
-import fi.tyomatka.ui.formatCostPerKm
 import fi.tyomatka.ui.formatDuration
 import fi.tyomatka.ui.formatAmount
 import fi.tyomatka.ui.formatMoney
 import fi.tyomatka.ui.formatMoneyByCurrency
-import fi.tyomatka.ui.formatPercent
 import fi.tyomatka.ui.formatUnitPrice
 import fi.tyomatka.ui.formatWhole
 import fi.tyomatka.ui.settings.SettingsScreen
+import fi.tyomatka.ui.components.ConnectedChoiceGroup
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import kotlinx.coroutines.CancellationException
+
+/** LazyColumnin alkio, jossa valitun jakson nuolirivi ja pager ovat: Tänään-kortin ja jaksovalitsimen jälkeen. */
+private const val PERIOD_ITEM_INDEX = 2
 
 /**
  * Työmatka-sivu: kilometrit ja ajoaika päivä-, viikko-, kuukausi- ja
@@ -174,6 +172,10 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
         defaultFillWord(openWorkSegment, state.defaultPlate, state.fillups, state.cars)
     }
     val now = rememberNowEpochSec()
+    val todayEpochDay = remember(now) { Instant.ofEpochSecond(now).atZone(ZoneId.systemDefault()).toLocalDate().toEpochDay() }
+    val periodKeys = remember(state.rows) { state.rows.map { it.key } }
+    val periodPager = rememberPeriodPagerState(periodKeys, state.period, todayEpochDay)
+    val listState = rememberLazyListState()
 
     // Muistutusilmoituksen "Kirjaa nyt" avaa aloitusdialogin.
     LaunchedEffect(state.openStartDialog) {
@@ -229,9 +231,11 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
         ) {
             LazyColumn(
                 modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                state = listState,
             ) {
-                item {
+                // Alkioiden järjestys: Tänään-kortti, jaksovalitsin ja valittu jakso (PERIOD_ITEM_INDEX), jonka alla muut
+                // jaksot. Ryhmän rivit ovat kiinni toisissaan, joten välit ovat alkioiden omia.
+                item(key = "today") {
                     TodayCard(
                         summary = todaySummary(state.todaySegments, now, nextPlate = state.defaultPlate),
                         onStartWork = { workDialog = WorkDialog.Start },
@@ -242,20 +246,17 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
                         modifier = Modifier.padding(top = 8.dp),
                     )
                 }
-                item {
-                    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                        periods.forEachIndexed { index, (period, labelRes) ->
-                            SegmentedButton(
-                                selected = state.period == period,
-                                onClick = Tap { viewModel.setPeriod(period) },
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = periods.size),
-                                label = { Text(stringResource(labelRes)) },
-                            )
-                        }
-                    }
+                item(key = "periods") {
+                    ConnectedChoiceGroup(
+                        options = periods.map { it.first },
+                        selected = state.period,
+                        label = { period -> stringResource(periods.first { it.first == period }.second) },
+                        onSelect = viewModel::setPeriod,
+                        modifier = Modifier.padding(top = 16.dp),
+                    )
                 }
                 if (state.rows.isEmpty()) {
-                    item {
+                    item(key = "empty") {
                         Text(
                             stringResource(
                                 todayWord.pick(R.string.work_history_empty, R.string.work_history_empty_charge, R.string.work_history_empty_gas)
@@ -268,25 +269,36 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
                         )
                     }
                 }
-                items(state.rows, key = { it.key }) { row ->
-                    PeriodRowCard(
-                        row = row,
-                        expanded = row.date != null && row.date == expandedDate,
-                        segments = row.date?.let { state.segmentsByDate[it] }.orEmpty(),
-                        intervalsByFillup = state.intervalsByFillup,
-                        photosByFillup = state.photosByFillup,
-                        onEditFillup = { fuelDialog = FuelDialogTarget.Edit(it.id) },
-                        onAddFuel = { fuelDialog = FuelDialogTarget.New(epochDay = it) },
-                        onToggle = {
-                            expandedDate = if (expandedDate == row.date) null else row.date
-                        },
-                        onFix = {
-                            fixDate = row.date
-                            fixSegments = row.date?.let { state.segmentsByDate[it] }
-                        },
-                    )
+                periodPagerItems(
+                    rows = state.rows,
+                    period = state.period,
+                    todayEpochDay = todayEpochDay,
+                    state = periodPager,
+                    itemKey = "period",
+                    onShowSelected = { listState.animateScrollToItem(PERIOD_ITEM_INDEX) },
+                ) { row ->
+                    if (row.date == null) {
+                        PeriodDetail(row)
+                    } else {
+                        DayCard(
+                            row = row,
+                            expanded = row.date == expandedDate,
+                            segments = state.segmentsByDate[row.date].orEmpty(),
+                            intervalsByFillup = state.intervalsByFillup,
+                            photosByFillup = state.photosByFillup,
+                            onEditFillup = { fuelDialog = FuelDialogTarget.Edit(it.id) },
+                            onAddFuel = { fuelDialog = FuelDialogTarget.New(epochDay = it) },
+                            onToggle = {
+                                expandedDate = if (expandedDate == row.date) null else row.date
+                            },
+                            onFix = {
+                                fixDate = row.date
+                                fixSegments = state.segmentsByDate[row.date]
+                            },
+                        )
+                    }
                 }
-                item { Spacer(Modifier.height(16.dp)) }
+                item(key = "end") { Spacer(Modifier.height(16.dp)) }
             }
 
         }
@@ -474,9 +486,13 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
     }
 }
 
+/**
+ * Päivän sisältö jaksonäkymässä, kunnes päivänäkymä uudistuu: kilometrit ja työaika, tankkaukset (napautus muokkaa),
+ * tankkaus jälkikäteen ja napautuksella laajeneva ajojen lista.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PeriodRowCard(
+private fun DayCard(
     row: WorkPeriodRow,
     expanded: Boolean,
     segments: List<WorkSegmentEntity>,
@@ -488,107 +504,76 @@ private fun PeriodRowCard(
     onToggle: () -> Unit,
     onFix: () -> Unit,
 ) {
+    val date = row.date ?: return
     Card(
         Modifier
             .fillMaxWidth()
-            .then(if (row.date != null) Modifier.clickable(onClick = Tap(onToggle)) else Modifier),
+            .clickable(onClick = Tap(onToggle)),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
-            if (row.date == null && row.hasWork) {
-                Text(row.label, style = MaterialTheme.typography.titleSmall)
-                PeriodStats(row)
-            } else {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    // Päivä ja kilometrit rivittyvät suurella fontilla omille riveilleen; kynä pysyy oikeassa reunassa.
-                    FlowRow(Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(row.label, style = MaterialTheme.typography.titleMedium)
-                        if (row.hasWork) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                DistanceIcon(Modifier.size(20.dp))
-                                Spacer(Modifier.width(4.dp))
-                                Text(
-                                    "${formatWhole(row.km)} km",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                            }
-                        }
-                    }
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                // Päivä ja kilometrit rivittyvät suurella fontilla omille riveilleen; kynä pysyy oikeassa reunassa.
+                FlowRow(Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(row.label, style = MaterialTheme.typography.titleMedium)
                     if (row.hasWork) {
-                        // Kynä kertoo, että päivän kirjauksia voi muokata; siirto tasaa sen rivien kynien kanssa.
-                        IconButton(onClick = Tap(onFix), modifier = Modifier.offset(x = 12.dp)) {
-                            Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.work_fix), tint = MaterialTheme.colorScheme.primary)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            DistanceIcon(Modifier.size(20.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text(
+                                "${formatWhole(row.km)} km",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
                         }
                     }
                 }
-                Text(
-                    when {
-                        !row.hasWork -> stringResource(R.string.work_no_entry)
-                        row.ongoing -> stringResource(R.string.work_in_progress)
-                        else -> stringResource(R.string.work_drive_time, formatDuration(row.durationSec))
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                if (row.hasWork) {
+                    // Kynä kertoo, että päivän kirjauksia voi muokata; siirto tasaa sen rivien kynien kanssa.
+                    IconButton(onClick = Tap(onFix), modifier = Modifier.offset(x = 12.dp)) {
+                        Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.work_fix), tint = MaterialTheme.colorScheme.primary)
+                    }
+                }
             }
+            Text(
+                when {
+                    !row.hasWork -> stringResource(R.string.work_no_entry)
+                    row.ongoing -> stringResource(R.string.work_in_progress)
+                    else -> stringResource(R.string.work_drive_time, formatDuration(row.durationSec))
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             // Lisätiedot-merkki kuvamerkin tapaan; teksti itse näkyy vasta korjauslomakkeessa.
             if (row.hasNote) NoteMarker(onClick = onFix)
-            // Päiväkortti: tankkaukset riveinä (napautus muokkaa). Viikko/kk/vuosi:
-            // summat ja autokohtainen kulutus — kaikki samassa kortissa.
-            if (row.date != null) {
-                // Yhteenveto vain lajeille, joilla on päivänä useampi tankkaus: muuten rivi toistaisi tankkausrivin.
-                row.fuel?.byKind?.filter { fuel -> row.fillups.count { it.kind == fuel.kind } > 1 }?.forEach { fuel ->
-                    Text(
-                        stringResource(
-                            R.string.fuel_tanked_kind,
-                            fuelKindName(fuel.kind),
-                            formatAmount(fuel.liters, fuel.kind),
-                            formatMoneyByCurrency(fuel.costs),
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-                if (row.fillups.isNotEmpty()) HorizontalDivider(Modifier.padding(top = 8.dp))
-                row.fillups.forEach { fillup ->
-                    FillupRow(fillup, intervalsByFillup[fillup.id], photosByFillup[fillup.id]?.size ?: 0, hasNote = fillup.note.isNotBlank()) { onEditFillup(fillup) }
-                }
-                // Eilen tekemättä jäänyt tankkaus kirjataan jälkikäteen päiväkortista; tekstinappi
-                // tankkaustietojen kohdalla, ei toista tankkausikonia km-luvun perään.
-                TextButton(onClick = Tap { onAddFuel(row.date) }, modifier = Modifier.align(Alignment.End)) {
-                    Text(stringResource(R.string.fuel_add_for_day))
-                }
-            } else {
-                row.fuel?.let { fuels ->
-                    fuels.byKind.forEach { fuel ->
-                        PeriodFuelBlock(fuel, percentOfDiesel = fuels.adBluePercent.takeIf { fuel.kind == FuelKind.ADBLUE })
-                    }
-                }
-                if (row.carFuel.isNotEmpty()) {
-                    Text(
-                        stringResource(carPeriodNote(row.carFuel.map { it.kind })),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 8.dp),
-                    )
-                }
-                row.carFuel.forEach { car -> CarFuelRow(car) }
+            // Yhteenveto vain lajeille, joilla on päivänä useampi tankkaus: muuten rivi toistaisi tankkausrivin.
+            row.fuel?.byKind?.filter { fuel -> row.fillups.count { it.kind == fuel.kind } > 1 }?.forEach { fuel ->
+                Text(
+                    stringResource(
+                        R.string.fuel_tanked_kind,
+                        fuelKindName(fuel.kind),
+                        formatAmount(fuel.liters, fuel.kind),
+                        formatMoneyByCurrency(fuel.costs),
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            if (row.fillups.isNotEmpty()) HorizontalDivider(Modifier.padding(top = 8.dp))
+            row.fillups.forEach { fillup ->
+                FillupRow(fillup, intervalsByFillup[fillup.id], photosByFillup[fillup.id]?.size ?: 0, hasNote = fillup.note.isNotBlank()) { onEditFillup(fillup) }
+            }
+            // Eilen tekemättä jäänyt tankkaus kirjataan jälkikäteen päiväkortista; tekstinappi
+            // tankkaustietojen kohdalla, ei toista tankkausikonia km-luvun perään.
+            TextButton(onClick = Tap { onAddFuel(date) }, modifier = Modifier.align(Alignment.End)) {
+                Text(stringResource(R.string.fuel_add_for_day))
             }
             if (row.missingReadings) {
-                if (row.date != null) {
-                    AssistChip(
-                        onClick = Tap(onFix),
-                        label = { Text(stringResource(R.string.work_missing_readings_short)) },
-                        leadingIcon = { Icon(Icons.Filled.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
-                    )
-                } else {
-                    Text(
-                        stringResource(R.string.work_missing_readings),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
+                AssistChip(
+                    onClick = Tap(onFix),
+                    label = { Text(stringResource(R.string.work_missing_readings_short)) },
+                    leadingIcon = { Icon(Icons.Filled.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+                )
             }
         }
         if (expanded && segments.isNotEmpty()) {
@@ -603,34 +588,6 @@ private fun PeriodRowCard(
     }
 }
 
-/** Viikko/kuukausi/vuosi: kilometrit, työaika ja työpäivät rinnakkain. */
-@Composable
-private fun PeriodStats(row: WorkPeriodRow) {
-    // Omat leveysosuudet: pitkät luvut eivät syö viimeisen sarakkeen tilaa.
-    Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        StatColumn(formatWhole(row.km), stringResource(R.string.period_km), modifier = Modifier.weight(1f))
-        StatColumn(
-            formatDuration(row.durationSec) + if (row.ongoing) " +" else "",
-            stringResource(R.string.period_work_time),
-            modifier = Modifier.weight(1.4f),
-        )
-        StatColumn(row.workDays.toString(), stringResource(R.string.period_work_days), modifier = Modifier.weight(1f))
-    }
-}
-
-@Composable
-private fun StatColumn(
-    value: String,
-    label: String,
-    valueStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleLarge,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        Text(value, style = valueStyle, color = MaterialTheme.colorScheme.primary)
-        Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
 /**
  * Matkan merkki päivän kilometrien edessä (vain päivätasolla, jaksokorteissa yksikkö on luvun alla).
  * Teksti kertoo luvun, joten ikoni on koriste.
@@ -638,107 +595,6 @@ private fun StatColumn(
 @Composable
 internal fun DistanceIcon(modifier: Modifier = Modifier) {
     Icon(Icons.Outlined.Route, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = modifier)
-}
-
-/**
- * Jakson yhden lajin luvut lajin nimellä ja yksiköllä: tankattu (sähkö: ladattu), kustannus ja keskihinta sekä kulutus
- * työkilometreiltä. Polttoaineille hinta kilometriltä, AdBluelle osuus dieselistä.
- */
-@Composable
-private fun PeriodFuelBlock(fuel: PeriodFuel, percentOfDiesel: Double?) {
-    HorizontalDivider(Modifier.padding(vertical = 8.dp))
-    Text(fuelKindName(fuel.kind), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-    val style = MaterialTheme.typography.titleMedium
-    val currency = fuel.currency
-    val avgPrice = fuel.avgPricePerLiter
-    Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
-        StatColumn(
-            formatAmount(fuel.liters, fuel.kind),
-            stringResource(fillWord(fuel.kind).pick(R.string.fuel_stat_tanked, R.string.fuel_stat_charged, R.string.fuel_stat_filled)),
-            style,
-            Modifier.weight(1f),
-        )
-        StatColumn(formatMoneyByCurrency(fuel.costs), stringResource(R.string.fuel_stat_cost), style, Modifier.weight(1f))
-        StatColumn(
-            if (avgPrice != null && currency != null) formatUnitPrice(avgPrice, currency, fuel.kind.unit) else "–",
-            stringResource(R.string.fuel_stat_avg_price),
-            style,
-            Modifier.weight(1f),
-        )
-    }
-    val adBlue = fuel.kind == FuelKind.ADBLUE
-    if (fuel.consumption != null || (adBlue && percentOfDiesel != null)) {
-        Row(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            StatColumn(
-                fuel.consumption?.let { formatConsumption(it, fuel.kind) } ?: "–",
-                stringResource(R.string.fuel_stat_per_work_km),
-                style,
-                Modifier.weight(2f),
-            )
-            if (adBlue) {
-                StatColumn(
-                    percentOfDiesel?.let(::formatPercent) ?: "–",
-                    stringResource(R.string.fuel_stat_percent_of_diesel),
-                    style,
-                    Modifier.weight(1f),
-                )
-            } else {
-                StatColumn(formatCostPerKm(fuel.costPerKm, currency), stringResource(R.string.fuel_stat_cost_per_km), style, Modifier.weight(1f))
-            }
-        }
-    }
-    if (fuel.missingPrices) {
-        Text(
-            stringResource(R.string.fuel_missing_prices),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp),
-        )
-    }
-}
-
-/**
- * Yhden auton yhden lajin kulutus jaksolla: rekkari (ja laji, jos ei dieseliä) ja tankkausmäärä vasemmalla, kulutus ja
- * hinta kilometriltä (AdBlue: osuus dieselistä) oikealla.
- */
-@Composable
-private fun CarFuelRow(car: CarPeriodFuel) {
-    val title = if (car.kind == FuelKind.DIESEL) car.plate else "${car.plate} · ${fuelKindName(car.kind)}"
-    val percent = car.percentOfDiesel
-    val detail = when {
-        car.kind == FuelKind.ADBLUE && percent != null -> stringResource(R.string.fuel_percent_of_diesel, formatPercent(percent))
-        car.consumption == null ->
-            stringResource(fillWord(car.kind).pick(R.string.fuel_no_interval, R.string.fuel_no_charge_interval, R.string.fuel_no_gas_interval))
-        car.kind == FuelKind.ADBLUE -> "–"
-        else -> formatCostPerKm(car.costPerKm, car.currency)
-    }
-    // Kaksi tasalevyistä saraketta: oikea sarake alkaa keskeltä, jotta plus-nappi ei peitä lukuja.
-    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.titleSmall)
-            Text(
-                pluralStringResource(
-                    fillWord(car.kind).pick(R.plurals.fuel_fillup_count, R.plurals.fuel_charge_count, R.plurals.fuel_gas_count),
-                    car.fillupCount,
-                    car.fillupCount,
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Column(Modifier.weight(1f)) {
-            Text(
-                car.consumption?.let { formatConsumption(it, car.kind) } ?: "–",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                detail,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
 }
 
 /**

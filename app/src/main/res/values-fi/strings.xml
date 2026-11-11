@@ -862,4 +862,18 @@
     <string name="odometer_span_description">Mittari %1$s – %2$s</string>
     <string name="odometer_missing">puuttuu</string>
     <string name="odometer_invalid">lukemat ristiriidassa</string>
+    <string name="period_km_driven">ajettu työajoa</string>
+    <string name="period_prev_day">Edellinen päivä</string>
+    <string name="period_prev_week">Edellinen viikko</string>
+    <string name="period_prev_month">Edellinen kuukausi</string>
+    <string name="period_prev_year">Edellinen vuosi</string>
+    <string name="period_next_day">Seuraava päivä</string>
+    <string name="period_next_week">Seuraava viikko</string>
+    <string name="period_next_month">Seuraava kuukausi</string>
+    <string name="period_next_year">Seuraava vuosi</string>
+    <string name="period_others_day">Muut päivät</string>
+    <string name="period_others_week">Muut viikot</string>
+    <string name="period_others_month">Muut kuukaudet</string>
+    <string name="period_others_year">Muut vuodet</string>
+    <string name="period_show">Näytä</string>
 </resources>

@@ -862,4 +862,18 @@
     <string name="odometer_span_description">Odometer %1$s – %2$s</string>
     <string name="odometer_missing">missing</string>
     <string name="odometer_invalid">readings inconsistent</string>
+    <string name="period_km_driven">driven for work</string>
+    <string name="period_prev_day">Previous day</string>
+    <string name="period_prev_week">Previous week</string>
+    <string name="period_prev_month">Previous month</string>
+    <string name="period_prev_year">Previous year</string>
+    <string name="period_next_day">Next day</string>
+    <string name="period_next_week">Next week</string>
+    <string name="period_next_month">Next month</string>
+    <string name="period_next_year">Next year</string>
+    <string name="period_others_day">Other days</string>
+    <string name="period_others_week">Other weeks</string>
+    <string name="period_others_month">Other months</string>
+    <string name="period_others_year">Other years</string>
+    <string name="period_show">Show</string>
 </resources>
