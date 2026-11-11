@@ -1,16 +1,17 @@
 package fi.tyomatka.ui.plan
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import fi.tyomatka.R
 import fi.tyomatka.core.plan.TemplateChange
@@ -34,13 +36,13 @@ fun TemplateChangedBanner(
     onSave: () -> Unit,
     onDiscard: () -> Unit,
     onLater: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-        ),
-        modifier = Modifier.fillMaxWidth(),
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        shape = RoundedCornerShape(24.dp),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 8.dp, bottom = 4.dp)) {
             Text(
@@ -48,13 +50,20 @@ fun TemplateChangedBanner(
                 style = MaterialTheme.typography.bodyLarge,
             )
             Spacer(Modifier.height(4.dp))
-            val buttonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onTertiaryContainer)
+            val buttonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
+            val buttonModifier = Modifier.heightIn(min = 48.dp)
             FlowRow(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                TextButton(onClick = Tap(onSave), colors = buttonColors) { Text(stringResource(R.string.save)) }
-                if (banner.canDiscard) {
-                    TextButton(onClick = Tap(onDiscard), colors = buttonColors) { Text(stringResource(R.string.template_discard)) }
+                TextButton(onClick = Tap(onSave), colors = buttonColors, modifier = buttonModifier) {
+                    Text(stringResource(R.string.save), fontWeight = FontWeight.Bold)
                 }
-                TextButton(onClick = Tap(onLater), colors = buttonColors) { Text(stringResource(R.string.template_later)) }
+                if (banner.canDiscard) {
+                    TextButton(onClick = Tap(onDiscard), colors = buttonColors, modifier = buttonModifier) {
+                        Text(stringResource(R.string.template_discard), fontWeight = FontWeight.Bold)
+                    }
+                }
+                TextButton(onClick = Tap(onLater), colors = buttonColors, modifier = buttonModifier) {
+                    Text(stringResource(R.string.template_later), fontWeight = FontWeight.Bold)
+                }
             }
         }
     }

@@ -23,7 +23,6 @@
         <item quantity="one">%d stop</item>
         <item quantity="other">%d stops</item>
     </plurals>
-    <string name="day_summary">Done around %1$s · duration %2$s</string>
     <string name="deadline_at">By %1$s</string>
     <string name="deadline_late_warning">Can\'t make the deadline with the current stops: %1$s (estimated arrival %2$s)</string>
     <string name="set_deadline">Set deadline</string>
@@ -885,4 +884,14 @@
         <item quantity="one">%d day ago</item>
         <item quantity="other">%d days ago</item>
     </plurals>
+    <string name="plan_ready_estimate">Done around</string>
+    <string name="plan_duration">duration %1$s</string>
+    <string name="plan_deadline_short">Deadline</string>
+    <string name="plan_service_short">Stop time</string>
+    <string name="plan_service_station">Service station</string>
+    <string name="plan_eta_late">Deadline will be missed</string>
+    <string name="plan_eta_tight">Deadline is tight</string>
+    <string name="plan_stop_done">Visited</string>
+    <string name="plan_stop_skipped">Skipped</string>
+    <string name="plan_no_stops">No stops. Add today\'s stops with the Add stop button.</string>
 </resources>

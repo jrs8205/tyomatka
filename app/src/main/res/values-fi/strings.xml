@@ -23,7 +23,6 @@
         <item quantity="one">%d stoppi</item>
         <item quantity="other">%d stoppia</item>
     </plurals>
-    <string name="day_summary">Valmis arviolta %1$s · kesto %2$s</string>
     <string name="deadline_at">Viim. %1$s</string>
     <string name="deadline_late_warning">Aikaraja ei toteudu nykyisillä stopeilla: %1$s (ennuste %2$s)</string>
     <string name="set_deadline">Aseta aikaraja</string>
@@ -885,4 +884,14 @@
         <item quantity="one">%d päivä sitten</item>
         <item quantity="other">%d päivää sitten</item>
     </plurals>
+    <string name="plan_ready_estimate">Valmis arviolta</string>
+    <string name="plan_duration">kesto %1$s</string>
+    <string name="plan_deadline_short">Aikaraja</string>
+    <string name="plan_service_short">Kesto</string>
+    <string name="plan_service_station">Huoltoasema</string>
+    <string name="plan_eta_late">Aikaraja ei toteudu</string>
+    <string name="plan_eta_tight">Aikaraja on tiukka</string>
+    <string name="plan_stop_done">Käyty</string>
+    <string name="plan_stop_skipped">Ohitettu</string>
+    <string name="plan_no_stops">Ei stoppeja. Lisää päivän stopit Lisää stoppi -napilla.</string>
 </resources>

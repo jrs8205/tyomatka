@@ -1,13 +1,21 @@
 package fi.tyomatka.ui.plan
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,26 +27,15 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -54,10 +51,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Modifier
@@ -70,7 +65,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,8 +82,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import fi.tyomatka.core.text.ImportedText
 import fi.tyomatka.ui.Tap
-import fi.tyomatka.core.model.DeadlineStatus
-import fi.tyomatka.core.model.StopEta
 import fi.tyomatka.data.db.StopEntity
 import fi.tyomatka.data.db.StopStatus
 import fi.tyomatka.core.plan.ServiceStops
@@ -99,9 +91,6 @@ import fi.tyomatka.ui.FullScreenDialog
 import fi.tyomatka.ui.plan.nearby.NearbyPage
 import fi.tyomatka.ui.plan.nearby.NearbySearchField
 import fi.tyomatka.ui.plan.nearby.NearbyViewModel
-import fi.tyomatka.ui.formatClock
-import fi.tyomatka.ui.formatDuration
-import fi.tyomatka.ui.formatMinutesOfDay
 import kotlinx.coroutines.launch
 import fi.tyomatka.ui.components.AppTimePicker
 
@@ -133,10 +122,51 @@ fun PlanScreen(
     val etasByStopId = state.schedule?.stopEtas?.associateBy { it.stop.id } ?: emptyMap()
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = Tap { showAddSheet = true }) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_stop))
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.tab_plan)) },
+                actions = {
+                    // Tyhjennä lista on yläpalkissa virhevärillä; vahvistusikkuna kysyy ennen poistoa.
+                    if (state.stops.isNotEmpty()) {
+                        IconButton(onClick = Tap { confirmClearStops = true }) {
+                            Icon(
+                                Icons.Rounded.DeleteSweep,
+                                contentDescription = stringResource(R.string.clear_stops),
+                                tint = MaterialTheme.colorScheme.error,
+                            )
+                        }
+                    }
+                },
+            )
+        },
+        // Ilmoitukset Scaffoldin omalla paikalla: lisäysnappi nousee niiden yläpuolelle eikä peitä tekstiä.
+        snackbarHost = {
+            Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                state.error?.let { error ->
+                    Snackbar(
+                        dismissAction = {
+                            TextButton(onClick = Tap(viewModel::dismissError)) { Text(stringResource(R.string.ok)) }
+                        }
+                    ) { Text(error) }
+                }
+                templateState.notice?.let { notice ->
+                    Snackbar(
+                        dismissAction = {
+                            TextButton(onClick = Tap(templateViewModel::dismissNotice)) { Text(stringResource(R.string.ok)) }
+                        }
+                    ) { Text(notice) }
+                }
             }
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = Tap { showAddSheet = true },
+                icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
+                text = { Text(stringResource(R.string.add_stop), fontWeight = FontWeight.Bold) },
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.heightIn(min = 64.dp),
+            )
         },
     ) { padding ->
         Column(
@@ -148,10 +178,8 @@ fun PlanScreen(
             val remainingIds = state.stops
                 .filter { it.status != StopStatus.DONE && it.status != StopStatus.SKIPPED }
                 .map { it.id }
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.weight(1f),
-            ) {
+            // Aikajanan alkiot ovat kiinni toisissaan (viiva jatkuu stopista seuraavaan), joten välit ovat alkioiden omia.
+            LazyColumn(modifier = Modifier.weight(1f)) {
                 templateState.banner?.let { banner ->
                     item(key = "template-banner") {
                         TemplateChangedBanner(
@@ -159,22 +187,24 @@ fun PlanScreen(
                             onSave = { showSaveTemplate = true },
                             onDiscard = { discardTemplateName = banner.templateName },
                             onLater = templateViewModel::later,
+                            modifier = Modifier.padding(bottom = 8.dp),
                         )
                     }
                 }
-                item {
-                    SummaryCard(
-                        state = state,
-                        templateState = templateState,
-                        onClearAll = { confirmClearStops = true },
-                        onSaveTemplate = { showSaveTemplate = true },
-                        onShowTemplates = { showTemplateSheet = true },
-                    )
+                item(key = "summary") {
+                    Box(Modifier.padding(bottom = 16.dp)) {
+                        PlanSummary(
+                            state = state,
+                            templateState = templateState,
+                            onSaveTemplate = { showSaveTemplate = true },
+                            onShowTemplates = { showTemplateSheet = true },
+                        )
+                    }
                 }
                 if (state.stops.isEmpty()) {
-                    item {
+                    item(key = "empty") {
                         Text(
-                            stringResource(R.string.no_stops),
+                            stringResource(R.string.plan_no_stops),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -184,35 +214,22 @@ fun PlanScreen(
                         )
                     }
                 }
-                items(state.stops, key = { it.id }) { stop ->
+                itemsIndexed(state.stops, key = { _, stop -> stop.id }) { index, stop ->
                     val position = remainingIds.indexOf(stop.id)
-                    StopRow(
+                    StopTimelineItem(
                         stop = stop,
                         number = if (position >= 0) position + 1 else null,
                         eta = etasByStopId[stop.id],
+                        isLast = index == state.stops.lastIndex,
                         onEditClick = { editStop = stop },
                         onDelete = { viewModel.removeStop(stop.id) },
                         onDeadlineClick = { deadlineDialogStop = stop },
                         onServiceClick = { serviceDialogStop = stop },
                     )
                 }
-                item { Spacer(Modifier.height(88.dp)) }
+                item(key = "end") { Spacer(Modifier.height(96.dp)) }
             }
 
-            state.error?.let { error ->
-                Snackbar(
-                    dismissAction = {
-                        TextButton(onClick = Tap(viewModel::dismissError)) { Text(stringResource(R.string.ok)) }
-                    }
-                ) { Text(error) }
-            }
-            templateState.notice?.let { notice ->
-                Snackbar(
-                    dismissAction = {
-                        TextButton(onClick = Tap(templateViewModel::dismissNotice)) { Text(stringResource(R.string.ok)) }
-                    }
-                ) { Text(notice) }
-            }
         }
     }
 
@@ -361,177 +378,6 @@ fun PlanScreen(
             },
             onDismiss = { discardTemplateName = null },
         )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun SummaryCard(
-    state: PlanUiState,
-    templateState: TemplateUiState,
-    onClearAll: () -> Unit,
-    onSaveTemplate: () -> Unit,
-    onShowTemplates: () -> Unit,
-) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    pluralStringResource(R.plurals.stop_count, state.stops.size, state.stops.size),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Spacer(Modifier.weight(1f))
-                if (state.stops.isNotEmpty()) {
-                    IconButton(onClick = Tap(onClearAll)) {
-                        Icon(
-                            Icons.Filled.DeleteSweep,
-                            contentDescription = stringResource(R.string.clear_stops),
-                            tint = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
-            }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (state.stops.isNotEmpty()) {
-                    AssistChip(
-                        onClick = Tap(onSaveTemplate),
-                        enabled = !templateState.driving,
-                        label = { Text(stringResource(R.string.template_save)) },
-                        leadingIcon = { Icon(Icons.Filled.Save, null, Modifier.width(16.dp)) },
-                    )
-                }
-                AssistChip(
-                    onClick = Tap(onShowTemplates),
-                    enabled = !templateState.driving,
-                    label = { Text(stringResource(R.string.template_list, templateState.templates.size)) },
-                    leadingIcon = { Icon(Icons.Filled.FolderOpen, null, Modifier.width(16.dp)) },
-                )
-            }
-            if (templateState.driving) {
-                Text(
-                    stringResource(R.string.template_disabled_driving),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            state.schedule?.let { schedule ->
-                Spacer(Modifier.height(8.dp))
-                val duration = schedule.finishEpochSec - schedule.computedAtEpochSec
-                Text(
-                    stringResource(
-                        R.string.day_summary,
-                        formatClock(schedule.finishEpochSec),
-                        formatDuration(duration),
-                    ),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                schedule.stopEtas.filter { it.deadlineStatus == DeadlineStatus.LATE }.forEach { late ->
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        stringResource(
-                            R.string.deadline_late_warning,
-                            late.stop.label,
-                            formatClock(late.arrivalEpochSec),
-                        ),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun StopRow(
-    stop: StopEntity,
-    number: Int?,
-    eta: StopEta?,
-    onEditClick: () -> Unit,
-    onDelete: () -> Unit,
-    onDeadlineClick: () -> Unit,
-    onServiceClick: () -> Unit,
-) {
-    Card {
-        Column(Modifier.padding(12.dp)) {
-            // Nimi- ja osoiterivin napautus avaa stopin muokkauksen; chipit ja
-            // poistonappi alarivillä säilyttävät omat toimintonsa.
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(onClick = Tap(onEditClick)),
-            ) {
-                Text(
-                    when {
-                        number != null -> "$number."
-                        stop.status == StopStatus.DONE -> "✓"
-                        else -> "–"
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(Modifier.width(8.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        stop.label,
-                        style = MaterialTheme.typography.titleSmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        stop.address,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                eta?.let {
-                    Text(
-                        formatClock(it.arrivalEpochSec),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = when (it.deadlineStatus) {
-                            DeadlineStatus.LATE -> MaterialTheme.colorScheme.error
-                            DeadlineStatus.TIGHT -> MaterialTheme.colorScheme.tertiary
-                            else -> MaterialTheme.colorScheme.onSurface
-                        },
-                    )
-                }
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.weight(1f),
-                ) {
-                AssistChip(
-                    onClick = Tap(onDeadlineClick),
-                    label = {
-                        Text(
-                            stop.deadlineMinutesOfDay?.let {
-                                stringResource(R.string.deadline_at, formatMinutesOfDay(it))
-                            } ?: stringResource(R.string.set_deadline)
-                        )
-                    },
-                    leadingIcon = { Icon(Icons.Filled.Schedule, null, Modifier.width(16.dp)) },
-                )
-                AssistChip(
-                    onClick = Tap(onServiceClick),
-                    label = {
-                        Text(stop.serviceSec?.let { "${it / 60} min" } ?: stringResource(R.string.set_service_time))
-                    },
-                    leadingIcon = { Icon(Icons.Filled.Timer, null, Modifier.width(16.dp)) },
-                )
-                }
-                // Poisto reunassa erillään chipeistä, ettei siihen osu vahingossa.
-                IconButton(onClick = Tap(onDelete)) {
-                    Icon(
-                        Icons.Filled.Delete,
-                        contentDescription = stringResource(R.string.delete_stop),
-                        tint = MaterialTheme.colorScheme.error,
-                    )
-                }
-            }
-        }
     }
 }
 

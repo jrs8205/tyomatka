@@ -23,7 +23,6 @@
         <item quantity="one">%d stopp</item>
         <item quantity="other">%d stopp</item>
     </plurals>
-    <string name="day_summary">Klar ca kl. %1$s · tid %2$s</string>
     <string name="deadline_at">Senast %1$s</string>
     <string name="deadline_late_warning">Tidsgränsen hålls inte med de nuvarande stoppen: %1$s (prognos %2$s)</string>
     <string name="set_deadline">Ange tidsgräns</string>
@@ -873,4 +872,14 @@
         <item quantity="one">för %d dag sedan</item>
         <item quantity="other">för %d dagar sedan</item>
     </plurals>
+    <string name="plan_ready_estimate">Klar ca kl.</string>
+    <string name="plan_duration">tid %1$s</string>
+    <string name="plan_deadline_short">Tidsgräns</string>
+    <string name="plan_service_short">Stopptid</string>
+    <string name="plan_service_station">Servicestation</string>
+    <string name="plan_eta_late">Tidsgränsen hålls inte</string>
+    <string name="plan_eta_tight">Tidsgränsen är snäv</string>
+    <string name="plan_stop_done">Besökt</string>
+    <string name="plan_stop_skipped">Överhoppat</string>
+    <string name="plan_no_stops">Inga stopp. Lägg till dagens stopp med knappen Lägg till stopp.</string>
 </resources>
