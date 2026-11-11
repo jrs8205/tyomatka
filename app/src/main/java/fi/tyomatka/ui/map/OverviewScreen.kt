@@ -51,6 +51,8 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,6 +78,9 @@ import fi.tyomatka.ui.components.mapCardColors
 import fi.tyomatka.ui.components.AppButtonDefaults
 import fi.tyomatka.ui.components.ConnectedChoiceGroup
 import fi.tyomatka.ui.boundParts
+
+/** Korttipinon yläväli kartan yläreunasta (mittakaavajanan ja kompassin alle). */
+private val OverlayTop = 60.dp
 
 /** Etäisyys listan reunasta (px), jonka sisällä raahaus alkaa vierittää listaa. */
 private const val AUTOSCROLL_ZONE_PX = 160f
@@ -109,6 +114,10 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
     val drawnRoute = state.comparison.drawnRoute(state.routePoints)
     LaunchedEffect(drawnRoute) { poiViewModel.setRoute(drawnRoute) }
 
+    val density = LocalDensity.current
+    // Pysyvien korttien (reittivalinta, yhteenveto) alareuna: koko reitin sovitus jättää reitin niiden alle. Latauspyörä,
+    // virhe ja kohdevihjeet tulevat ja menevät, joten ne eivät liikuta karttaa.
+    var stableCardsHeight by remember { mutableStateOf(0.dp) }
     Box(Modifier.fillMaxSize()) {
         OverviewMap(
             stops = state.stops,
@@ -121,6 +130,7 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
             pois = poiState.markers,
             onPoiClick = poiViewModel::select,
             onViewport = poiViewModel::onViewport,
+            topOverlayHeight = if (stableCardsHeight > 0.dp) OverlayTop + stableCardsHeight else 0.dp,
         )
 
         Column(
@@ -128,47 +138,52 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
                 .align(Alignment.TopCenter)
                 // Mittakaavajana on kartan vasemmassa ja käännetyn kartan kompassi oikeassa yläkulmassa;
                 // kortit niiden alle (kortti osui kompassin alakulmaan).
-                .padding(start = 12.dp, end = 12.dp, top = 60.dp, bottom = 12.dp),
+                .padding(start = 12.dp, end = 12.dp, top = OverlayTop, bottom = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            if (state.stops.isEmpty()) {
-                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
-                    Text(
-                        stringResource(
-                            if (state.hasHandledStops) R.string.all_stops_done_map else R.string.no_stops
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    )
+            Column(
+                Modifier.onSizeChanged { stableCardsHeight = with(density) { it.height.toDp() } },
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (state.stops.isEmpty()) {
+                    Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
+                        Text(
+                            stringResource(
+                                if (state.hasHandledStops) R.string.all_stops_done_map else R.string.no_stops
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        )
+                    }
                 }
-            }
-            if (state.comparison.available) {
-                RouteChoiceCard(state.comparison, viewModel::setRouteChoice)
-                Spacer(Modifier.padding(2.dp))
-            }
-            if (state.totalDistanceM > 0) {
-                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
-                    Column(
-                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        // Vertailussa matka ja aika näkyvät jo valinnassa.
-                        if (!state.comparison.available) {
-                            Text(
-                                stringResource(
-                                    R.string.route_total,
-                                    formatKm(state.totalDistanceM),
-                                    formatDuration(state.totalDurationSec),
-                                ),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
-                        state.comparison.finishEpochSec(state.finishEpochSec)?.let { finish ->
-                            Text(
-                                stringResource(R.string.finish_estimate, formatClock(finish)),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
+                if (state.comparison.available) {
+                    RouteChoiceCard(state.comparison, viewModel::setRouteChoice)
+                    Spacer(Modifier.padding(2.dp))
+                }
+                if (state.totalDistanceM > 0) {
+                    Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), colors = mapCardColors()) {
+                        Column(
+                            Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            // Vertailussa matka ja aika näkyvät jo valinnassa.
+                            if (!state.comparison.available) {
+                                Text(
+                                    stringResource(
+                                        R.string.route_total,
+                                        formatKm(state.totalDistanceM),
+                                        formatDuration(state.totalDurationSec),
+                                    ),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                            state.comparison.finishEpochSec(state.finishEpochSec)?.let { finish ->
+                                Text(
+                                    stringResource(R.string.finish_estimate, formatClock(finish)),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
                         }
                     }
                 }

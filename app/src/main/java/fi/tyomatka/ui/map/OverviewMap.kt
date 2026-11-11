@@ -34,6 +34,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -95,7 +98,22 @@ internal val RecenterBottomPadding = 48.dp
  * Koko reitin sovituksen reunukset: ylhäällä yhteenvetokortti, alhaalla Järjestys-nappi ja kohdistusnappi.
  * Stopit eivät saa jäädä niiden alle, eivät järjestyksen vaihdon jälkeenkään.
  */
-private val FitPadding = PaddingValues(start = 48.dp, top = 220.dp, end = 48.dp, bottom = 120.dp)
+private val FitTop = 220.dp
+private val FitBottom = 120.dp
+private val FitSide = 48.dp
+
+/** Reitille jätettävä vähimmäiskorkeus, vaikka yläosan korttipino olisi isolla fontilla hyvin korkea. */
+private val FitRouteMin = 160.dp
+
+/**
+ * Sovituksen yläväli: vähintään nykyinen [FitTop], ja korkeampi korttipino ([overlayBottom], kortit mitattuna kartan
+ * yläreunasta) siirtää reitin korttien alle. Reitille jää aina [FitRouteMin]. Ennen kartan mittausta nykyinen arvo.
+ */
+internal fun fitTopPadding(overlayBottom: Dp, mapHeight: Dp): Dp {
+    val wanted = overlayBottom + 24.dp
+    if (wanted <= FitTop) return FitTop
+    return minOf(wanted, maxOf(FitTop, mapHeight - FitBottom - FitRouteMin))
+}
 
 /** Nopeuskapseli nappirivin (keskitys, Järjestys) yläpuolella, ettei se jaa tilaa niiden kanssa. */
 private val SpeedBottomPadding = 84.dp
@@ -125,8 +143,14 @@ fun OverviewMap(
     pois: List<PoiMarker> = emptyList(),
     onPoiClick: (String) -> Unit = {},
     onViewport: (PoiBox?, Double) -> Unit = { _, _ -> },
+    /** Yläosan korttipinon alareuna kartan yläreunasta (reittivalinta, valmistumisaika, vihje); 0 = ei mitattu. */
+    topOverlayHeight: Dp = 0.dp,
 ) {
     val context = LocalContext.current
+    val density = LocalDensity.current
+    var mapHeight by remember { mutableStateOf(0.dp) }
+    val fitTop = fitTopPadding(topOverlayHeight, mapHeight)
+    val currentFitTop by rememberUpdatedState(fitTop)
     val cameraState = rememberCameraState(CameraPosition(target = DefaultTarget, zoom = 10.0))
     // Ei tallentuva: jokainen välilehden avaus (ja prosessin palautus) alkaa alusta: ilman stoppeja seuranta, stopeilla
     // koko reitti.
@@ -156,7 +180,8 @@ fun OverviewMap(
 
     suspend fun animateTo(fit: Fit) {
         val box = MapGeometry.boundingBoxOf(fit.points) ?: return
-        cameraState.animateTo(boundingBox = box, padding = FitPadding, duration = 600.milliseconds)
+        val padding = PaddingValues(start = FitSide, top = currentFitTop, end = FitSide, bottom = FitBottom)
+        cameraState.animateTo(boundingBox = box, padding = padding, duration = 600.milliseconds)
     }
 
     // Datan muutos sovittaa aina (myös seurannassa) ja päättää seurannan; oma sijainti otetaan mukaan, jos se on jo
@@ -184,6 +209,13 @@ fun OverviewMap(
     LaunchedEffect(locationGranted) {
         val location = snapshotFlow { userLocation.location }.filterNotNull().first()
         camera.onFirstLocation(location.toGeoPoint(), currentStops, currentOrigin)?.let { animateTo(it) }
+    }
+
+    // Isolla fontilla korttipino kasvaa (reittivalinta allekkain): koskematon kartta sovitetaan uudelleen korttien alle.
+    LaunchedEffect(fitTop) {
+        if (fitTop > FitTop) {
+            camera.onBackgroundData(currentStops, currentOrigin, userLocation.location?.toGeoPoint())?.let { animateTo(it) }
+        }
     }
 
     // Näkyvä ikkuna ja zoom kohteiden hakua varten aina, kun kameran liike päättyy (myös ohjelmallinen sovitus).
@@ -220,7 +252,7 @@ fun OverviewMap(
             }
     }
 
-    Box(modifier) {
+    Box(modifier.onSizeChanged { mapHeight = with(density) { it.height.toDp() } }) {
         val lifecycleGate = rememberMapLifecycleGate()
         CompositionLocalProvider(LocalLifecycleOwner provides lifecycleGate) {
             MaplibreMap(
