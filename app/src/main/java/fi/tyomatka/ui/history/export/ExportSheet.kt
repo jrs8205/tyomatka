@@ -62,6 +62,7 @@ import fi.tyomatka.ui.formatDayRange
 import fi.tyomatka.ui.formatDecimal
 import java.time.LocalDate
 import fi.tyomatka.ui.components.AppButtonDefaults
+import fi.tyomatka.ui.components.AppDragHandle
 
 private const val DAY_MILLIS = 86_400_000L
 private const val NO_DAY = Long.MIN_VALUE
@@ -108,7 +109,7 @@ fun ExportSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var pickRange by rememberSaveable { mutableStateOf(false) }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
+    ModalBottomSheet(dragHandle = { AppDragHandle() }, onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())

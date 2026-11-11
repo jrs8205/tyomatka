@@ -16,6 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import fi.tyomatka.ui.Tap
+import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 
 /** Koko rivi kytkimenä, jotta kosketusalue on riittävä myös suurella fontilla. */
 @Composable
@@ -39,17 +43,29 @@ internal fun SwitchRow(title: String, body: String?, checked: Boolean, onChange:
     }
 }
 
-/** Avattava rivi: otsikko ja nykyinen arvo tai selitys. */
+/** Avattava rivi: otsikko ja nykyinen arvo tai selitys; alasivulle vievällä rivillä ([opensPage]) nuoli oikealla. */
 @Composable
-internal fun ActionRow(title: String, value: String? = null, onClick: () -> Unit) {
-    Column(
+internal fun ActionRow(title: String, value: String? = null, opensPage: Boolean = false, onClick: () -> Unit) {
+    Row(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
             .clickable(onClick = Tap(onClick)),
-        verticalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(title, style = MaterialTheme.typography.bodyLarge)
-        value?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            value?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
+        if (opensPage) {
+            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
+}
+
+/** Ryhmän rivien erotin (koriste). */
+@Composable
+internal fun RowDivider() {
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }

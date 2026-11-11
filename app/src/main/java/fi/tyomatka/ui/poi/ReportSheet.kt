@@ -54,6 +54,7 @@ import java.time.LocalDate
 import fi.tyomatka.ui.components.AppTextField
 import fi.tyomatka.ui.components.AppFilterChip
 import fi.tyomatka.ui.components.AppButtonDefaults
+import fi.tyomatka.ui.components.AppDragHandle
 
 /**
  * Ilmoita muutos (luonnos C2): valmiit valinnat, ei vapaata tekstiä. Kyllä/ei-valinta lähtee heti ([onReport]);
@@ -116,7 +117,7 @@ fun ReportSheet(
         )
     }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(dragHandle = { AppDragHandle() }, onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         // Otsikko ja tulos pysyvät näkyvissä, vaikka valintoja vieritetään.
         Column(
             Modifier

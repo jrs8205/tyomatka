@@ -67,6 +67,8 @@ import fi.tyomatka.ui.Tap
 import fi.tyomatka.ui.history.PlateField
 import fi.tyomatka.ui.history.forms.OptionalFuelChips
 import kotlinx.coroutines.launch
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 
 /**
  * Ensikäynnistyksen esittely: sivu 1 kertoo mitä sovellus tekee, sivu 2 kysyy auton (ohitettavissa), sivu 3 pyytää
@@ -264,13 +266,18 @@ private fun PermissionCardView(
 
 @Composable
 private fun PageDots(count: Int, current: Int) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+    val description = stringResource(R.string.nearby_page, current + 1, count)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clearAndSetSemantics { contentDescription = description },
+    ) {
         repeat(count) { index ->
             Box(
                 Modifier
                     .size(if (index == current) 10.dp else 8.dp)
                     .background(
-                        if (index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                        if (index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                         CircleShape,
                     )
             )

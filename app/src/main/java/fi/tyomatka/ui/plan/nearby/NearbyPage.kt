@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,9 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,7 +42,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import fi.tyomatka.R
 import fi.tyomatka.core.poi.PoiCategory
 import fi.tyomatka.core.poi.PoiItem
@@ -60,6 +55,7 @@ import fi.tyomatka.ui.components.AppTextField
 import fi.tyomatka.ui.components.AppFilterChip
 import fi.tyomatka.ui.components.AppButtonDefaults
 import androidx.compose.ui.text.font.FontWeight
+import fi.tyomatka.ui.components.ConnectedChoiceGroup
 
 /** Lajisirujen järjestys. */
 private val CATEGORIES = listOf(PoiCategory.FUEL, PoiCategory.REST, PoiCategory.GAS, PoiCategory.CHARGING)
@@ -142,29 +138,16 @@ private fun NearbyContent(
     val choices = state.choices
     val data = session.data
     Column(modifier) {
-        SingleChoiceSegmentedButtonRow(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp),
-        ) {
-            NearbyBand.entries.forEachIndexed { index, band ->
-                val label = stringResource(bandRes(band))
-                SegmentedButton(
-                    selected = band == choices.band,
-                    onClick = Tap { viewModel.setBand(band) },
-                    shape = SegmentedButtonDefaults.itemShape(index, NearbyBand.entries.size),
-                    // Ei valintamerkkiä, ja teksti yhdellä rivillä tarvittaessa pienempänä: määrä mahtuu katkeamatta kesken sanan.
-                    icon = {},
-                ) {
-                    Text(
-                        state.bandCounts?.get(band)?.let { stringResource(R.string.nearby_band_count, label, it) } ?: label,
-                        maxLines = 1,
-                        softWrap = false,
-                        autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = MaterialTheme.typography.labelLarge.fontSize),
-                    )
-                }
-            }
-        }
+        // Etäisyysvyöhyke ja sen kohteiden määrä; ahtaassa tilassa vyöhykkeet asettuvat allekkain eivätkä katkea.
+        ConnectedChoiceGroup(
+            options = NearbyBand.entries,
+            selected = choices.band,
+            label = { band -> stringResource(bandRes(band)) },
+            // Hakuosumien määrä toisella rivillä: sarakejako ratkeaa vyöhykkeen nimestä, joten ryhmä ei hypi haun aikana.
+            supportingText = if (state.bandCounts != null) { band -> state.bandCounts?.get(band)?.toString() } else null,
+            onSelect = viewModel::setBand,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier

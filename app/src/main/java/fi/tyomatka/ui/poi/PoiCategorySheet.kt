@@ -22,6 +22,9 @@ import fi.tyomatka.R
 import fi.tyomatka.core.poi.PoiCategory
 import fi.tyomatka.data.repo.PoiSettings
 import fi.tyomatka.ui.Tap
+import fi.tyomatka.ui.components.AppDragHandle
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.ui.graphics.Color
 
 /** Kohteet-valikko: neljä luokkaa kytkiminä sekä raskaan kaluston ja reitin varrella -tarkennukset. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +37,7 @@ fun PoiCategorySheet(
     onRouteOnly: (Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(dragHandle = { AppDragHandle() }, onDismissRequest = onDismiss) {
         Text(
             stringResource(R.string.poi_sheet_title),
             style = MaterialTheme.typography.titleLarge,
@@ -78,5 +81,7 @@ private fun SwitchRow(title: String, hint: String?, icon: ImageVector?, checked:
         leadingContent = icon?.let { { Icon(it, contentDescription = null) } },
         trailingContent = { Switch(checked = checked, onCheckedChange = { Tap.now(); onChecked() }) },
         modifier = Modifier.fillMaxWidth().clickable(onClick = Tap(onChecked)),
+        // Paneelin oma pohja näkyy rivin alla: ei eri sävyisiä raitoja.
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }

@@ -46,6 +46,7 @@ import fi.tyomatka.data.repo.ThemeChoice
 import fi.tyomatka.ui.Tap
 import fi.tyomatka.ui.appLocale
 import fi.tyomatka.ui.form.FormSection
+import fi.tyomatka.ui.components.ConnectedChoiceGroup
 
 @Composable
 private fun RadioRow(title: String, selected: Boolean, onClick: () -> Unit) {
@@ -68,6 +69,7 @@ internal fun DriveSection(settings: AppSettings, onChange: ((AppSettings) -> App
         ActionRow(
             title = stringResource(R.string.settings_voice),
             value = stringResource(if (settings.voiceName == null) R.string.settings_voice_default else R.string.settings_voice_chosen),
+            opensPage = true,
             onClick = onOpenVoices,
         )
         SwitchRow(stringResource(R.string.settings_guidance_vibration), null, settings.guidanceVibration) { on ->
@@ -92,11 +94,21 @@ internal fun AppearanceSection(
     val context = LocalContext.current
     FormSection(stringResource(R.string.settings_section_appearance)) {
         Text(stringResource(R.string.settings_theme), style = MaterialTheme.typography.bodyLarge)
-        Column(Modifier.selectableGroup()) {
-            RadioRow(stringResource(R.string.settings_theme_system), theme == ThemeChoice.SYSTEM) { onTheme(ThemeChoice.SYSTEM) }
-            RadioRow(stringResource(R.string.settings_theme_light), theme == ThemeChoice.LIGHT) { onTheme(ThemeChoice.LIGHT) }
-            RadioRow(stringResource(R.string.settings_theme_dark), theme == ThemeChoice.DARK) { onTheme(ThemeChoice.DARK) }
-        }
+        // Puhelimen mukaan, Vaalea ja Tumma rinnakkain; ahtaassa tilassa allekkain.
+        ConnectedChoiceGroup(
+            options = listOf(ThemeChoice.SYSTEM, ThemeChoice.LIGHT, ThemeChoice.DARK),
+            selected = theme,
+            label = { choice ->
+                stringResource(
+                    when (choice) {
+                        ThemeChoice.SYSTEM -> R.string.settings_theme_system
+                        ThemeChoice.LIGHT -> R.string.settings_theme_light
+                        ThemeChoice.DARK -> R.string.settings_theme_dark
+                    },
+                )
+            },
+            onSelect = onTheme,
+        )
         SwitchRow(stringResource(R.string.settings_tap_vibration), null, settings.tapVibration) { on ->
             onChange { it.copy(tapVibration = on) }
         }

@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fi.tyomatka.R
 import fi.tyomatka.data.db.RouteTemplateEntity
@@ -39,6 +38,9 @@ import fi.tyomatka.ui.Tap
 import fi.tyomatka.ui.formatShortDate
 import java.time.Instant
 import java.time.ZoneId
+import fi.tyomatka.ui.components.AppDragHandle
+import fi.tyomatka.ui.boundParts
+import fi.tyomatka.ui.PART_SEPARATOR
 
 /**
  * Tallennettujen reittien lista koko korkeuden alavalikkona: rivillä nimi, stoppien määrä ja viimeisin avaus;
@@ -54,7 +56,7 @@ fun RouteTemplateSheet(
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
+    ModalBottomSheet(dragHandle = { AppDragHandle() }, onDismissRequest = onDismiss, sheetState = sheetState) {
         Text(
             stringResource(R.string.template_list_title),
             style = MaterialTheme.typography.titleLarge,
@@ -92,12 +94,14 @@ private fun TemplateRow(
 ) {
     var menuOpen by remember { mutableStateOf(false) }
     val opened = item.template.lastOpenedEpochSec
-        ?.let { stringResource(R.string.template_last_opened, formatShortDate(epochDayOf(it), capitalize = false)) }
+        ?.let { stringResource(R.string.template_last_opened, boundParts(formatShortDate(epochDayOf(it), capitalize = false))) }
         ?: stringResource(R.string.template_never_opened)
     ListItem(
-        headlineContent = { Text(item.template.name, maxLines = 2, overflow = TextOverflow.Ellipsis) },
+        // Nimi rivittyy kokonaisena eikä lyhene.
+        headlineContent = { Text(item.template.name) },
         supportingContent = {
-            Text(pluralStringResource(R.plurals.stop_count, item.stopCount, item.stopCount) + " · " + opened)
+            // Määrä ja päivämäärä pysyvät koossa, lause rivittyy sanojen välistä.
+            Text(boundParts(pluralStringResource(R.plurals.stop_count, item.stopCount, item.stopCount)) + PART_SEPARATOR + opened)
         },
         trailingContent = {
             Box {

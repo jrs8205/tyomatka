@@ -107,26 +107,33 @@ fun SettingsScreen(
                         DriveSection(app, viewModel::updateApp, onOpenVoices = { page = SettingsPage.VOICES })
                         AppearanceSection(app, theme, viewModel::setTheme, viewModel::updateApp)
                         FormSection(stringResource(R.string.settings_section_data)) {
-                            ActionRow(stringResource(R.string.settings_export_backup), stringResource(R.string.settings_export_backup_body), onExportBackup)
+                            ActionRow(stringResource(R.string.settings_export_backup), stringResource(R.string.settings_export_backup_body), onClick = onExportBackup)
+                            RowDivider()
                             ForgetReportsRow(forget, viewModel::forgetReports)
-                            ActionRow(stringResource(R.string.settings_import), stringResource(R.string.settings_import_body), onImport)
+                            RowDivider()
+                            ActionRow(stringResource(R.string.settings_import), stringResource(R.string.settings_import_body), onClick = onImport)
                         }
                         PermissionsSection(onShowIntro = viewModel::showIntro)
                         FormSection(stringResource(R.string.settings_section_servers)) {
-                            ActionRow(stringResource(R.string.settings_servers_row), stringResource(R.string.settings_servers_row_body)) {
+                            ActionRow(stringResource(R.string.settings_servers_row), stringResource(R.string.settings_servers_row_body), opensPage = true) {
                                 page = SettingsPage.SERVERS
                             }
                         }
                         FormSection(stringResource(R.string.settings_section_about)) {
                             Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.bodyLarge)
-                            ActionRow(stringResource(R.string.settings_sources)) { page = SettingsPage.SOURCES }
-                            ActionRow(stringResource(R.string.settings_licenses)) { page = SettingsPage.LICENSES }
+                            RowDivider()
+                            ActionRow(stringResource(R.string.settings_sources), opensPage = true) { page = SettingsPage.SOURCES }
+                            RowDivider()
+                            ActionRow(stringResource(R.string.settings_licenses), opensPage = true) { page = SettingsPage.LICENSES }
+                            RowDivider()
                             ActionRow(stringResource(R.string.settings_privacy)) {
                                 runCatching { uriHandler.openUri(privacyUrl(DisplayLanguage.current())) }
                             }
+                            RowDivider()
                             ActionRow(stringResource(R.string.settings_contact), CONTACT_EMAIL) {
                                 runCatching { uriHandler.openUri("mailto:$CONTACT_EMAIL") }
                             }
+                            RowDivider()
                             ActionRow(stringResource(R.string.settings_source_code), SOURCE_CODE_URL) {
                                 runCatching { uriHandler.openUri(SOURCE_CODE_URL) }
                             }

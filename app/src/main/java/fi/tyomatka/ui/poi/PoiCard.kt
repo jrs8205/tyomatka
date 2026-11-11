@@ -45,6 +45,7 @@ import fi.tyomatka.core.poi.PoiServices
 import fi.tyomatka.core.poi.StationInfo
 import fi.tyomatka.ui.Tap
 import java.time.LocalDate
+import fi.tyomatka.ui.components.AppDragHandle
 
 /**
  * Kohdekortti alavalikkona: kuvake ja nimi, osoite, matka ja aika. Huoltoasemalla osiot lähteineen ([StationSections]),
@@ -71,7 +72,7 @@ fun PoiCard(
     // Huoltoasemalla osiot korvaavat sirut; latauspisteellä ja lepopaikalla sirut säilyvät, ja ilmoitukset korvaavat ne kentittäin.
     val chips = if (station) emptyList() else PoiServices.chips(item, selection.corrections + PoiCardText.driverCorrections(info))
     val today = LocalDate.now().toEpochDay()
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(dragHandle = { AppDragHandle() }, onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
             Modifier
                 .heightIn(max = maxHeight)

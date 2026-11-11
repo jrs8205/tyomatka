@@ -164,6 +164,7 @@ internal fun ReminderSection(
                     } else {
                         stringResource(R.string.reminder_devices_count, settings.bluetoothDevices.size)
                     },
+                    opensPage = true,
                     onClick = onOpenDevices,
                 )
                 if (!radioOn) HelperLine(stringResource(R.string.reminder_bluetooth_off), HelperTone.ERROR)

@@ -717,7 +717,6 @@
     <string name="nearby_band_near">0⁠–⁠10 km</string>
     <string name="nearby_band_mid">10⁠–⁠20 km</string>
     <string name="nearby_band_far">20⁠–⁠50 km</string>
-    <string name="nearby_band_count">%1$s · %2$d</string>
     <string name="nearby_cat_fuel">Polttoaine</string>
     <string name="nearby_cat_rest">Lepo</string>
     <string name="nearby_cat_gas">Kaasu</string>

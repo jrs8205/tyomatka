@@ -14,14 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +55,12 @@ import fi.tyomatka.ui.history.PlateField
 import fi.tyomatka.ui.components.AppFilterChip
 import fi.tyomatka.ui.components.AppButtonDefaults
 import androidx.compose.material3.Button
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material.icons.rounded.DirectionsCar
+import androidx.compose.ui.text.style.TextAlign
 
 /**
  * Autot: tunnetut autot polttoaineineen ([carListRows]); napautus avaa auton lomakkeen, ja
@@ -121,20 +124,29 @@ fun CarsScreen(
                             modifier = Modifier.padding(16.dp),
                         )
                     }
+                    // Autot yhtenä ryhmänä erottimin: ensimmäisellä ja viimeisellä rivillä pyöreät kulmat.
                     LazyColumn(
                         Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(rows, key = { it.car.plate }) { row ->
-                            // Sama pohja kuin jaksokorteilla: oletuspohjaa vasten primary-tekstit jäisivät alle 7:1
-                            //.
-                            Card(
+                        itemsIndexed(rows, key = { _, row -> row.car.plate }) { index, row ->
+                            val top = if (index == 0) 24.dp else 0.dp
+                            val bottom = if (index == rows.lastIndex) 24.dp else 0.dp
+                            Surface(
                                 onClick = Tap { editingPlate = row.car.plate },
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                                shape = RoundedCornerShape(topStart = top, topEnd = top, bottomStart = bottom, bottomEnd = bottom),
+                                color = MaterialTheme.colorScheme.surfaceContainerLow,
                             ) {
-                                Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Column {
+                                if (index > 0) HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                                Row(Modifier.heightIn(min = 64.dp).padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        Icons.Rounded.DirectionsCar,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(end = 12.dp),
+                                    )
                                     Column(Modifier.weight(1f)) {
                                         Text(row.car.plate, style = MaterialTheme.typography.titleMedium)
                                         Text(
@@ -146,13 +158,15 @@ fun CarsScreen(
                                     // Valinta on lisätoiminto muokkauksen rinnalla: nappi tai merkintä kynän vieressä.
                                     val plate = row.car.plate
                                     when (carRowChoice(plate, ongoing, openPlate, nextPlate)) {
-                                        CarRowChoice.IN_USE -> ChoiceMark(stringResource(R.string.car_in_use))
-                                        CarRowChoice.NEXT -> ChoiceMark(stringResource(R.string.car_next))
+                                        // Merkintä saa rivittyä ("Nästa / körning"), ettei rekisterinumero katkea.
+                                        CarRowChoice.IN_USE -> ChoiceMark(stringResource(R.string.car_in_use), Modifier.weight(1f, fill = false))
+                                        CarRowChoice.NEXT -> ChoiceMark(stringResource(R.string.car_next), Modifier.weight(1f, fill = false))
                                         CarRowChoice.SWITCH_CAR -> SelectButton(plate) { onSwitchCar(plate) }
                                         CarRowChoice.CHOOSE_NEXT -> SelectButton(plate) { onChooseNext(plate) }
                                     }
                                     // Kynä kertoo, että autoa voi muokata.
                                     Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.car_edit), tint = MaterialTheme.colorScheme.primary)
+                                }
                                 }
                             }
                         }
@@ -212,12 +226,13 @@ private fun SelectButton(plate: String, onClick: () -> Unit) {
 
 /** Käytössä olevan tai seuraavan ajon auton merkintä napin paikalla, samalla sisennyksellä kuin napin teksti. */
 @Composable
-private fun ChoiceMark(text: String) {
+private fun ChoiceMark(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(horizontal = 12.dp),
+        textAlign = TextAlign.End,
+        modifier = modifier.padding(horizontal = 12.dp),
     )
 }
 
