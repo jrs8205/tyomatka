@@ -52,6 +52,12 @@ import androidx.compose.ui.unit.sp
 
 private data class Tab(val route: String, val labelRes: Int, val icon: @Composable () -> Unit)
 
+/** Välilehti, jolle sovellus avautuu: Työmatka (päivän kirjaukset). Takaisin-nappi palaa muilta välilehdiltä tänne. */
+internal const val START_ROUTE = "history"
+
+/** Alapalkin järjestys vasemmalta: Työmatka, Suunnittelu, Kartta, Ajo. */
+internal val TAB_ORDER = listOf(START_ROUTE, "plan", "map", "drive")
+
 @Composable
 fun TyomatkaNavHost(
     onStartDrive: (Long) -> Unit,
@@ -87,11 +93,11 @@ fun TyomatkaNavHost(
         }
     }
     val tabs = listOf(
+        Tab("history", R.string.tab_history_short) { Icon(Icons.Filled.DirectionsCar, null) },
         Tab("plan", R.string.tab_plan) { Icon(Icons.AutoMirrored.Filled.List, null) },
         Tab("map", R.string.tab_map) { Icon(Icons.Filled.Map, null) },
         Tab("drive", R.string.tab_drive) { Icon(Icons.Filled.Navigation, null) },
-        Tab("history", R.string.tab_history_short) { Icon(Icons.Filled.DirectionsCar, null) },
-    )
+    ).sortedBy { TAB_ORDER.indexOf(it.route) }
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
 
@@ -149,7 +155,7 @@ fun TyomatkaNavHost(
         Box(Modifier.padding(padding).consumeWindowInsets(padding)) {
             NavHost(
                 navController = navController,
-                startDestination = "plan",
+                startDestination = START_ROUTE,
                 // Oletus häivyttää sivut ristiin 700 ms: edellisen sivun osat jäivät haamuina uuden päälle.
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
