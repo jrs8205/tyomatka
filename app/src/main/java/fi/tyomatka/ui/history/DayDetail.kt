@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Notes
-import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.EvStation
 import androidx.compose.material.icons.rounded.History
@@ -41,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.onClick
@@ -358,18 +356,7 @@ private fun FillupRow(fillup: FuelFillupEntity, interval: FuelInterval?, photoCo
             }
             if (photoCount > 0 || hasNote) {
                 FlowRow(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    // Kuitti tai muu kuva todisteena; teksti kertoo määrän, joten kuvake on koriste.
-                    if (photoCount > 0) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Outlined.PhotoCamera, contentDescription = null, tint = scheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text(
-                                pluralStringResource(R.plurals.fuel_photo_count, photoCount, photoCount),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = scheme.onSurfaceVariant,
-                            )
-                        }
-                    }
+                    if (photoCount > 0) PhotoMarker(photoCount)
                     // Kirjauksen lisätiedot: merkki riittää, koko rivi avaa lomakkeen, jossa teksti näkyy.
                     if (hasNote) NoteMarker()
                 }

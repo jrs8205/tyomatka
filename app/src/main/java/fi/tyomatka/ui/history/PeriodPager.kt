@@ -148,6 +148,8 @@ fun LazyListScope.periodPagerItems(
     state: PeriodPagerState,
     itemKey: Any,
     onShowSelected: suspend () -> Unit,
+    /** Tankkauksen kuvien määrä päivärivin kuvamerkkiin. */
+    photoCount: (Long) -> Int = { 0 },
     page: @Composable (WorkPeriodRow) -> Unit,
 ) {
     if (rows.isEmpty()) return
@@ -194,6 +196,7 @@ fun LazyListScope.periodPagerItems(
             row = row,
             period = period,
             subtitle = periodSubtitle(row, period, todayEpochDay, showOngoing = true),
+            markers = rowMarkers(row, period, photoCount),
             first = index == 0,
             last = index == others.lastIndex,
             onClick = { state.select(row.key, before = onShowSelected) },
@@ -311,6 +314,7 @@ private fun OtherPeriodRow(
     row: WorkPeriodRow,
     period: WorkPeriod,
     subtitle: String,
+    markers: RowMarkers,
     first: Boolean,
     last: Boolean,
     onClick: () -> Unit,
@@ -347,6 +351,12 @@ private fun OtherPeriodRow(
                             Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = scheme.onSurfaceVariant)
                         }
                         if (row.missingReadings) WarningLine(stringResource(R.string.work_missing_readings_short))
+                        if (markers.any) {
+                            FlowRow(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                                if (markers.photos > 0) PhotoMarker(markers.photos)
+                                if (markers.note) NoteMarker()
+                            }
+                        }
                     }
                     // Täyttää rivin loppuosan (tai oman rivinsä, jos rivittyi), joten luvut ovat aina oikeassa reunassa.
                     Column(Modifier.weight(1f), horizontalAlignment = Alignment.End) {

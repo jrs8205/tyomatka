@@ -58,6 +58,25 @@ data class PeriodChoice(val keys: List<String>, private val selectedKey: String?
 fun otherPeriodRows(rows: List<WorkPeriodRow>, selectedKey: String?): List<WorkPeriodRow> =
     rows.filter { it.key != selectedKey }
 
+/** Muiden jaksojen päivärivin merkit: lisätietoja (päivän tai tankkauksen teksti) ja tankkauskuvien määrä. */
+data class RowMarkers(val note: Boolean, val photos: Int) {
+    val any: Boolean get() = note || photos > 0
+}
+
+/**
+ * Päivärivin merkit kuten 1.0.0:n päiväkorteissa, jotta lisätiedot ja kuitit löytyvät listasta selaamatta päiviä.
+ * Viikko-, kuukausi- ja vuosiriveillä ei merkkejä. [photoCount] antaa tankkauksen kuvien määrän.
+ */
+fun rowMarkers(row: WorkPeriodRow, period: WorkPeriod, photoCount: (Long) -> Int): RowMarkers =
+    if (period != WorkPeriod.DAY) {
+        RowMarkers(note = false, photos = 0)
+    } else {
+        RowMarkers(
+            note = row.hasNote || row.fillups.any { it.note.isNotBlank() },
+            photos = row.fillups.sumOf { photoCount(it.id) },
+        )
+    }
+
 /** Muiden jaksojen rivin polttoaineet: lajit ilman AdBluea, tai AdBlue, jos muuta ei tankattu. */
 fun listFuelLines(fuel: PeriodFuels?): List<PeriodFuel> {
     val tiles = periodFuelTiles(fuel)

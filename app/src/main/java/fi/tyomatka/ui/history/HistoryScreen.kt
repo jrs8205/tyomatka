@@ -246,6 +246,7 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
                     state = periodPager,
                     itemKey = "period",
                     onShowSelected = { listState.animateScrollToItem(PERIOD_ITEM_INDEX) },
+                    photoCount = { id -> state.photosByFillup[id]?.size ?: 0 },
                 ) { row ->
                     if (row.date == null) {
                         PeriodDetail(row)
