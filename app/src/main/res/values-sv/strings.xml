@@ -56,7 +56,7 @@
     <string name="leg_from_previous">%1$s från föregående stopp</string>
 
     <string name="start_driving">Starta körning</string>
-    <string name="route_choice_title">Rutt</string>
+    <string name="route_choice_shortest_active">Rutt: Kortast (vald på Karta-sidan)</string>
     <string name="route_choice_normal">Snabbast</string>
     <string name="route_choice_shortest">Kortast</string>
     <string name="route_choice_shortest_hint">Den kortaste rutten kan gå på små vägar. Den beräknade tiden kan bli längre.</string>

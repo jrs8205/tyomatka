@@ -56,13 +56,12 @@ class DriveViewModel @Inject constructor(
 
     val driveState: StateFlow<DriveState> = sessionManager.state
 
-    /** Seuraavan ajon reittivalinta; aloitettu ajo käyttää valintaa, joka oli voimassa aloitettaessa. */
+    /**
+     * Seuraavan ajon reittivalinta (valitaan Kartta-sivulla, lyhin vain valintapäivän); aloitettu ajo käyttää valintaa,
+     * joka oli voimassa aloitettaessa.
+     */
     val routeChoice: StateFlow<RouteChoice> =
         routeChoiceStore.choice.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RouteChoice.NORMAL)
-
-    fun setRouteChoice(choice: RouteChoice) {
-        viewModelScope.launch { routeChoiceStore.set(choice) }
-    }
 
     /** Ajokartan näkymätila Ferrostarilta (sama singleton kuin ajosession moottori). */
     val navigationViewModel: NavigationViewModel get() = engine

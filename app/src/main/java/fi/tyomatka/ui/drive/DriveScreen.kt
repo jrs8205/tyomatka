@@ -28,7 +28,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,6 +48,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -70,7 +70,6 @@ import fi.tyomatka.ui.history.forms.WorkStartForm
 import kotlinx.coroutines.flow.StateFlow
 import fi.tyomatka.BuildConfig
 import fi.tyomatka.ui.components.AdaptiveButtonRow
-import fi.tyomatka.ui.components.ConnectedChoiceGroup
 import fi.tyomatka.ui.components.AppButtonDefaults
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
@@ -120,7 +119,6 @@ fun DriveScreen(
         state.phase == DrivePhase.IDLE || finishedStale -> IdleContent(
             stopCount = stopCount,
             routeChoice = routeChoice,
-            onRouteChoice = viewModel::setRouteChoice,
             onStart = {
                 // Työpäivän kirjaus unohtunut? Kysytään aloituskilometrit
                 // ennen ajoa — tai ajetaan kirjaamatta.
@@ -218,7 +216,6 @@ private fun WorkStartBeforeDriveDialog(
 private fun IdleContent(
     stopCount: Int,
     routeChoice: RouteChoice,
-    onRouteChoice: (RouteChoice) -> Unit,
     onStart: () -> Unit,
     onStartSimulated: () -> Unit,
 ) {
@@ -228,8 +225,7 @@ private fun IdleContent(
                 pluralStringResource(R.plurals.stop_count, stopCount, stopCount),
                 style = MaterialTheme.typography.titleLarge,
             )
-            Spacer(Modifier.height(16.dp))
-            RouteChoiceRow(routeChoice, onRouteChoice)
+            ShortestRouteNotice(routeChoice)
             Spacer(Modifier.height(16.dp))
             Button(
                 onClick = Tap(onStart),
@@ -262,28 +258,26 @@ private fun IdleContent(
     }
 }
 
-/** Nopein on palvelimen arvion mukaan nopein reitti; lyhin voi kulkea pieniä teitä, ja valinta koskee koko seuraavaa ajoa. */
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Reitti valitaan Kartta-sivulla, jossa vaikutus näkyy kartalla. Ajo-sivu kertoo valinnasta vain, kun lyhin on voimassa
+ * (valintapäivän); nopein on oletus eikä tarvitse riviä.
+ */
 @Composable
-private fun RouteChoiceRow(choice: RouteChoice, onChoice: (RouteChoice) -> Unit) {
-    val options = listOf(RouteChoice.NORMAL to R.string.route_choice_normal, RouteChoice.SHORTEST to R.string.route_choice_shortest)
-    Text(stringResource(R.string.route_choice_title), style = MaterialTheme.typography.titleSmall)
-    Spacer(Modifier.height(4.dp))
-    // Ahtaassa tilassa vaihtoehdot asettuvat allekkain eivätkä kutistu tai katkea.
-    ConnectedChoiceGroup(
-        options = options.map { it.first },
-        selected = choice,
-        label = { option -> stringResource(options.first { it.first == option }.second) },
-        onSelect = onChoice,
+private fun ShortestRouteNotice(choice: RouteChoice) {
+    if (choice != RouteChoice.SHORTEST) return
+    Spacer(Modifier.height(12.dp))
+    Text(
+        stringResource(R.string.route_choice_shortest_active),
+        style = MaterialTheme.typography.titleSmall,
+        textAlign = TextAlign.Center,
     )
-    if (choice == RouteChoice.SHORTEST) {
-        Spacer(Modifier.height(4.dp))
-        Text(
-            stringResource(R.string.route_choice_shortest_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
+    Spacer(Modifier.height(4.dp))
+    Text(
+        stringResource(R.string.route_choice_shortest_hint),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+    )
 }
 
 @Composable

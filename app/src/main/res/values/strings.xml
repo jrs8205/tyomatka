@@ -56,7 +56,7 @@
     <string name="leg_from_previous">%1$s from previous stop</string>
 
     <string name="start_driving">Start driving</string>
-    <string name="route_choice_title">Route</string>
+    <string name="route_choice_shortest_active">Route: Shortest (chosen on the Map page)</string>
     <string name="route_choice_normal">Fastest</string>
     <string name="route_choice_shortest">Shortest</string>
     <string name="route_choice_shortest_hint">The shortest route may use small roads. The estimated time can be longer.</string>

@@ -56,7 +56,7 @@
     <string name="leg_from_previous">%1$s edelliseltä stopilta</string>
 
     <string name="start_driving">Aloita ajo</string>
-    <string name="route_choice_title">Reitti</string>
+    <string name="route_choice_shortest_active">Reitti: Lyhin (valittu Kartta-sivulla)</string>
     <string name="route_choice_normal">Nopein</string>
     <string name="route_choice_shortest">Lyhin</string>
     <string name="route_choice_shortest_hint">Lyhin reitti voi kulkea pieniä teitä. Arvioitu aika voi olla pidempi.</string>
