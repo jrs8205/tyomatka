@@ -74,6 +74,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.CancellationException
+import androidx.compose.material3.IconButtonDefaults
 
 /** LazyColumnin alkio, jossa valitun jakson nuolirivi ja pager ovat: Tänään-kortin ja jaksovalitsimen jälkeen. */
 private const val PERIOD_ITEM_INDEX = 2
@@ -177,6 +178,11 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
                             exportOpen = true
                         },
                         enabled = state.hasAny,
+                        // Pois käytöstä harmaa kiekko eikä himmennys: ero näkyy täytöstä, ja ikoni on luettava.
+                        colors = IconButtonDefaults.iconButtonColors(
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ),
                     ) {
                         Icon(Icons.Filled.Upload, contentDescription = stringResource(R.string.work_export))
                     }

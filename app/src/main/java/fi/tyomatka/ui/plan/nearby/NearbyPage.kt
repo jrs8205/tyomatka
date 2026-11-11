@@ -20,13 +20,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -58,6 +56,10 @@ import fi.tyomatka.ui.poi.PoiCard
 import fi.tyomatka.ui.poi.PoiCardText
 import fi.tyomatka.ui.poi.ReportSheet
 import java.time.LocalDateTime
+import fi.tyomatka.ui.components.AppTextField
+import fi.tyomatka.ui.components.AppFilterChip
+import fi.tyomatka.ui.components.AppButtonDefaults
+import androidx.compose.ui.text.font.FontWeight
 
 /** Lajisirujen järjestys. */
 private val CATEGORIES = listOf(PoiCategory.FUEL, PoiCategory.REST, PoiCategory.GAS, PoiCategory.CHARGING)
@@ -65,7 +67,7 @@ private val CATEGORIES = listOf(PoiCategory.FUEL, PoiCategory.REST, PoiCategory.
 /** Kohteet-sivun hakukenttä lisäysikkunan yläpalkissa; ei nosta näppäimistöä itsestään. */
 @Composable
 fun NearbySearchField(query: String, onQueryChange: (String) -> Unit, modifier: Modifier = Modifier) {
-    OutlinedTextField(
+    AppTextField(
         value = query,
         onValueChange = onQueryChange,
         label = { Text(stringResource(R.string.nearby_search)) },
@@ -101,7 +103,7 @@ fun NearbyPage(state: NearbyUiState, viewModel: NearbyViewModel, onAdd: (PoiItem
             state.notice?.let { notice ->
                 Snackbar(
                     modifier = Modifier.padding(16.dp),
-                    dismissAction = { TextButton(onClick = Tap(viewModel::dismissNotice)) { Text(stringResource(R.string.ok)) } },
+                    dismissAction = { TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(viewModel::dismissNotice)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) } },
                 ) { Text(notice) }
             }
         }
@@ -172,13 +174,13 @@ private fun NearbyContent(
         ) {
             CATEGORIES.forEach { category ->
                 val name = stringResource(categoryRes(category))
-                FilterChip(
+                AppFilterChip(
                     selected = category == choices.category,
                     onClick = Tap { viewModel.setCategory(category) },
                     label = { Text(state.categoryCounts[category]?.let { stringResource(R.string.nearby_chip_count, name, it) } ?: name) },
                 )
             }
-            FilterChip(
+            AppFilterChip(
                 selected = choices.heavyOnly,
                 onClick = Tap(viewModel::toggleHeavy),
                 label = { Text(stringResource(R.string.nearby_heavy)) },

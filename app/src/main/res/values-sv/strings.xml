@@ -882,4 +882,5 @@
     <string name="plan_stop_done">Besökt</string>
     <string name="plan_stop_skipped">Överhoppat</string>
     <string name="plan_no_stops">Inga stopp. Lägg till dagens stopp med knappen Lägg till stopp.</string>
+    <string name="field_error">Ogiltigt värde</string>
 </resources>

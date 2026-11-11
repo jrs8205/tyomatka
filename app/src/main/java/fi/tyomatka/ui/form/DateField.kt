@@ -10,7 +10,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,6 +29,7 @@ import fi.tyomatka.R
 import fi.tyomatka.ui.Tap
 import fi.tyomatka.ui.appLocale
 import fi.tyomatka.ui.history.shortDay
+import fi.tyomatka.ui.components.AppTextField
 
 private const val DAY_MILLIS = 86_400_000L
 
@@ -54,7 +54,7 @@ fun DateField(
             }
         }
     }
-    OutlinedTextField(
+    AppTextField(
         value = shortDay(epochDay),
         onValueChange = {},
         readOnly = true,

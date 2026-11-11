@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,6 +29,11 @@ import fi.tyomatka.data.repo.GapSuggestion
 import fi.tyomatka.data.repo.plateSuggestions
 import fi.tyomatka.ui.formatShortDate
 import fi.tyomatka.ui.formatWhole
+import fi.tyomatka.ui.components.AppTextField
+import androidx.compose.material3.SuggestionChipDefaults
+import fi.tyomatka.ui.components.ChipBorderWidth
+import fi.tyomatka.ui.components.ChipHeight
+import androidx.compose.foundation.layout.heightIn
 
 /** Lyhyt suomalainen päivämäärä dialogeihin ja laajennettuun korttiin. */
 internal fun shortDay(epochDay: Long): String = formatShortDate(epochDay)
@@ -43,7 +47,7 @@ internal fun OdometerField(
     modifier: Modifier = Modifier,
     isError: Boolean = false,
 ) {
-    OutlinedTextField(
+    AppTextField(
         value = value,
         onValueChange = { onChange(it.filter(Char::isDigit)) },
         label = { Text(label) },
@@ -63,7 +67,7 @@ internal fun DecimalField(
     modifier: Modifier = Modifier,
     isError: Boolean = false,
 ) {
-    OutlinedTextField(
+    AppTextField(
         value = value,
         onValueChange = { onChange(filterDecimalInput(it)) },
         label = { Text(label) },
@@ -89,7 +93,7 @@ internal fun PlateField(
     isError: Boolean = false,
 ) {
     Column(modifier) {
-        OutlinedTextField(
+        AppTextField(
             value = value,
             onValueChange = { raw ->
                 onChange(raw.uppercase().filter { it.isLetterOrDigit() || it == '-' })
@@ -107,7 +111,16 @@ internal fun PlateField(
         if (suggestions.isNotEmpty()) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 suggestions.forEach { plate ->
-                    SuggestionChip(onClick = Tap { onChange(plate) }, label = { Text(plate) })
+                    SuggestionChip(
+                        onClick = Tap { onChange(plate) },
+                        label = { Text(plate) },
+                        border = SuggestionChipDefaults.suggestionChipBorder(
+                            enabled = true,
+                            borderColor = MaterialTheme.colorScheme.outline,
+                            borderWidth = ChipBorderWidth,
+                        ),
+                        modifier = Modifier.heightIn(min = ChipHeight),
+                    )
                 }
             }
         }

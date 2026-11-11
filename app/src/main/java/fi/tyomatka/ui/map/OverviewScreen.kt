@@ -78,6 +78,7 @@ import fi.tyomatka.ui.formatKm
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import fi.tyomatka.ui.components.mapCardColors
+import fi.tyomatka.ui.components.AppButtonDefaults
 
 /** Etäisyys listan reunasta (px), jonka sisällä raahaus alkaa vierittää listaa. */
 private const val AUTOSCROLL_ZONE_PX = 160f
@@ -230,7 +231,7 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
             Snackbar(
                 modifier = Modifier.align(Alignment.BottomCenter).padding(start = 16.dp, end = 16.dp, bottom = 96.dp),
                 dismissAction = {
-                    TextButton(onClick = Tap(poiViewModel::dismissNotice)) { Text(stringResource(R.string.ok)) }
+                    TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(poiViewModel::dismissNotice)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) }
                 },
             ) { Text(notice) }
         }

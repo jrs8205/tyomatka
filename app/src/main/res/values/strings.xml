@@ -894,4 +894,5 @@
     <string name="plan_stop_done">Visited</string>
     <string name="plan_stop_skipped">Skipped</string>
     <string name="plan_no_stops">No stops. Add today\'s stops with the Add stop button.</string>
+    <string name="field_error">Invalid value</string>
 </resources>

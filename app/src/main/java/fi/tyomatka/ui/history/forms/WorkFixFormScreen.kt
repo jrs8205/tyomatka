@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
@@ -33,6 +32,7 @@ import fi.tyomatka.ui.history.SegmentFix
 import fi.tyomatka.ui.history.resolveSegmentFix
 import fi.tyomatka.ui.parseClockMinutes
 import java.time.ZoneId
+import fi.tyomatka.ui.components.AppTextField
 
 /**
  * Segmenttien korjaus: kellonajat ja mittarilukemat rinnakkain, rekkari chippeinä.
@@ -126,7 +126,7 @@ private fun TimeField(
     isError: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(
+    AppTextField(
         value = value,
         onValueChange = { onChange(it.filter { c -> c.isDigit() || c == '.' || c == ':' || c == ',' }) },
         label = { Text(label) },

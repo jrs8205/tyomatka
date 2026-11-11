@@ -58,6 +58,12 @@ object AppButtonDefaults {
         disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
+    /** Ilmoituksen (snackbar) toiminto käänteisellä pohjalla: `inversePrimary`, kuten Materialin oma toimintonappi. */
+    @Composable
+    fun snackbarActionColors(): ButtonColors = ButtonDefaults.textButtonColors(
+        contentColor = MaterialTheme.colorScheme.inversePrimary,
+    )
+
     /** Ääriviiva 1,5 dp: käytössä `outline` (≥ 4,5:1), poissa käytöstä `outlineVariant`. */
     @Composable
     fun border(enabled: Boolean): BorderStroke = BorderStroke(

@@ -62,6 +62,7 @@ import fi.tyomatka.ui.boundParts
 import fi.tyomatka.ui.formatClock
 import fi.tyomatka.ui.formatMinutesOfDay
 import fi.tyomatka.ui.history.unbreakableParts
+import fi.tyomatka.ui.components.ChipHeight
 
 /** Aikajanan pallo: jäljellä olevan stopin numero, käydyn ✓ tai ohitetun "–". */
 sealed interface StopNode {
@@ -366,6 +367,8 @@ private fun StopChip(text: String, description: String?, icon: ImageVector, set:
             leadingIconContentColor = content,
         ),
         border = if (set) null else BorderStroke(1.5.dp, scheme.outline),
-        modifier = if (description != null) Modifier.semantics { contentDescription = description } else Modifier,
+        modifier = Modifier
+            .heightIn(min = ChipHeight)
+            .then(if (description != null) Modifier.semantics { contentDescription = description } else Modifier),
     )
 }

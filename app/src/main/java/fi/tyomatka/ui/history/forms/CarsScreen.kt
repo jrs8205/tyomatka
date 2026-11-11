@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +55,9 @@ import fi.tyomatka.ui.form.FormSection
 import fi.tyomatka.ui.form.HelperLine
 import fi.tyomatka.ui.form.HelperTone
 import fi.tyomatka.ui.history.PlateField
+import fi.tyomatka.ui.components.AppFilterChip
+import fi.tyomatka.ui.components.AppButtonDefaults
+import androidx.compose.material3.Button
 
 /**
  * Autot: tunnetut autot polttoaineineen ([carListRows]); napautus avaa auton lomakkeen, ja
@@ -276,13 +278,13 @@ private fun CarFormScreen(
         }
         FormSection(stringResource(R.string.car_section_fuel)) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(
+                AppFilterChip(
                     selected = form.fuel == null,
                     onClick = Tap { form = form.withFuel(null) },
                     label = { Text(stringResource(R.string.car_auto)) },
                 )
                 FuelKind.mainFuels.forEach { kind ->
-                    FilterChip(
+                    AppFilterChip(
                         selected = form.fuel == kind,
                         onClick = Tap { form = form.withFuel(kind) },
                         label = { Text(fuelKindName(kind)) },
@@ -313,12 +315,12 @@ private fun CarFormScreen(
             title = { Text(stringResource(R.string.car_delete_confirm, row.car.plate)) },
             text = { Text(stringResource(R.string.car_delete_note)) },
             confirmButton = {
-                TextButton(
+                Button(colors = AppButtonDefaults.dangerColors(), 
                     onClick = Tap {
                         confirmDelete = false
                         onDelete()
                     }
-                ) { Text(stringResource(R.string.car_delete), color = MaterialTheme.colorScheme.error) }
+                ) { Text(stringResource(R.string.car_delete)) }
             },
             dismissButton = {
                 TextButton(onClick = Tap { confirmDelete = false }) { Text(stringResource(R.string.cancel)) }
@@ -338,7 +340,7 @@ internal fun OptionalFuelChips(selected: FuelKind?, label: String? = null, onSel
     )
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         FuelKind.mainFuels.forEach { kind ->
-            FilterChip(
+            AppFilterChip(
                 selected = selected == kind,
                 onClick = Tap { onSelect(kind.takeIf { it != selected }) },
                 label = { Text(fuelKindName(kind)) },

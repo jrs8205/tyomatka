@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +29,9 @@ import fi.tyomatka.data.db.RouteTemplateEntity
 import fi.tyomatka.data.db.TemplateListItem
 import fi.tyomatka.data.repo.OpenMode
 import fi.tyomatka.ui.Tap
+import fi.tyomatka.ui.components.AppTextField
+import fi.tyomatka.ui.components.AppButtonDefaults
+import androidx.compose.material3.Button
 
 /**
  * Tallennuskysely: nimi ja Tallenna; pohjasta avatulle
@@ -79,7 +81,7 @@ fun SaveTemplateDialog(
             FlowRow(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 TextButton(onClick = Tap(onDismiss)) { Text(stringResource(R.string.cancel)) }
                 val saveLabel = if (openedTemplate != null || duplicate != null) R.string.template_save_new else R.string.save
-                TextButton(enabled = normalized.isNotEmpty(), onClick = Tap { onSaveNew(normalized) }) {
+                TextButton(colors = AppButtonDefaults.textColors(), enabled = normalized.isNotEmpty(), onClick = Tap { onSaveNew(normalized) }) {
                     Text(stringResource(saveLabel))
                 }
                 openedTemplate?.let { opened ->
@@ -134,7 +136,7 @@ fun RenameTemplateDialog(
         title = { Text(stringResource(R.string.template_rename)) },
         text = { TemplateNameField(value = name, onChange = { name = it }) },
         confirmButton = {
-            TextButton(enabled = normalized.isNotEmpty() && normalized != template.name, onClick = Tap { onRename(normalized) }) {
+            TextButton(colors = AppButtonDefaults.textColors(), enabled = normalized.isNotEmpty() && normalized != template.name, onClick = Tap { onRename(normalized) }) {
                 Text(stringResource(R.string.ok))
             }
         },
@@ -156,8 +158,8 @@ fun DeleteTemplateDialog(
         title = { Text(stringResource(R.string.template_delete)) },
         text = { Text(stringResource(R.string.template_delete_confirm, template.name)) },
         confirmButton = {
-            TextButton(onClick = Tap(onDelete)) {
-                Text(stringResource(R.string.template_delete), color = MaterialTheme.colorScheme.error)
+            Button(colors = AppButtonDefaults.dangerColors(), onClick = Tap(onDelete)) {
+                Text(stringResource(R.string.template_delete))
             }
         },
         dismissButton = {
@@ -178,8 +180,8 @@ fun DiscardTemplateChangesDialog(
         title = { Text(stringResource(R.string.template_discard)) },
         text = { Text(stringResource(R.string.template_discard_confirm, templateName)) },
         confirmButton = {
-            TextButton(onClick = Tap(onDiscard)) {
-                Text(stringResource(R.string.template_discard), color = MaterialTheme.colorScheme.error)
+            Button(colors = AppButtonDefaults.dangerColors(), onClick = Tap(onDiscard)) {
+                Text(stringResource(R.string.template_discard))
             }
         },
         dismissButton = {
@@ -191,7 +193,7 @@ fun DiscardTemplateChangesDialog(
 /** Reitin nimen kenttä: yksi rivi, enintään [TEMPLATE_NAME_MAX_LENGTH] merkkiä, iso alkukirjain. */
 @Composable
 private fun TemplateNameField(value: String, onChange: (String) -> Unit) {
-    OutlinedTextField(
+    AppTextField(
         value = value,
         onValueChange = { onChange(it.take(TEMPLATE_NAME_MAX_LENGTH)) },
         label = { Text(stringResource(R.string.template_name_hint)) },

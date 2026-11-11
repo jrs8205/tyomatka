@@ -75,6 +75,7 @@ import fi.tyomatka.ui.formatWhole
 import fi.tyomatka.ui.history.forms.FillWord
 import fi.tyomatka.ui.history.forms.fillWord
 import fi.tyomatka.ui.history.forms.fuelKindName
+import fi.tyomatka.ui.components.ChipHeight
 
 private val GroupCorner = 24.dp
 
@@ -255,7 +256,9 @@ private fun DayChip(
     val tap = Tap(onClick)
     AssistChip(
         onClick = tap,
-        modifier = if (clickLabel != null) Modifier.semantics { onClick(label = clickLabel) { tap(); true } } else Modifier,
+        modifier = Modifier
+            .heightIn(min = ChipHeight)
+            .then(if (clickLabel != null) Modifier.semantics { onClick(label = clickLabel) { tap(); true } } else Modifier),
         label = { Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold) },
         leadingIcon = { Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(AssistChipDefaults.IconSize)) },
         colors = AssistChipDefaults.assistChipColors(labelColor = color, leadingIconContentColor = color),

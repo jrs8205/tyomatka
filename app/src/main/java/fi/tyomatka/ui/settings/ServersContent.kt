@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,6 +27,8 @@ import fi.tyomatka.data.repo.ServerKind
 import fi.tyomatka.ui.Tap
 import fi.tyomatka.ui.form.HelperLine
 import fi.tyomatka.ui.form.HelperTone
+import fi.tyomatka.ui.components.AppTextField
+import fi.tyomatka.ui.components.AppButtonDefaults
 
 /** Palvelinosoitteet: tyhjä kenttä on oletus. Sovellus lukee osoitteet käynnistyessään. */
 @Composable
@@ -47,7 +48,7 @@ internal fun ServersContent(
         Text(stringResource(R.string.settings_servers_hint), style = MaterialTheme.typography.bodyMedium)
         ServerKind.entries.forEach { kind ->
             val field = fields.getValue(kind)
-            OutlinedTextField(
+            AppTextField(
                 value = field.value,
                 onValueChange = {
                     field.value = it
@@ -73,6 +74,7 @@ internal fun ServersContent(
             ) { Text(stringResource(R.string.settings_servers_reset)) }
             Button(
                 enabled = invalid.isEmpty(),
+                colors = AppButtonDefaults.filledColors(),
                 onClick = Tap {
                     onSave(fields.mapValues { it.value.value })
                     saved = true

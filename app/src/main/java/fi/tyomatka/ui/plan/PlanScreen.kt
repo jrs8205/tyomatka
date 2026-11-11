@@ -40,7 +40,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
@@ -93,6 +92,8 @@ import fi.tyomatka.ui.plan.nearby.NearbySearchField
 import fi.tyomatka.ui.plan.nearby.NearbyViewModel
 import kotlinx.coroutines.launch
 import fi.tyomatka.ui.components.AppTimePicker
+import fi.tyomatka.ui.components.AppTextField
+import fi.tyomatka.ui.components.AppButtonDefaults
 
 /**
  * Suunnittelunäkymä: stoppien lisäys (osoitehaku / liitetty lista), aikarajat,
@@ -145,14 +146,14 @@ fun PlanScreen(
                 state.error?.let { error ->
                     Snackbar(
                         dismissAction = {
-                            TextButton(onClick = Tap(viewModel::dismissError)) { Text(stringResource(R.string.ok)) }
+                            TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(viewModel::dismissError)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) }
                         }
                     ) { Text(error) }
                 }
                 templateState.notice?.let { notice ->
                     Snackbar(
                         dismissAction = {
-                            TextButton(onClick = Tap(templateViewModel::dismissNotice)) { Text(stringResource(R.string.ok)) }
+                            TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(templateViewModel::dismissNotice)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) }
                         }
                     ) { Text(notice) }
                 }
@@ -284,13 +285,13 @@ fun PlanScreen(
             title = { Text(stringResource(R.string.clear_stops)) },
             text = { Text(pluralStringResource(R.plurals.clear_stops_confirm, state.stops.size, state.stops.size)) },
             confirmButton = {
-                TextButton(
+                Button(colors = AppButtonDefaults.dangerColors(), 
                     onClick = Tap {
                         viewModel.clearAllStops()
                         confirmClearStops = false
                     }
                 ) {
-                    Text(stringResource(R.string.clear_stops), color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.clear_stops))
                 }
             },
             dismissButton = {
@@ -446,7 +447,7 @@ private fun AddStopOverlay(
                         )
                     }
                     if (pagerState.currentPage == PAGE_ADDRESS) {
-                        OutlinedTextField(
+                        AppTextField(
                             value = state.searchText,
                             onValueChange = viewModel::onSearchChanged,
                             label = { Text(stringResource(R.string.search_address)) },
@@ -494,7 +495,7 @@ private fun AddStopOverlay(
                     Snackbar(
                         modifier = Modifier.padding(16.dp),
                         dismissAction = {
-                            TextButton(onClick = Tap(viewModel::dismissError)) { Text(stringResource(R.string.ok)) }
+                            TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(viewModel::dismissError)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) }
                         },
                     ) { Text(error) }
                 }
@@ -559,7 +560,7 @@ private fun PasteListPage(
     onDismiss: () -> Unit,
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-        OutlinedTextField(
+        AppTextField(
             value = pastedText,
             onValueChange = onPastedText,
             label = { Text(stringResource(R.string.paste_list_hint)) },
@@ -618,6 +619,7 @@ private fun PasteListPage(
                 viewModel.addPastedList(pastedText) { onDismiss() }
             },
             enabled = pastedText.isNotBlank() && !state.geocodingList,
+            colors = AppButtonDefaults.filledColors(),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(R.string.geocode_list))
@@ -682,7 +684,7 @@ private fun EditStopOverlay(
                     )
                 }
                 Column(Modifier.padding(horizontal = 16.dp)) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = label,
                         onValueChange = { label = it },
                         label = { Text(stringResource(R.string.stop_name)) },
@@ -691,7 +693,7 @@ private fun EditStopOverlay(
                         singleLine = true,
                     )
                     Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
+                    AppTextField(
                         value = addressText,
                         onValueChange = {
                             addressText = it
@@ -830,7 +832,7 @@ private fun ServiceTimeDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.set_service_time)) },
         text = {
-            OutlinedTextField(
+            AppTextField(
                 value = text,
                 onValueChange = { text = it.filter(Char::isDigit) },
                 singleLine = true,
@@ -838,7 +840,7 @@ private fun ServiceTimeDialog(
             )
         },
         confirmButton = {
-            TextButton(enabled = text.isBlank() || text.toIntOrNull() != null, onClick = Tap { onSet(text.toIntOrNull()) }) { Text(stringResource(R.string.ok)) }
+            TextButton(colors = AppButtonDefaults.textColors(), enabled = text.isBlank() || text.toIntOrNull() != null, onClick = Tap { onSet(text.toIntOrNull()) }) { Text(stringResource(R.string.ok)) }
         },
         dismissButton = {
             TextButton(onClick = Tap(onDismiss)) { Text(stringResource(R.string.cancel)) }

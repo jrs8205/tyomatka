@@ -14,7 +14,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -62,6 +61,9 @@ import fi.tyomatka.ui.unitSymbol
 import java.io.File
 import java.time.LocalDate
 import java.time.ZoneId
+import fi.tyomatka.ui.components.AppFilterChip
+import fi.tyomatka.ui.components.AppButtonDefaults
+import androidx.compose.material3.Button
 
 /** Tankkauksen kirjaus tai muokkaus koko näytön lomakkeena; logiikka on [FuelForm]issa. */
 @OptIn(ExperimentalLayoutApi::class)
@@ -142,7 +144,7 @@ fun FuelFormScreen(
         onPrimary = { form.entry()?.let { entry -> onSave(entry, photos) } },
         topAction = if (existing != null) {
             {
-                TextButton(onClick = Tap { confirmDelete = true }, enabled = !busy) {
+                TextButton(onClick = Tap { confirmDelete = true }, enabled = !busy, colors = AppButtonDefaults.textColors()) {
                     Text(stringResource(R.string.fuel_delete), color = if (busy) Color.Unspecified else MaterialTheme.colorScheme.error)
                 }
             }
@@ -158,7 +160,7 @@ fun FuelFormScreen(
             // Viisi lajia ei mahdu yhdelle napparivillä: chipit rivittyvät.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FuelKind.entries.forEach { kind ->
-                    FilterChip(
+                    AppFilterChip(
                         selected = form.kind == kind,
                         onClick = Tap { edited = form.withKind(kind) },
                         label = { Text(fuelKindName(kind)) },
@@ -337,13 +339,13 @@ fun FuelFormScreen(
                 )
             },
             confirmButton = {
-                TextButton(
+                Button(colors = AppButtonDefaults.dangerColors(), 
                     onClick = Tap {
                         confirmDelete = false
                         photoActions.discard(photos.discardOnClose)
                         onDelete()
                     }
-                ) { Text(stringResource(R.string.fuel_delete), color = MaterialTheme.colorScheme.error) }
+                ) { Text(stringResource(R.string.fuel_delete)) }
             },
             dismissButton = {
                 TextButton(onClick = Tap { confirmDelete = false }) { Text(stringResource(R.string.cancel)) }

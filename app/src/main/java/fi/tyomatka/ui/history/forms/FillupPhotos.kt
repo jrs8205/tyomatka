@@ -83,6 +83,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import fi.tyomatka.ui.components.AppButtonDefaults
+import androidx.compose.material3.Button
 
 /** Kuvien toiminnot lomakkeelle; toteutus on ViewModelissa (kuvan pakkaus ja tiedostot). */
 interface PhotoActions {
@@ -365,7 +367,7 @@ private fun PhotoDeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Uni
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.photo_delete_confirm)) },
         confirmButton = {
-            TextButton(onClick = Tap(onConfirm)) { Text(stringResource(R.string.photo_delete_button), color = MaterialTheme.colorScheme.error) }
+            Button(colors = AppButtonDefaults.dangerColors(), onClick = Tap(onConfirm)) { Text(stringResource(R.string.photo_delete_button)) }
         },
         dismissButton = {
             TextButton(onClick = Tap(onDismiss)) { Text(stringResource(R.string.cancel)) }

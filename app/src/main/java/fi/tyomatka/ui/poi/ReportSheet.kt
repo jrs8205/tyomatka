@@ -16,16 +16,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -55,6 +51,9 @@ import fi.tyomatka.core.poi.ReportField
 import fi.tyomatka.ui.Tap
 import fi.tyomatka.ui.localDecimal
 import java.time.LocalDate
+import fi.tyomatka.ui.components.AppTextField
+import fi.tyomatka.ui.components.AppFilterChip
+import fi.tyomatka.ui.components.AppButtonDefaults
 
 /**
  * Ilmoita muutos (luonnos C2): valmiit valinnat, ei vapaata tekstiä. Kyllä/ei-valinta lähtee heti ([onReport]);
@@ -292,15 +291,11 @@ private fun Group(title: String, hint: String? = null, content: @Composable () -
 /** Valinta: valittu erottuu värin lisäksi merkistä ([check]). */
 @Composable
 private fun Choice(text: String, selected: Boolean, check: Boolean = true, onClick: () -> Unit) {
-    FilterChip(
+    AppFilterChip(
         selected = selected,
         onClick = Tap(onClick),
         label = { Text(text) },
-        leadingIcon = if (selected && check) {
-            { Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
-        } else {
-            null
-        },
+        showCheck = check,
     )
 }
 
@@ -339,13 +334,13 @@ private fun Status(report: FieldReport?, strings: (Int, Array<out Any>) -> Strin
 @Composable
 private fun SendButton(enabled: Boolean, onClick: () -> Unit) {
     Spacer(Modifier.height(4.dp))
-    Button(onClick = Tap(onClick), enabled = enabled) { Text(stringResource(R.string.poi_report_send)) }
+    Button(onClick = Tap(onClick), enabled = enabled, colors = AppButtonDefaults.filledColors()) { Text(stringResource(R.string.poi_report_send)) }
 }
 
 @Composable
 private fun NumberField(value: String, label: String, invalid: Boolean, onChange: (String) -> Unit) {
     Spacer(Modifier.height(4.dp))
-    OutlinedTextField(
+    AppTextField(
         value = value,
         onValueChange = onChange,
         label = { Text(label) },
@@ -373,7 +368,7 @@ private fun DayRow(label: String, hours: DayHours, onChange: (DayHours) -> Unit)
     }
     if (hours is DayHours.Range) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(
+            AppTextField(
                 value = hours.open,
                 onValueChange = { onChange(hours.copy(open = it)) },
                 label = { Text(stringResource(R.string.poi_report_opens)) },
@@ -382,7 +377,7 @@ private fun DayRow(label: String, hours: DayHours, onChange: (DayHours) -> Unit)
                 modifier = Modifier.weight(1f),
             )
             Spacer(Modifier.width(8.dp))
-            OutlinedTextField(
+            AppTextField(
                 value = hours.close,
                 onValueChange = { onChange(hours.copy(close = it)) },
                 label = { Text(stringResource(R.string.poi_report_closes)) },

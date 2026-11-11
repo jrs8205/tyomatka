@@ -61,6 +61,7 @@ import fi.tyomatka.ui.formatMonth
 import fi.tyomatka.ui.formatDayRange
 import fi.tyomatka.ui.formatDecimal
 import java.time.LocalDate
+import fi.tyomatka.ui.components.AppButtonDefaults
 
 private const val DAY_MILLIS = 86_400_000L
 private const val NO_DAY = Long.MIN_VALUE
@@ -145,7 +146,7 @@ fun ExportSheet(
             Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = Tap(onDismiss)) { Text(stringResource(R.string.cancel)) }
                 Spacer(Modifier.width(8.dp))
-                Button(onClick = Tap(onExport), enabled = form.canExport(summary)) { Text(stringResource(R.string.export_button)) }
+                Button(onClick = Tap(onExport), enabled = form.canExport(summary), colors = AppButtonDefaults.filledColors()) { Text(stringResource(R.string.export_button)) }
             }
         }
     }
@@ -283,6 +284,7 @@ private fun RangePickerDialog(
                                 }
                             },
                             enabled = start != null && end != null,
+                            colors = AppButtonDefaults.textColors(),
                         ) { Text(stringResource(R.string.export_range_save)) }
                     }
                     DateRangePicker(

@@ -39,6 +39,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import fi.tyomatka.R
+import fi.tyomatka.ui.components.AppButtonDefaults
+import androidx.compose.material3.Button
 import fi.tyomatka.data.repo.AppSettings
 import fi.tyomatka.data.repo.ThemeChoice
 import fi.tyomatka.ui.Tap
@@ -245,7 +247,8 @@ internal fun ForgetReportsRow(state: ForgetState, onConfirm: () -> Unit) {
             title = { Text(stringResource(R.string.settings_forget_title)) },
             text = { Text(stringResource(R.string.settings_forget_text)) },
             confirmButton = {
-                TextButton(
+                Button(
+                    colors = AppButtonDefaults.dangerColors(),
                     onClick = Tap {
                         confirming = false
                         onConfirm()

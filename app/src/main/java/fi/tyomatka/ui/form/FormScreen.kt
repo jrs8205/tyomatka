@@ -17,8 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +33,10 @@ import androidx.compose.ui.unit.dp
 import fi.tyomatka.R
 import fi.tyomatka.ui.Tap
 import fi.tyomatka.ui.FullScreenDialog
+import fi.tyomatka.ui.components.AppButtonDefaults
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.semantics.heading
 
 /**
  * Koko näytön lomake: yläpalkki (sulje, otsikko, valinnainen toiminto), rullaava
@@ -88,8 +90,9 @@ fun FormScreen(
                         Button(
                             onClick = Tap(onPrimary),
                             enabled = primaryEnabled,
-                            modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp),
-                        ) { Text(primaryLabel, style = MaterialTheme.typography.titleMedium) }
+                            colors = AppButtonDefaults.filledColors(),
+                            modifier = Modifier.fillMaxWidth().padding(16.dp).height(56.dp),
+                        ) { Text(primaryLabel, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
                     }
                 }
             }
@@ -97,17 +100,20 @@ fun FormScreen(
     }
 }
 
+/** Lomakkeen lohko: lihavoitu otsikko lohkon yläpuolella ja sisältö `surfaceContainerLow`-pohjalla, kulmat 24 dp. */
 @Composable
 fun FormSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column {
         Text(
             title,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 8.dp),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp).semantics { heading() },
         )
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            shape = RoundedCornerShape(24.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp), content = content)

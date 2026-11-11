@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +18,7 @@ import fi.tyomatka.R
 import fi.tyomatka.ui.Tap
 import fi.tyomatka.data.repo.normalizePlate
 import fi.tyomatka.ui.history.PlateField
+import fi.tyomatka.ui.components.AppFilterChip
 
 /**
  * Tunnetut rekkarit chippeinä; "Muu" avaa tekstikentän. Ilman tunnettuja rekkareita
@@ -42,7 +42,7 @@ fun PlateChips(
         if (knownPlates.isNotEmpty()) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 knownPlates.forEach { plate ->
-                    FilterChip(
+                    AppFilterChip(
                         selected = !showField && plate == selectedKnown,
                         onClick = Tap {
                             manualShowField = false
@@ -51,7 +51,7 @@ fun PlateChips(
                         label = { Text(plate) },
                     )
                 }
-                FilterChip(
+                AppFilterChip(
                     selected = showField,
                     onClick = Tap {
                         manualShowField = true

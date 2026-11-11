@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,6 +55,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.format.TextStyle
 import fi.tyomatka.ui.components.AppTimePicker
+import fi.tyomatka.ui.components.AppFilterChip
 
 /** Asetussivua ei välttämättä ole kaikissa puhelimissa, eikä se saa kaataa sovellusta. */
 internal fun Context.openSafely(intent: Intent) {
@@ -219,7 +219,7 @@ private fun DayChips(days: Set<DayOfWeek>, onChange: (Set<DayOfWeek>) -> Unit) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         DayOfWeek.entries.forEach { day ->
             val label = day.getDisplayName(TextStyle.SHORT, appLocale()).replaceFirstChar { it.uppercase(appLocale()) }
-            FilterChip(
+            AppFilterChip(
                 selected = day in days,
                 onClick = Tap { onChange(if (day in days) days - day else days + day) },
                 label = { Text(label) },
