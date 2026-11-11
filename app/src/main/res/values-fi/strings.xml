@@ -45,7 +45,7 @@
 
     <string name="map_recenter">Keskitä omaan sijaintiin</string>
     <string name="map_following">Seuranta päällä: kartta kääntyy ajosuuntaan</string>
-    <string name="map_speed_kmh">%1$d km/h</string>
+    <string name="map_speed_kmh">%1$d km/h</string>
     <string name="route_total">%1$s · %2$s</string>
     <string name="route_fetch_failed">Reitin haku epäonnistui — numerointi on ajan tasalla, reittiviiva puuttuu.</string>
     <string name="retry">Yritä uudelleen</string>
@@ -119,7 +119,7 @@
     <string name="export_counting">Lasketaan…</string>
     <!-- %1$s: määrät luettelona ("12 työpäivää, 3 tankkausta ja 5 kuvaa"), %2$s: arvioitu koko ("1,2 Mt"). -->
     <string name="export_summary_contents">Mukaan tulee %1$s (noin %2$s).</string>
-    <string name="export_size_mb">%1$s Mt</string>
+    <string name="export_size_mb">%1$s Mt</string>
     <string name="export_and">ja</string>
     <string name="export_note_period">Tiedosto sisältää vain tämän jakson tiedot. Koko varmuuskopio valitaan erikseen.</string>
     <string name="export_note_full">Tiedosto sisältää kaikki tiedot ja kuvat. Sen voi tuoda takaisin sovellukseen.</string>
@@ -182,14 +182,14 @@
     <string name="work_history_empty_charge">Ei vielä työmatkoja tai latauksia. Aloita työt tai lisää lataus Tänään-kortista.</string>
     <string name="work_history_empty_gas">Ei vielä työmatkoja tai täyttöjä. Aloita työt tai lisää täyttö Tänään-kortista.</string>
     <string name="work_prefill_note">Esitäytetty auton viimeisimmästä lukemasta — muuta tarvittaessa.</string>
-    <string name="work_start_diff_note">%1$s km yli edellisen lukeman (%2$s). Jos ajoit työajoa jo ennen tätä kirjausta, käytä edellistä lukemaa — kilometrit lasketaan lukemista, eivät kellonajoista.</string>
+    <string name="work_start_diff_note">%1$s km yli edellisen lukeman (%2$s). Jos ajoit työajoa jo ennen tätä kirjausta, käytä edellistä lukemaa — kilometrit lasketaan lukemista, eivät kellonajoista.</string>
     <string name="work_use_prev_reading">Käytä edellistä lukemaa</string>
     <string name="work_retro_entry">takautuva kirjaus</string>
     <string name="work_gap_title">Kirjaamaton väli havaittu</string>
     <string name="work_gap_prev_end">Edellinen lukema: %1$s (%2$s lopetus)</string>
     <string name="work_gap_prev_start">Edellinen lukema: %1$s (%2$s aloitus)</string>
     <string name="work_gap_new">Uusi lukema: %1$s</string>
-    <string name="work_gap_diff">Erotus: %1$s km</string>
+    <string name="work_gap_diff">Erotus: %1$s km</string>
     <string name="work_gap_days_note">Kirjataan puuttuville työpäiville — pienennä määrää, jos välissä oli yksityisajoa:</string>
     <string name="work_gap_day_km">%1$s — km</string>
     <string name="work_gap_record">Kirjaa</string>
@@ -212,15 +212,15 @@
     <string name="fuel_edit">Muokkaa tankkausta</string>
     <string name="fuel_plate">Rekisterinumero</string>
     <string name="fuel_odometer">Mittarilukema (km)</string>
-    <string name="fuel_prev_fillup">Edellinen tankkaus: %1$s km</string>
-    <string name="fuel_km_too_small">Lukema ei voi olla pienempi kuin saman auton edellinen tankkaus (%1$s km)</string>
-    <string name="fuel_km_too_large">Lukema ei voi olla suurempi kuin saman auton seuraava tankkaus (%1$s km)</string>
-    <string name="fuel_prev_charge">Edellinen lataus: %1$s km</string>
-    <string name="fuel_km_too_small_charge">Lukema ei voi olla pienempi kuin saman auton edellinen lataus (%1$s km)</string>
-    <string name="fuel_km_too_large_charge">Lukema ei voi olla suurempi kuin saman auton seuraava lataus (%1$s km)</string>
-    <string name="fuel_prev_gas">Edellinen täyttö: %1$s km</string>
-    <string name="fuel_km_too_small_gas">Lukema ei voi olla pienempi kuin saman auton edellinen täyttö (%1$s km)</string>
-    <string name="fuel_km_too_large_gas">Lukema ei voi olla suurempi kuin saman auton seuraava täyttö (%1$s km)</string>
+    <string name="fuel_prev_fillup">Edellinen tankkaus: %1$s km</string>
+    <string name="fuel_km_too_small">Lukema ei voi olla pienempi kuin saman auton edellinen tankkaus (%1$s km)</string>
+    <string name="fuel_km_too_large">Lukema ei voi olla suurempi kuin saman auton seuraava tankkaus (%1$s km)</string>
+    <string name="fuel_prev_charge">Edellinen lataus: %1$s km</string>
+    <string name="fuel_km_too_small_charge">Lukema ei voi olla pienempi kuin saman auton edellinen lataus (%1$s km)</string>
+    <string name="fuel_km_too_large_charge">Lukema ei voi olla suurempi kuin saman auton seuraava lataus (%1$s km)</string>
+    <string name="fuel_prev_gas">Edellinen täyttö: %1$s km</string>
+    <string name="fuel_km_too_small_gas">Lukema ei voi olla pienempi kuin saman auton edellinen täyttö (%1$s km)</string>
+    <string name="fuel_km_too_large_gas">Lukema ei voi olla suurempi kuin saman auton seuraava täyttö (%1$s km)</string>
     <string name="fuel_liters">Litrat</string>
     <string name="fuel_delete">Poista</string>
     <string name="fuel_since_prev">%1$s edellisestä täydestä</string>
@@ -388,7 +388,7 @@
     <string name="work_section_new_car">Uusi auto</string>
     <string name="work_end_summary">Aloitettu %1$s · kesto tähän asti %2$s</string>
     <string name="work_end_summary_car">Auto %1$s</string>
-    <string name="work_end_summary_start_km">Aloituslukema %1$s km</string>
+    <string name="work_end_summary_start_km">Aloituslukema %1$s km</string>
     <string name="work_fix_section_segment">Segmentti %1$d · %2$s</string>
     <string name="work_fix_section_single">Työpäivä</string>
     <string name="today_title">Tänään</string>
@@ -476,8 +476,8 @@
     <string name="map_attribution_osm">OpenStreetMap-lisenssi</string>
     <string name="map_fix_map">Korjaa karttaa</string>
     <string name="map_attribution_open">Tietolähteet</string>
-    <string name="speed_limit_sign">Nopeusrajoitus %1$d km/h</string>
-    <string name="speed_current">Nopeus %1$d km/h</string>
+    <string name="speed_limit_sign">Nopeusrajoitus %1$d km/h</string>
+    <string name="speed_current">Nopeus %1$d km/h</string>
     <string name="voice_missing">Puhelimesta puuttuu puheääni kielelle %1$s. Opastus jatkuu ilman ääntä.</string>
     <string name="voice_install">Asenna</string>
     <string name="volume_low">Median äänenvoimakkuus on %1$d/%2$d, puheohjeet voivat jäädä hiljaisiksi</string>
@@ -589,10 +589,10 @@
     <string name="poi_chip_shop">Kauppa</string>
     <string name="poi_chip_24h">24 h</string>
     <string name="poi_chip_socket">%1$s ×%2$s</string>
-    <string name="poi_chip_power">%1$s kW</string>
+    <string name="poi_chip_power">%1$s kW</string>
     <string name="poi_chip_capacity">%1$s paikkaa</string>
-    <string name="poi_chip_max_height">Korkeusraja %1$s m</string>
-    <string name="poi_chip_max_weight">Painoraja %1$s t</string>
+    <string name="poi_chip_max_height">Korkeusraja %1$s m</string>
+    <string name="poi_chip_max_weight">Painoraja %1$s t</string>
     <string name="poi_chip_overnight">Yöpyminen sallittu</string>
     <string name="poi_chip_overnight_no">Ei yöpymistä</string>
     <string name="poi_chip_unknown_height">Korkeusraja: ei tietoa</string>
@@ -617,8 +617,8 @@
     <string name="poi_fuel_cng">CNG</string>
     <string name="poi_fuel_lng">LNG</string>
     <string name="poi_fuel_product">%1$s · %2$s</string>
-    <string name="poi_connectors_max">%1$s × %2$s enintään %3$s kW</string>
-    <string name="poi_connectors">%1$s × %2$s %3$s kW</string>
+    <string name="poi_connectors_max">%1$s × %2$s enintään %3$s kW</string>
+    <string name="poi_connectors">%1$s × %2$s %3$s kW</string>
     <string name="poi_section_station">Asema</string>
     <string name="poi_section_fuels">Polttoaineet</string>
     <string name="poi_section_heavy">Raskas kalusto</string>
@@ -648,7 +648,7 @@
     <string name="poi_charging_none">Ei latausta</string>
     <string name="poi_charging_operator">Operaattori %1$s</string>
     <string name="poi_hgv_lane">Oma rekkapiste</string>
-    <string name="poi_truck_length">Yhdistelmä %1$s m</string>
+    <string name="poi_truck_length">Yhdistelmä %1$s m</string>
     <string name="poi_truck_parking">Rekkapysäköinti</string>
     <string name="poi_sauna">Sauna</string>
     <string name="poi_rest_room">Taukotila</string>

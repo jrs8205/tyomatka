@@ -45,7 +45,7 @@
 
     <string name="map_recenter">Centre on my location</string>
     <string name="map_following">Follow mode on: the map turns with your direction of travel</string>
-    <string name="map_speed_kmh">%1$d km/h</string>
+    <string name="map_speed_kmh">%1$d km/h</string>
     <string name="route_total">%1$s · %2$s</string>
     <string name="route_fetch_failed">Couldn\'t get the route. Stop numbers are up to date, but the route line is missing.</string>
     <string name="retry">Try again</string>
@@ -119,7 +119,7 @@
     <string name="export_counting">Counting…</string>
     <!-- %1$s: the amounts as a list ("12 working days, 3 fill-ups and 5 photos"), %2$s: estimated size ("1.2 MB"). -->
     <string name="export_summary_contents">Includes %1$s (about %2$s).</string>
-    <string name="export_size_mb">%1$s MB</string>
+    <string name="export_size_mb">%1$s MB</string>
     <string name="export_and">and</string>
     <string name="export_note_period">The file only contains data for this period. A full backup is chosen separately.</string>
     <string name="export_note_full">The file contains all data and photos. You can import it back into the app.</string>
@@ -182,14 +182,14 @@
     <string name="work_history_empty_charge">No work trips or charges yet. Start work or add a charge from the Today card.</string>
     <string name="work_history_empty_gas">No work trips or refills yet. Start work or add a refill from the Today card.</string>
     <string name="work_prefill_note">Filled in from the car\'s latest reading. Change it if needed.</string>
-    <string name="work_start_diff_note">%1$s km more than the previous reading (%2$s). If you were already driving for work before this entry, use the previous reading. Kilometres are calculated from readings, not clock times.</string>
+    <string name="work_start_diff_note">%1$s km more than the previous reading (%2$s). If you were already driving for work before this entry, use the previous reading. Kilometres are calculated from readings, not clock times.</string>
     <string name="work_use_prev_reading">Use previous reading</string>
     <string name="work_retro_entry">backdated entry</string>
     <string name="work_gap_title">Unrecorded gap found</string>
     <string name="work_gap_prev_end">Previous reading: %1$s (finish on %2$s)</string>
     <string name="work_gap_prev_start">Previous reading: %1$s (start on %2$s)</string>
     <string name="work_gap_new">New reading: %1$s</string>
-    <string name="work_gap_diff">Difference: %1$s km</string>
+    <string name="work_gap_diff">Difference: %1$s km</string>
     <string name="work_gap_days_note">To be recorded for the missing working days. Reduce the amount if you did any private driving in between:</string>
     <string name="work_gap_day_km">%1$s — km</string>
     <string name="work_gap_record">Record</string>
@@ -212,15 +212,15 @@
     <string name="fuel_edit">Edit fill-up</string>
     <string name="fuel_plate">Registration number</string>
     <string name="fuel_odometer">Odometer (km)</string>
-    <string name="fuel_prev_fillup">Previous fill-up: %1$s km</string>
-    <string name="fuel_km_too_small">Reading can\'t be lower than this car\'s previous fill-up (%1$s km)</string>
-    <string name="fuel_km_too_large">Reading can\'t be higher than this car\'s next fill-up (%1$s km)</string>
-    <string name="fuel_prev_charge">Previous charge: %1$s km</string>
-    <string name="fuel_km_too_small_charge">Reading can\'t be lower than this car\'s previous charge (%1$s km)</string>
-    <string name="fuel_km_too_large_charge">Reading can\'t be higher than this car\'s next charge (%1$s km)</string>
-    <string name="fuel_prev_gas">Previous refill: %1$s km</string>
-    <string name="fuel_km_too_small_gas">Reading can\'t be lower than this car\'s previous refill (%1$s km)</string>
-    <string name="fuel_km_too_large_gas">Reading can\'t be higher than this car\'s next refill (%1$s km)</string>
+    <string name="fuel_prev_fillup">Previous fill-up: %1$s km</string>
+    <string name="fuel_km_too_small">Reading can\'t be lower than this car\'s previous fill-up (%1$s km)</string>
+    <string name="fuel_km_too_large">Reading can\'t be higher than this car\'s next fill-up (%1$s km)</string>
+    <string name="fuel_prev_charge">Previous charge: %1$s km</string>
+    <string name="fuel_km_too_small_charge">Reading can\'t be lower than this car\'s previous charge (%1$s km)</string>
+    <string name="fuel_km_too_large_charge">Reading can\'t be higher than this car\'s next charge (%1$s km)</string>
+    <string name="fuel_prev_gas">Previous refill: %1$s km</string>
+    <string name="fuel_km_too_small_gas">Reading can\'t be lower than this car\'s previous refill (%1$s km)</string>
+    <string name="fuel_km_too_large_gas">Reading can\'t be higher than this car\'s next refill (%1$s km)</string>
     <string name="fuel_liters">Litres</string>
     <string name="fuel_delete">Delete</string>
     <string name="fuel_since_prev">%1$s since last full fill</string>
@@ -388,7 +388,7 @@
     <string name="work_section_new_car">New car</string>
     <string name="work_end_summary">Started %1$s · %2$s so far</string>
     <string name="work_end_summary_car">Car %1$s</string>
-    <string name="work_end_summary_start_km">Start reading %1$s km</string>
+    <string name="work_end_summary_start_km">Start reading %1$s km</string>
     <string name="work_fix_section_segment">Segment %1$d · %2$s</string>
     <string name="work_fix_section_single">Working day</string>
     <string name="today_title">Today</string>
@@ -476,8 +476,8 @@
     <string name="map_attribution_osm">OpenStreetMap licence</string>
     <string name="map_fix_map">Improve the map</string>
     <string name="map_attribution_open">Data sources</string>
-    <string name="speed_limit_sign">Speed limit %1$d km/h</string>
-    <string name="speed_current">Speed %1$d km/h</string>
+    <string name="speed_limit_sign">Speed limit %1$d km/h</string>
+    <string name="speed_current">Speed %1$d km/h</string>
     <string name="voice_missing">Your phone has no voice for %1$s. Guidance will continue without sound.</string>
     <string name="voice_install">Install</string>
     <string name="volume_low">Media volume is %1$d/%2$d, so voice guidance may be too quiet</string>
@@ -589,10 +589,10 @@
     <string name="poi_chip_shop">Shop</string>
     <string name="poi_chip_24h">24 h</string>
     <string name="poi_chip_socket">%1$s ×%2$s</string>
-    <string name="poi_chip_power">%1$s kW</string>
+    <string name="poi_chip_power">%1$s kW</string>
     <string name="poi_chip_capacity">Spaces: %1$s</string>
-    <string name="poi_chip_max_height">Max height %1$s m</string>
-    <string name="poi_chip_max_weight">Max weight %1$s t</string>
+    <string name="poi_chip_max_height">Max height %1$s m</string>
+    <string name="poi_chip_max_weight">Max weight %1$s t</string>
     <string name="poi_chip_overnight">Overnight stays allowed</string>
     <string name="poi_chip_overnight_no">No overnight stays</string>
     <string name="poi_chip_unknown_height">Max height: unknown</string>
@@ -617,8 +617,8 @@
     <string name="poi_fuel_cng">CNG</string>
     <string name="poi_fuel_lng">LNG</string>
     <string name="poi_fuel_product">%1$s · %2$s</string>
-    <string name="poi_connectors_max">%1$s × %2$s up to %3$s kW</string>
-    <string name="poi_connectors">%1$s × %2$s %3$s kW</string>
+    <string name="poi_connectors_max">%1$s × %2$s up to %3$s kW</string>
+    <string name="poi_connectors">%1$s × %2$s %3$s kW</string>
     <string name="poi_section_station">Station</string>
     <string name="poi_section_fuels">Fuels</string>
     <string name="poi_section_heavy">Heavy vehicles</string>
@@ -648,7 +648,7 @@
     <string name="poi_charging_none">No charging</string>
     <string name="poi_charging_operator">Operator %1$s</string>
     <string name="poi_hgv_lane">Separate truck pump</string>
-    <string name="poi_truck_length">Trucks up to %1$s m</string>
+    <string name="poi_truck_length">Trucks up to %1$s m</string>
     <string name="poi_truck_parking">Truck parking</string>
     <string name="poi_sauna">Sauna</string>
     <string name="poi_rest_room">Drivers\' lounge</string>

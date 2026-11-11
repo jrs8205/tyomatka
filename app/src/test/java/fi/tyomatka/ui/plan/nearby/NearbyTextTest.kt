@@ -63,14 +63,15 @@ class NearbyTextTest {
     @Test
     fun `latauspisteen liitännät kortin muodossa tai teho ja pistokkeet`() {
         val afir = station(mapOf("afir:connectors" to "CCS2:4:150;Type 2:2:22"), PoiCategory.CHARGING)
-        assertEquals("4 × CCS2 enintään 150 kW · 2 × Type 2 22 kW", NearbyText.details(afir, StationInfo.of(afir, emptyList()), strings))
+        // Luvun ja yksikön välissä sitova väli (U+00A0).
+        assertEquals("4 × CCS2 enintään 150 kW · 2 × Type 2 22 kW", NearbyText.details(afir, StationInfo.of(afir, emptyList()), strings))
         // Muut sirut (24 h) eivät tule latauspisteen riville.
         val osm = station(mapOf("socket:type2" to "2", "charging_station:output" to "22 kW", "opening_hours" to "24/7"), PoiCategory.CHARGING)
         // Suurin teho ensin, sitten pistokkeet.
-        assertEquals("22 kW · Type 2 ×2", NearbyText.details(osm, StationInfo.of(osm, emptyList()), strings))
+        assertEquals("22 kW · Type 2 ×2", NearbyText.details(osm, StationInfo.of(osm, emptyList()), strings))
         // Kelvoton AFIR-teksti: sirut.
         val broken = station(mapOf("afir:connectors" to "CCS2:x:150", "socket:type2" to "2", "charging_station:output" to "22 kW"), PoiCategory.CHARGING)
-        assertEquals("22 kW · Type 2 ×2", NearbyText.details(broken, StationInfo.of(broken, emptyList()), strings))
+        assertEquals("22 kW · Type 2 ×2", NearbyText.details(broken, StationInfo.of(broken, emptyList()), strings))
     }
 
     @Test
