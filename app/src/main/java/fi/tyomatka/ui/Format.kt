@@ -54,12 +54,20 @@ fun parseClockMinutes(text: String): Int? {
 /** Metrit muotoon "850 m" / "12,4 km". */
 fun formatKm(meters: Long): String = when {
     meters < 950 -> "$meters m"
-    else -> String.format(appLocale(), "%.1f km", meters / 1000.0)
+    else -> "${formatDecimal(meters / 1000.0, 1)} km"
 }
 
-/** Desimaaliluku näytön kielellä, esim. 7.84 → "7,8", englanniksi "7.8". */
-fun formatDecimal(value: Double, decimals: Int): String =
-    String.format(appLocale(), "%.${decimals}f", value)
+/**
+ * Desimaaliluku näytön kielellä, esim. 7.84 → "7,8", englanniksi "7.8". Kokonaisosassa sama tuhaterotin kuin
+ * [formatWhole]issa ("12 345,67", englanniksi "12,345.67"); nollaksi pyöristyvä negatiivinen luku ilman etumerkkiä.
+ */
+fun formatDecimal(value: Double, decimals: Int): String {
+    val text = String.format(Locale.ROOT, "%.${decimals}f", kotlin.math.abs(value))
+    val fraction = text.substringAfter('.', "")
+    val whole = groupDigits(text.substringBefore('.'))
+    val body = if (fraction.isEmpty()) whole else whole + (if (isEnglish()) "." else ",") + fraction
+    return if (value < 0 && text.any { it in '1'..'9' }) "-$body" else body
+}
 
 /**
  * Kokonaisluku kuten raportissa. Suomeksi ja ruotsiksi nelinumeroinen ilman väliä ("1100"), viidestä
@@ -67,14 +75,18 @@ fun formatDecimal(value: Double, decimals: Int): String =
  * Englanniksi pilkku neljästä numerosta alkaen ("1,100").
  */
 fun formatWhole(value: Long): String {
-    val digits = kotlin.math.abs(value).toString()
+    val text = groupDigits(kotlin.math.abs(value).toString())
+    return if (value < 0) "-$text" else text
+}
+
+/** Numerojonon tuhaterottimet näytön kielen mukaan. */
+private fun groupDigits(digits: String): String {
     val english = isEnglish()
-    val text = if (digits.length < if (english) 4 else 5) {
+    return if (digits.length < if (english) 4 else 5) {
         digits
     } else {
         digits.reversed().chunked(3).joinToString(if (english) "," else "\u00A0").reversed()
     }
-    return if (value < 0) "-$text" else text
 }
 
 /**

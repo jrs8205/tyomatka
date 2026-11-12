@@ -46,6 +46,20 @@ class FormatTest {
     }
 
     @Test
+    fun `desimaaliluvussa sama tuhaterotin kuin kokonaisluvussa`() {
+        assertEquals("9999,50", formatDecimal(9999.5, 2))
+        assertEquals("12\u00A0345,67", formatDecimal(12345.67, 2))
+        assertEquals("-12\u00A0345,6", formatDecimal(-12345.6, 1))
+        // Pyöristys voi nostaa luvun rajan yli.
+        assertEquals("10\u00A0000,0", formatDecimal(9999.96, 1))
+        assertEquals("12\u00A0345,67 €", formatMoney(12345.67, "EUR"))
+        assertEquals("10\u00A0432,1 l", formatAmount(10432.12, FuelKind.DIESEL))
+        assertEquals("1234,5 km", formatKm(1_234_500))
+        assertEquals("12\u00A0345,6 km", formatKm(12_345_600))
+        assertEquals("850 m", formatKm(850))
+    }
+
+    @Test
     fun `polttoainemuotoilut suomalaisella pilkulla`() {
         assertEquals("54,3 l", formatAmount(54.32, FuelKind.DIESEL))
         assertEquals("98,45 €", formatMoney(98.449, "EUR"))
@@ -82,6 +96,9 @@ class FormatTest {
         try {
             java.util.Locale.setDefault(java.util.Locale.US)
             assertEquals("98.45 €", formatMoney(98.45, "EUR"))
+            assertEquals("12,345.67 €", formatMoney(12345.67, "EUR"))
+            assertEquals("1,234.5", formatDecimal(1234.5, 1))
+            assertEquals("1,234.5 km", formatKm(1_234_500))
             assertEquals("1.812 €/l", formatUnitPrice(1.812, "EUR", FuelUnit.LITER))
             assertEquals("Fri 25 Sep 2026", formatShortDate(LocalDate.of(2026, 9, 25).toEpochDay()))
             assertEquals("23:05", formatMinutesOfDay(23 * 60 + 5))
