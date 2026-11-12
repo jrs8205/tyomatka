@@ -15,7 +15,7 @@ import androidx.compose.ui.window.DialogWindowProvider
  * Android 15:n pakotetussa reunasta reunaan -tilassa kelluva dialogi-ikkuna
  * mitataan koko näytön korkuiseksi, mutta WindowManager sijoittaa sen
  * järjestelmäpalkkien väliin, jolloin sisällön alimmat ~250 px leikkautuvat
- * pois (havaittu 28.9.2026: 14 stopin listasta näkyi 13).
+ * pois (14 stopin listasta näkyisi vain 13).
  * `usePlatformDefaultWidth = false` ei kelpaa, koska silloin Compose asettaa
  * ikkunan koon joka layoutissa sisällön mitatun koon mukaan ja ylikirjoittaa
  * alla asetetun MATCH_PARENTin. Oletustilassa MATCH_PARENT pysyy voimassa,

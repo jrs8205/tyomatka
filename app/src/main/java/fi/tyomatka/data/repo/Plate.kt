@@ -36,7 +36,7 @@ fun latestWorkReading(segments: List<WorkSegmentEntity>): Long? =
 /**
  * Auton viimeisin tunnettu mittarilukema: työjaksojen loppu- ja alkulukemat sekä kirjausten lukemat, ajallisesti
  * viimeisimmän kalenteripäivän ([zone]) lukemista suurin. Takautuva kirjaus saa aikaleimakseen klo 12
- * ([fillupEpochSec]), eikä se saa hävitä saman päivän aiemmin kirjatulle pienemmälle lukemalle (laitteella 18.10.);
+ * ([fillupEpochSec]), eikä se saa hävitä saman päivän aiemmin kirjatulle pienemmälle lukemalle;
  * eri päivien kesken viimeisin päivä voittaa, vaikka vanhempi lukema olisi suurempi. Null, kun autolle ei tunneta
  * lukemaa. Toisen auton lukemat eivät vaikuta, jotta valitun auton aloitus ei saa edellisen auton lukemaa.
  */

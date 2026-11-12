@@ -70,7 +70,7 @@ class WorkLogPhotoTransferTest {
         val source = WorkLogTestStore()
         source.fillups.add(fillup(1))
         val photo = source.addPhoto(1, byteArrayOf(4, 5, 6), at = 10)
-        // Ennen 17.10. tehdyissä vienneissä kuvarivi on muotoa src="src="data:…; niiden kuvat pitää saada takaisin.
+        // Vanhimmissa vienneissä kuvarivi on muotoa src="src="data:…; niiden kuvat pitää saada takaisin.
         val legacy = source.repository.exportHtml(noon).lines().joinToString("\n") { line ->
             if (line.startsWith(PHOTO_LINE)) line.replace(" src=\"$DATA_PREFIX", " src=\"src=\"$DATA_PREFIX") else line
         }

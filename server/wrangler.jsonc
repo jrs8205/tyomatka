@@ -6,7 +6,7 @@
   // Vain oma verkkotunnus: ei workers.dev-osoitetta (päätös 10).
   "workers_dev": false,
   "routes": [{ "pattern": "poi.jrs8205.com", "custom_domain": true }],
-  // Tunnisteet käyttöönotosta 22.10.2026 (`wrangler d1 create`, `wrangler kv namespace create`); ne eivät ole salaisuuksia.
+  // Tunnisteet käyttöönotosta (`wrangler d1 create`, `wrangler kv namespace create`); ne eivät ole salaisuuksia.
   "d1_databases": [{ "binding": "DB", "database_name": "tyomatka-poi", "database_id": "02f1324d-861c-4e05-84d0-ea29bc0e8eab" }],
   // Vanhojen ilmoitusten laitetunnukset pois kerran vuorokaudessa (src/reports.ts).
   "triggers": { "crons": ["17 3 * * *"] },

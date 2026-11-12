@@ -413,7 +413,7 @@ class PlanViewModel @Inject constructor(
         _state.value = _state.value.copy(error = errorText(e))
     }
 
-    /** Verkkovirheen raaka viesti ("Failed to connect to …") ei kelpaa kuljettajalle (laitetesti 20.10.). */
+    /** Verkkovirheen raaka viesti ("Failed to connect to …") ei kelpaa kuljettajalle. */
     private fun errorText(e: Throwable): String =
         application.getString(UserErrors.messageRes(e))
 

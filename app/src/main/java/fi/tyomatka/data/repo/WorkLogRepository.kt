@@ -590,7 +590,7 @@ class WorkLogRepository @Inject constructor(
     /** Kuvarivi odottavaksi tiedostoksi; virheellinen tai liian suuri ohitetaan. */
     private fun readPhoto(line: String): Pair<String, File>? {
         val idEnd = line.indexOf('"', PHOTO_LINE.length)
-        // Haku eikä attribuutin jäsennys: ennen 17.10. tehdyissä vienneissä rivi on muotoa src="src="data:…,
+        // Haku eikä attribuutin jäsennys: vanhimmissa vienneissä rivi on muotoa src="src="data:…,
         // ja niidenkin kuvat pitää saada takaisin.
         val dataStart = line.indexOf(PHOTO_DATA).takeIf { it >= 0 }?.plus(PHOTO_DATA.length) ?: return null
         val dataEnd = line.lastIndexOf("\">")
@@ -659,7 +659,7 @@ class WorkLogRepository @Inject constructor(
                 ?: routeDayDao.insert(RouteDayEntity(dateEpochDay = day.date))
                     .takeIf { it != -1L }
                 ?: requireNotNull(routeDayDao.byDate(day.date)).id
-            // Päivän lisätiedot: tyhjä täydennetään varmuuskopiosta, olemassa olevaa ei ylikirjoiteta (määrittely 20.10.).
+            // Päivän lisätiedot: tyhjä täydennetään varmuuskopiosta, olemassa olevaa ei ylikirjoiteta.
             val dayNote = normalizeNote(day.note)
             if (dayNote.isNotEmpty()) {
                 routeDayDao.fillNoteIfEmpty(dayId, dayNote)

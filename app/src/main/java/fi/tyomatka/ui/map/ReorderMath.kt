@@ -26,7 +26,7 @@ fun reorderTarget(
  * Muuttaako siirto [from] → [to] ylimmän näkyvän rivin indeksiä. LazyColumn
  * ankkuroi vierityskohdan ylimmän rivin avaimeen, joten ilman kiinnitystä
  * indeksiin lista hyppäisi rivin verran ja kumoaisi automaattivierityksen
- * (havaittu 28.9.: raahaus jäi värisemään listan yläreunaan).
+ * (raahaus jäisi värisemään listan yläreunaan).
  */
 fun swapMovesFirstVisible(firstVisibleIndex: Int, from: Int, to: Int): Boolean =
     firstVisibleIndex in minOf(from, to)..maxOf(from, to)

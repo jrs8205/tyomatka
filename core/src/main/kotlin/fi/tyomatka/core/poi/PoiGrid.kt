@@ -7,8 +7,9 @@ import kotlin.math.floor
 /**
  * Kyselyikkunan pyöristys ruudukkoon: sama pyöristetty ikkuna osuu reunavälimuistiin ja laitteen omaan välimuistiin.
  * Zoomilla ≥ [FINE_ZOOM] ruudukko on [FINE_CELL_DEG], zoomilla ≥ [FINEST_ZOOM] [FINEST_CELL_DEG], muuten [CELL_DEG]:
- * kaupungin näkymässä neljännesasteen ruutuun mahtuu enemmän kuin palvelimen 300 kohdetta (Helsingin latauspisteet
- * 22.10.), ja Amsterdamin keskustan 0,05°:n solussa on yli 300 latauspistettä, jolloin lähentäminen ei muuten auttaisi.
+ * kaupungin näkymässä neljännesasteen ruutuun mahtuu enemmän kuin palvelimen 300 kohdetta (Helsingin
+ * latauspisteet), ja tiheimmän keskustan 0,05°:n solussa voi olla yli 300 latauspistettä, jolloin lähentäminen ei
+ * muuten auttaisi.
  * Kohteita kysytään vasta zoomilla ≥ [MIN_ZOOM]; yli [MAX_SPAN_DEG]:n ikkunaa ei kysytä.
  */
 object PoiGrid {

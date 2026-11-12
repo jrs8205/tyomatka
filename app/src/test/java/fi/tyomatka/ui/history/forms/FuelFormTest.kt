@@ -243,7 +243,7 @@ class FuelFormTest {
 
     @Test
     fun `vajaa samalla lukemalla kuin täysi esikatselee saman kerran välin`() {
-        // Katselmointi 17.10.: vajaa kuuluu saman lukeman täyden kertaan eikä odota seuraavaa täyttä.
+        // Vajaa kuuluu saman lukeman täyden kertaan eikä odota seuraavaa täyttä.
         val start = fillup(1, daysAgo = 10, km = 100_000, liters = 300.0)
         val full = fillup(2, daysAgo = 2, km = 100_800, liters = 200.0)
         val f = form(listOf(start, full)).withFullTank(false).withKm("100800").withLiters("5")
@@ -274,7 +274,7 @@ class FuelFormTest {
 
     @Test
     fun `ketjun aloittavan kerran vajaa ja toinen täysi saavat kulutuksen seuraavasta`() {
-        // Katselmointi 17.10.: ensimmäisen täyden kerran määrät ovat lähtötaso eivätkä seuraavan täyden väliä.
+        // Ensimmäisen täyden kerran määrät ovat lähtötaso eivätkä seuraavan täyden väliä.
         val first = fillup(1, daysAgo = 2, km = 100_000, liters = 50.0)
         val partial = form(listOf(first)).withFullTank(false).withKm("100000").withLiters("5")
         val second = form(listOf(first)).withKm("100000").withLiters("20")

@@ -44,7 +44,7 @@ class ValhallaRouteClient(
     /**
      * Palvelimen pyytämä odotus (HTTP 429 Retry-After) koskee asiakkaan kaikkia pyyntöjä, myös uudelleenreititystä.
      * Null, kun odotusta ei ole: vähennyslasku `Long.MIN_VALUE - now()` vuotaisi yli positiiviseksi ja odottaisi
-     * ikuisesti (laitetesti 20.10.: reittiä ei koskaan tullut).
+     * ikuisesti, eikä reittiä tulisi koskaan.
      */
     @Volatile
     private var holdUntilMs: Long? = null

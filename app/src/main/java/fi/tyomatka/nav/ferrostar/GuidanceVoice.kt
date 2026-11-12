@@ -78,7 +78,7 @@ class GuidanceVoice(context: Context, private val vibrate: () -> Unit) : SpokenI
 
     /**
      * Käynnistää puhesynteesin ja odottaa sen valmistumista enintään [INIT_TIMEOUT_MS], jotta ensimmäinen ohje ei
-     * laukea ennen kuin moottori on valmis. Laitteella 19.10. ensimmäinen ohje katkesi, kun moottori oli vasta
+     * laukea ennen kuin moottori on valmis. Muuten ensimmäinen ohje katkeaa, kun moottori on vasta
      * käynnistynyt.
      */
     suspend fun start(languageTag: String) {

@@ -417,7 +417,7 @@ class PeliasClientTest {
 
     @Test
     fun `lyhenne avataan kadun päätteeksi eikä hyväksy muuta samalla alulla alkavaa katua`() = runTest {
-        // Digitransit 16.10.: "Kauppak. 5, Oulu" → Haukiputaan Kauppakuja 2 (18 km), "Isok. 10, Oulu" → Isokatu 10.
+        // Digitransit: "Kauppak. 5, Oulu" → Haukiputaan Kauppakuja 2 (18 km), "Isok. 10, Oulu" → Isokatu 10.
         server.enqueue(
             MockResponse().setBody(
                 searchResult(

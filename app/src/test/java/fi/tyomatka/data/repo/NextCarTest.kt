@@ -110,7 +110,7 @@ class NextCarTest {
 
     @Test
     fun `esitäytön lukema on valitun auton oma lukema, ei viimeisimmän jakson`() {
-        // Laitteella 18.10.: TES-393 valittuna, mutta viimeisin jakso on TES-598:n. Lukema tulee TES-393:lta.
+        // TES-393 valittuna, mutta viimeisin jakso on TES-598:n. Lukema tulee TES-393:lta.
         val imb = CarEntity("TES-393", FuelKind.DIESEL, null)
         val jkj = CarEntity("TES-598", FuelKind.DIESEL, null)
         val segments = listOf(

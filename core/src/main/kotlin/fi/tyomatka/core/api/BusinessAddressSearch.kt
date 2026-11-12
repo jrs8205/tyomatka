@@ -13,7 +13,7 @@ import kotlin.math.round
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Osoitehaku ja Overturen yrityshaku rinnakkain (Google pois 28.10.). Kun toinen valmistuu tuloksin, toista odotetaan
+ * Osoitehaku ja Overturen yrityshaku rinnakkain. Kun toinen valmistuu tuloksin, toista odotetaan
  * enintään [graceMs]; tyhjä tai epäonnistunut vastaus ei käynnistä odotusta, ja myöhästynyt osio jää pois tältä haulta.
  * Yrityshaku katkaistaan aina [businessCapMs]:ssä. Numero hakusanassa tuo osoitteet ensin, muuten yritykset. Sovellus
  * hakee vain Suomesta, joten yrityksiä haetaan sijainnista riippumatta. Valitun yrityksen osoite haetaan [resolver]illa

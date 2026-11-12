@@ -215,8 +215,8 @@ data class FuelFillupEntity(
 )
 
 /**
- * Tankkauksen, latauksen tai täytön kuva todisteeksi: kuitti, mittarin näyttö tai latausapin kuvakaappaus (käyttäjä
- * 17.10.). Tiedosto on sovelluksen kuvakansiossa; kirjauksen poisto poistaa rivit viiteavaimella.
+ * Tankkauksen, latauksen tai täytön kuva todisteeksi: kuitti, mittarin näyttö tai latausapin kuvakaappaus.
+ * Tiedosto on sovelluksen kuvakansiossa; kirjauksen poisto poistaa rivit viiteavaimella.
  */
 @Entity(
     tableName = "fuel_photos",

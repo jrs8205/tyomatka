@@ -46,7 +46,7 @@ object SpeechPlan {
             fixed = withEarlyAlert(fixed, step.distanceM, lang, next)
             if (last && !continueSaysNext) fixed = withArrivalAlert(fixed, step.distanceM, arrivalSide, lang)
             // Valhallan oma saapumisohje (40 m) jää pois: oma Perillä-lause puhutaan 50 m:ssä, muuten lauseet tulisivat
-            // peräkkäin (laitetesti 20.10.).
+            // peräkkäin.
             if (last) fixed = fixed.filter { it.triggerM > ARRIVAL_SELF_M }
             PlannedStep(step.distanceM, fixed)
         }

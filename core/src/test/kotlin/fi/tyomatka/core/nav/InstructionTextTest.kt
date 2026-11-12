@@ -4,7 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * Syötteet ovat FOSSGIS-Valhallan oikeista vastauksista (Tampere keskusta → Hervanta, 18.10.2026) ja Valhallan
+ * Syötteet ovat FOSSGIS-Valhallan oikeista vastauksista (Tampere keskusta → Hervanta) ja Valhallan
  * kielitiedostojen fraaseista. Valhalla merkitsee osan nimistä U+200E-merkeillä.
  */
 class InstructionTextTest {

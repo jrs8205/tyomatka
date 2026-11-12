@@ -118,7 +118,7 @@ class ValhallaPreviewClient(
         /** Valhallan oma muoto käyttää kuutta desimaalia. */
         const val SHAPE_FACTOR = 1e6
 
-        /** FOSSGIS-palvelimen raja pisteille yhdessä pyynnössä (mitattu 31.10.2026). */
+        /** FOSSGIS-palvelimen raja pisteille yhdessä pyynnössä (mitattu palvelimelta). */
         const val MAX_LOCATIONS = 10
 
         /** Ei reittiä pisteiden välillä tai piste ei osu tiehen. */

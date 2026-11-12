@@ -7,7 +7,7 @@ function place(id: string, name: string, locality: string | null, lat: number, l
   return { id, name, street, postcode: null, locality, lat, lon, conf, nwords: tokens(name).join(" "), lwords: tokens(locality ?? "").join(" ") };
 }
 
-// Overture Places 2026-10-21.0, Askolan ja Porvoon rivit (määrittelyn selvitys 28.10.2026).
+// Overture Places 2026-10-21.0, Askolan ja Porvoon rivit.
 const KONEKORJAAMO = place("37f9b45c-9227-4fa9-ad8d-9fae83427804", "Askolan Auto- ja Konekorjaamo", "Askola", 60.50148, 25.56598, 0.95, "Teollisuustie 3");
 const AUTOKOULU = place("bb0f539f-6cea-44d7-9226-e59557defbea", "Askolan Autokoulu Ky", "Askola", 60.4931, 25.54033, 0.95, "Meijeritie 18");
 const KONE_OY = place("640464d2-30ed-405a-a7b9-4b9d5eaff1c1", "Askolan Kone Oy", "Askola", 60.51593, 25.48793, 0.73, "Luhdintie 413");

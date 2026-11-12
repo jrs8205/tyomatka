@@ -215,7 +215,7 @@ export function swapDecision(
 }
 
 /**
- * Kertatuonnin faktat (22.10.2026): vain kuljettajan päätöksiin tarvittavat avaimet, ei
+ * Kertatuonnin faktat: vain kuljettajan päätöksiin tarvittavat avaimet, ei
  * yhteystietoja, ruokalistoja, tekstejä eikä raakatietoja. Liitetty rivi (`linked` 1) täydentää OSM-kohdetta samalla
  * tunnisteella; liittämätön (`linked` 0) on oma `k-`-asema. `/admin/facts/clear` poistaa koko lähteen.
  */

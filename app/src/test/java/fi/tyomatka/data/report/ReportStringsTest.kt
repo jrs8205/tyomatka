@@ -119,7 +119,7 @@ class ReportStringsTest {
             assertEquals(fi.explanations.size, strings.explanations.size, language.tag)
         }
         assertEquals(10, fi.tableColumns.size)
-        // Lisätiedot-sarake kulutuksen jälkeen ennen kuvia (määrittely 20.10.).
+        // Lisätiedot-sarake kulutuksen jälkeen ennen kuvia.
         assertEquals(listOf("Lisätiedot", "Anteckningar", "Notes"), listOf(fi, sv, en).map { it.tableColumns[8] })
         assertEquals(listOf("Lisätiedot", "Anteckningar", "Notes"), listOf(fi, sv, en).map { it.notes })
     }

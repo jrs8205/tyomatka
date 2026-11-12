@@ -295,7 +295,7 @@ object AppModule {
     fun placeSearch(okHttp: OkHttpClient, reverse: ReverseGeocoder, servers: ServerUrls): PlaceSearch {
         // Vain Suomen (Ahvenanmaa mukaan lukien) osoitteet: Digitransit ja sen varalla Suomeen rajattu Photon.
         val addresses = FallbackPlaceSearch(listOf(finlandSearch(okHttp, servers), finlandPhoton(okHttp, servers)))
-        // Yritykset (Overture Places) omasta Workerista osoitehaun rinnalla (Google pois 28.10.); valitun yrityksen
+        // Yritykset (Overture Places) omasta Workerista osoitehaun rinnalla; valitun yrityksen
         // osoite osoitehausta tai käänteishaulla ([reverseGeocoder]). Sama palvelin kuin karttakohteilla.
         val businesses = BusinessClient(okHttp, servers.poi)
         val resolver = BusinessPlaceResolver({ line, bias -> addresses.geocodeText(line, bias) }, reverse)

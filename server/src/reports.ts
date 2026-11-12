@@ -48,7 +48,7 @@ export const REPORT_FIELDS: Record<string, (value: string) => boolean> = {
   truck_length: (v) => v === "14" || v === "25.25" || v === "34.5",
   maxheight: limit,
   maxweight: limit,
-  // Hintailmoitukset poistuivat sovelluksesta 31.10.2026; vanhojen versioiden jonot saavat vielä lähteä.
+  // Hintailmoitukset poistuivat sovelluksesta; vanhojen versioiden jonot saavat vielä lähteä.
   "price:diesel": price,
   "price:petrol": price,
   "price:gas": price,

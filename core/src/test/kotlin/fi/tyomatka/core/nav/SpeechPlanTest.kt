@@ -127,7 +127,7 @@ class SpeechPlanTest {
         val instructions = planned[0].instructions
         assertEquals(PlannedInstruction("Kohde on 250 metrin päässä oikealla.", 250.0), instructions[0])
         assertEquals("In 100 metriä, Kohde on oikealla.", instructions[1].text)
-        // Valhallan 40 m:n saapumisohje jää pois: oma Perillä-lause puhutaan 50 m:ssä (laitetesti 20.10.: kaksi lausetta peräkkäin).
+        // Valhallan 40 m:n saapumisohje jää pois: oma Perillä-lause puhutaan 50 m:ssä, muuten tulisi kaksi lausetta peräkkäin.
         assertEquals(2, instructions.size)
     }
 

@@ -2,8 +2,8 @@ package fi.tyomatka.core.plan
 
 /**
  * Huoltostoppi on karttakohteesta (huoltoasema, lataus, kaasu, lepopaikka) lisätty stoppi. Se tunnistetaan
- * `placeId`-etuliitteestä `service:`, jota mikään osoitehaku ei tuota (Photonin osoitteet ovat `osm:W:123`, kierros
- * 19), ja se ei kuulu tallennettuun pohjaan eikä pohjan ja päivän vertailuun.
+ * `placeId`-etuliitteestä `service:`, jota mikään osoitehaku ei tuota (Photonin osoitteet ovat `osm:W:123`),
+ * eikä se kuulu tallennettuun pohjaan eikä pohjan ja päivän vertailuun.
  */
 object ServiceStops {
     const val PREFIX = "service:"

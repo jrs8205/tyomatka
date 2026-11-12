@@ -37,7 +37,7 @@ class PlateTest {
     @Test
     fun `saman päivän lukemista viimeisin on suurin, vaikka sen kellonaika olisi aiempi`() {
         // Takautuva tankkaus saa aikaleimakseen klo 12 ([fillupEpochSec]); se on kirjattu jakson lopun jälkeen,
-        // eikä saa hävitä saman päivän pienemmälle lukemalle (laitteella 18.10.).
+        // eikä saa hävitä saman päivän pienemmälle lukemalle.
         val segments = listOf(segment(1, at("2026-10-17", 8), at("2026-10-17", 15), 475_000, 475_279))
         val fillups = listOf(fillup(at("2026-10-17", 12), 475_290))
         assertEquals(475_290, latestPlateReading("TES-598", segments, fillups, zone))

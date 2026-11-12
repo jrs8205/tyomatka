@@ -308,7 +308,7 @@ class PhotonClientTest {
 
     @Test
     fun `geocodeText vaatii rivin kadun ja talonumeron`() = runTest {
-        // Photon 16.10.: paikkakunta täsmää, mutta katu tai talo on väärä.
+        // Photon: paikkakunta täsmää, mutta katu tai talo on väärä.
         server.enqueue(
             MockResponse().setBody(
                 collection(
@@ -361,7 +361,7 @@ class PhotonClientTest {
 
     @Test
     fun `samanniminen ketjukohde ei kelpaa väärältä kadulta, vaikka nimi osuu`() = runTest {
-        // Katselmointi 17.10.: Photon antaa ketjun toisen toimipisteen, vaikka rivillä on toinen katuosoite.
+        // Photon antaa ketjun toisen toimipisteen, vaikka rivillä on toinen katuosoite.
         val rKioski = feature(osmId = 51, name = "R-kioski", street = "Isokatu", housenumber = "20", postcode = "90100", city = "Oulu", lat = 65.012, lon = 25.47)
         val rema = feature(osmId = 52, name = "Rema 1000", street = "Sjøgata", housenumber = "5", postcode = "9008", city = "Tromsø", lat = 69.65, lon = 18.96)
         listOf(rKioski, rema, rKioski, rKioski).forEach { server.enqueue(MockResponse().setBody(collection(it))) }
@@ -584,7 +584,7 @@ class PhotonClientTest {
 
     @Test
     fun `kerros- tai rakennusmerkintä talonumeron perässä ei ole paikkakunta`() = runTest {
-        // Katselmointi 17.10.: "kjallari" (kellari) ja "bakhús" (takarakennus) eivät ole paikkakuntia, joten 101 on
+        // "kjallari" (kellari) ja "bakhús" (takarakennus) eivät ole paikkakuntia, joten 101 on
         // talonumero; rivin lopun 101 kaupungin perässä ei ole postinumeron paikalla, eikä se vie talonumeroa.
         val house102 = feature(osmId = 61, street = "Hverfisgata", housenumber = "102", postcode = "101", city = "Reykjavík", lat = 64.14, lon = -21.93)
         val house101 = feature(osmId = 62, street = "Hverfisgata", housenumber = "101", postcode = "101", city = "Reykjavík", lat = 64.14, lon = -21.93)

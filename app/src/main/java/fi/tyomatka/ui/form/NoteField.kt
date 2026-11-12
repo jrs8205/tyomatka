@@ -12,7 +12,7 @@ import fi.tyomatka.data.NOTE_MAX_LENGTH
 import fi.tyomatka.ui.components.AppTextField
 
 /**
- * Lisätiedot-kenttä: monirivinen vapaa teksti, enintään [NOTE_MAX_LENGTH] merkkiä (määrittely 20.10.). Sama kenttä
+ * Lisätiedot-kenttä: monirivinen vapaa teksti, enintään [NOTE_MAX_LENGTH] merkkiä. Sama kenttä
  * tankkauksessa, työpäivän aloituksessa ja lopetuksessa sekä korjauslomakkeessa; [hint] kertoo, mitä tähän kirjoitetaan.
  */
 @Composable
