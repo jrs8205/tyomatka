@@ -11,6 +11,7 @@
 
     <string name="add_stop">Lägg till stopp</string>
     <string name="search_address">Sök adress…</string>
+    <string name="search_clear">Rensa sökningen</string>
     <string name="paste_list">Klistra in lista</string>
     <string name="add_stop_tab_address">Sök adress</string>
     <string name="paste_list_hint">Klistra in adresser, en per rad</string>
@@ -475,6 +476,8 @@
     <string name="volume_low">Medievolymen är %1$d/%2$d, röstvägledningen kan höras dåligt</string>
     <string name="volume_raise">Höj</string>
     <string name="fuel_add_for_day">Lägg till tankning för dagen</string>
+    <string name="charge_add_for_day">Lägg till laddning för dagen</string>
+    <string name="gas_add_for_day">Lägg till påfyllning för dagen</string>
     <string name="import_unsupported">Filformatet stöds inte. Spara filen som xlsx eller csv.</string>
 
     <string name="template_saved">Rutten %1$s sparad</string>

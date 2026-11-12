@@ -11,6 +11,7 @@
 
     <string name="add_stop">Lisää stoppi</string>
     <string name="search_address">Hae osoitetta…</string>
+    <string name="search_clear">Tyhjennä haku</string>
     <string name="paste_list">Liitä lista</string>
     <string name="add_stop_tab_address">Hae osoite</string>
     <string name="paste_list_hint">Liitä osoitteet, yksi per rivi</string>
@@ -448,7 +449,7 @@
     <string name="guidance_lanes">Kaistat</string>
     <!-- Korvaa navigointikirjaston englanninkielisen kuvauksen käännösnuolelle. -->
     <string name="maneuver_image">Käännöksen suunta</string>
-    <!-- Ferrostarin keskitysnapin kuvaukset (laitetesti 20.10.: "Route Overview" kuului englanniksi). -->
+    <!-- Ferrostarin keskitysnapin kuvaukset: ilman näitä "Route Overview" kuuluisi englanniksi. -->
     <string name="recenter">Keskitä kartta</string>
     <string name="route_overview">Reitin yleiskuva</string>
     <string name="search_network_error">Verkkoyhteys ei toimi. Yritä uudelleen.</string>
@@ -483,9 +484,11 @@
     <string name="volume_low">Median äänenvoimakkuus on %1$d/%2$d, puheohjeet voivat jäädä hiljaisiksi</string>
     <string name="volume_raise">Nosta</string>
     <string name="fuel_add_for_day">Lisää tankkaus päivälle</string>
+    <string name="charge_add_for_day">Lisää lataus päivälle</string>
+    <string name="gas_add_for_day">Lisää täyttö päivälle</string>
     <string name="import_unsupported">Tiedostomuotoa ei tueta. Tallenna tiedosto xlsx- tai csv-muotoon.</string>
 
-    <!-- Tallennetut reitit (kori 3, osa A) -->
+    <!-- Tallennetut reitit -->
     <string name="template_saved">Reitti %1$s tallennettu</string>
     <string name="template_opened">Reitti %1$s avattu</string>
     <plurals name="template_opened_skipped">
@@ -537,7 +540,7 @@
     <string name="template_disabled_driving">Ei käytössä ajon aikana</string>
     <string name="template_empty">Ei tallennettuja reittejä. Tallenna päivän stoppilista Tallenna reitti -napilla.</string>
 
-    <!-- Karttakohteet (kori 3 B): Kohteet-nappi, luokkavalikko, kohdekortti -->
+    <!-- Karttakohteet: Kohteet-nappi, luokkavalikko, kohdekortti -->
     <string name="poi_button">Kohteet</string>
     <string name="poi_sheet_title">Karttakohteet</string>
     <string name="poi_cat_fuel">Huoltoasemat</string>

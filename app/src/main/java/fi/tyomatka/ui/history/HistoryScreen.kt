@@ -258,6 +258,7 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
                             photosByFillup = state.photosByFillup,
                             onEditFillup = { fuelDialog = FuelDialogTarget.Edit(it.id) },
                             onAddFuel = { fuelDialog = FuelDialogTarget.New(epochDay = it) },
+                            addWord = todayWord,
                             onFix = {
                                 fixDate = row.date
                                 fixSegments = state.segmentsByDate[row.date]

@@ -11,6 +11,7 @@
 
     <string name="add_stop">Add stop</string>
     <string name="search_address">Search address…</string>
+    <string name="search_clear">Clear search</string>
     <string name="paste_list">Paste list</string>
     <string name="add_stop_tab_address">Address</string>
     <string name="paste_list_hint">Paste addresses, one per line</string>
@@ -483,6 +484,8 @@
     <string name="volume_low">Media volume is %1$d/%2$d, so voice guidance may be too quiet</string>
     <string name="volume_raise">Turn up</string>
     <string name="fuel_add_for_day">Add fill-up for this day</string>
+    <string name="charge_add_for_day">Add charge for this day</string>
+    <string name="gas_add_for_day">Add refill for this day</string>
     <string name="import_unsupported">File format not supported. Save the file as xlsx or csv.</string>
 
     <!-- Saved routes -->

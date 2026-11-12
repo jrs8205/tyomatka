@@ -112,6 +112,10 @@ fun segmentDisplay(seg: WorkSegmentEntity): SegmentDisplay {
 fun fillupsTitleWord(fillups: List<FuelFillupEntity>): FillWord =
     fillups.map { fillWord(it.kind) }.distinct().singleOrNull() ?: FillWord.FILL
 
+/** Päivän lisäysnapin teksti käyttövoiman mukaan: tankkaus, lataus tai täyttö. */
+fun dayAddFuelRes(word: FillWord): Int =
+    word.pick(R.string.fuel_add_for_day, R.string.charge_add_for_day, R.string.gas_add_for_day)
+
 /**
  * Valitun päivän sisältö: kilometrit isona (tai "Ei työkirjausta") ja korjauksen chipit, päivän tankkaukset
  * (napautus muokkaa), tankkaus jälkikäteen sekä päivän ajot aina näkyvissä mittarijanoineen.
@@ -125,6 +129,8 @@ fun DayDetail(
     onEditFillup: (FuelFillupEntity) -> Unit,
     /** Tankkaus jälkikäteen päivälle (epochDay). */
     onAddFuel: (Long) -> Unit,
+    /** Uuden kirjauksen sana: sama kuin Tänään-kortin napissa. */
+    addWord: FillWord,
     onFix: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -166,7 +172,7 @@ fun DayDetail(
         ) {
             Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.fuel_add_for_day), textAlign = TextAlign.Center)
+            Text(stringResource(dayAddFuelRes(addWord)), textAlign = TextAlign.Center)
         }
         if (segments.isNotEmpty()) {
             SectionTitle(stringResource(R.string.day_drives_title))

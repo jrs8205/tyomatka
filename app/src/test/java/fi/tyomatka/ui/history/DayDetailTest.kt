@@ -1,5 +1,6 @@
 package fi.tyomatka.ui.history
 
+import fi.tyomatka.R
 import fi.tyomatka.data.db.FuelFillupEntity
 import fi.tyomatka.data.db.FuelKind
 import fi.tyomatka.data.db.WorkSegmentEntity
@@ -55,6 +56,13 @@ class DayDetailTest {
     @Test
     fun `ilman polttoainetietoja ei ole yhteenvetoja`() {
         assertEquals(emptyList(), kindSummaries(listOf(fillup(FuelKind.DIESEL, 1.0), fillup(FuelKind.DIESEL, 2.0)), null))
+    }
+
+    @Test
+    fun `päivän lisäysnapin teksti seuraa käyttövoimaa`() {
+        assertEquals(R.string.fuel_add_for_day, dayAddFuelRes(FillWord.FILL))
+        assertEquals(R.string.charge_add_for_day, dayAddFuelRes(FillWord.CHARGE))
+        assertEquals(R.string.gas_add_for_day, dayAddFuelRes(FillWord.GAS))
     }
 
     @Test
