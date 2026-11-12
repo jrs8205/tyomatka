@@ -19,3 +19,6 @@ tyomatka-varmuuskopiot/
 # Pythonin käännöstiedostot
 __pycache__/
 *.pyc
+
+# Windowsin nul-laitteen nimellä vahingossa syntyvä tiedosto
+nul
