@@ -29,10 +29,28 @@ object ImportedText {
         return joinRows(lines.map { splitLine(it, separator) })
     }
 
-    /** Vanhat .xls- ja .ods-taulukot eivät ole tuettuja: pääte tai OLE-alku kertoo sen. */
+    /**
+     * Tiedostovalitsimen tyypit: tuetut teksti-, csv- ja xlsx-tiedostot sekä .xls- ja .ods-taulukot, joita ei tueta. Ne
+     * ovat valittavissa, jotta kuljettaja saa ohjeen tallentaa tiedosto toiseen muotoon eikä tiedosto vain jää harmaaksi.
+     */
+    val PICKER_MIME_TYPES: List<String> = listOf(
+        "text/plain",
+        "text/csv",
+        "text/comma-separated-values",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-excel",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "application/octet-stream",
+    )
+
+    /**
+     * .xls- ja .ods-taulukot eivät ole tuettuja: pääte tai OLE-alku kertoo sen. Pakattu tiedosto kelpaa vain
+     * xlsx-päätteellä: nimettömänä (valitsin antaa joskus pelkän tunnisteen) se luettaisiin tekstinä roskaksi.
+     */
     fun isSupported(fileName: String, bytes: ByteArray): Boolean {
         val lower = fileName.lowercase()
         if (lower.endsWith(".xls") || lower.endsWith(".ods")) return false
+        if (bytes.startsWith(ZIP_MAGIC) && !lower.endsWith(".xlsx")) return false
         return !bytes.startsWith(OLE_MAGIC)
     }
 
@@ -215,6 +233,7 @@ object ImportedText {
         .replace("&amp;", "&")
 
     private val WINDOWS_1252: Charset = Charset.forName("windows-1252")
+    private val ZIP_MAGIC = byteArrayOf(0x50, 0x4B, 0x03, 0x04)
     private val OLE_MAGIC = byteArrayOf(0xD0.toByte(), 0xCF.toByte(), 0x11, 0xE0.toByte(), 0xA1.toByte(), 0xB1.toByte(), 0x1A, 0xE1.toByte())
     private val BULLET = Regex("""^[-•*–]\s+""")
     private val NUMBERING = Regex("""^(\d{1,3})[.)]\s+""")

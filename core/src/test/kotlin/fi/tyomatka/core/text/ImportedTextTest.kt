@@ -5,6 +5,8 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ImportedTextTest {
 
@@ -75,6 +77,32 @@ class ImportedTextTest {
             listOf("Mannerheimintie 10, Helsinki", "Kaivokatu 1, Helsinki", "Unioninkatu 5"),
             ImportedText.lines("stopit.csv", text.toByteArray()),
         )
+    }
+
+    @Test
+    fun `tiedostovalitsin tarjoaa tuetut tyypit ja vanhat taulukot, joista annetaan ohje`() {
+        val supported = listOf(
+            "text/plain",
+            "text/csv",
+            "text/comma-separated-values",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/octet-stream",
+        )
+        assertTrue(ImportedText.PICKER_MIME_TYPES.containsAll(supported))
+        // Vanhan taulukon pitää olla valittavissa, jotta kuljettaja saa ohjeen tallentaa se toiseen muotoon.
+        assertTrue("application/vnd.ms-excel" in ImportedText.PICKER_MIME_TYPES)
+        assertTrue("application/vnd.oasis.opendocument.spreadsheet" in ImportedText.PICKER_MIME_TYPES)
+    }
+
+    @Test
+    fun `pakattu tiedosto ilman xlsx-päätettä ei ole tuettu`() {
+        // Tiedoston nimi voi puuttua (silloin tilalla on tunniste): pakattu taulukko luettaisiin tekstinä roskaksi.
+        val zip = byteArrayOf(0x50, 0x4B, 0x03, 0x04, 0x14, 0x00)
+        assertFalse(ImportedText.isSupported("msf:123", zip))
+        assertFalse(ImportedText.isSupported("lista.txt", zip))
+        assertTrue(ImportedText.isSupported("lista.xlsx", zip))
+        assertTrue(ImportedText.isSupported("LISTA.XLSX", zip))
+        assertTrue(ImportedText.isSupported("msf:123", "Kauppakatu 5, Oulu".toByteArray()))
     }
 
     @Test
