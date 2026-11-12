@@ -394,8 +394,8 @@ class PhotonClientTest {
     }
 
     @Test
-    fun `viisinumeroinen luku on postinumero eikä talonumero`() = runTest {
-        // Suomessa postinumero on aina viisinumeroinen, eikä talonumero ole koskaan: rivi kelpaa ilman pilkkuakin.
+    fun `tuloksen postinumero ei ole rivin talonumero`() = runTest {
+        // Rivi kelpaa ilman pilkkuakin: tuloksen postinumero tunnistetaan rivistä.
         val house10 = collection(feature(osmId = 9, street = "Mannerheimintie", housenumber = "10", postcode = "00100", city = "Helsinki"))
         // Photonin postinumero voi olla eri kuin rivin (naapurialue) tai puuttua kokonaan.
         val otherPostcode = collection(feature(osmId = 10, street = "Mannerheimintie", housenumber = "10", postcode = "00101", city = "Helsinki"))
@@ -405,13 +405,14 @@ class PhotonClientTest {
 
         assertEquals("osm:N:9", photon.geocodeText("Mannerheimintie 10 00100 Helsinki", null)?.placeId)
         assertNull(photon.geocodeText("Mannerheimintie 12 00100 Helsinki", null))
-        assertEquals("osm:N:10", photon.geocodeText("Mannerheimintie 00100 Helsinki", null)?.placeId)
+        // Tuntematon viisinumeroinen luku kadun perässä voi olla talonumero: epäselvä rivi hylätään.
+        assertNull(photon.geocodeText("Mannerheimintie 00100 Helsinki", null))
         assertEquals("osm:N:10", photon.geocodeText("Mannerheimintie 10, 00100 Helsinki", null)?.placeId)
         assertEquals("osm:N:11", photon.geocodeText("Mannerheimintie 10 00100 Helsinki", null)?.placeId)
     }
 
     @Test
-    fun `rivin alun listan numero ja kohteen nimen numero eivät ole talonumeroita`() = runTest {
+    fun `talonumero on kadun perässä, vaikka edellä on listan tai kohteen nimen numero`() = runTest {
         // Maaseudun etäisyysperusteinen talonumero on usein nelinumeroinen.
         val iijoentie = collection(feature(osmId = 21, street = "Iijoentie", housenumber = "1234", postcode = "91100", city = "Ii", lat = 65.3, lon = 25.6))
         val wrongHouse = collection(feature(osmId = 22, street = "Iijoentie", housenumber = "3", postcode = "91100", city = "Ii", lat = 65.32, lon = 25.37))
@@ -421,8 +422,8 @@ class PhotonClientTest {
 
         assertEquals("osm:N:21", photon.geocodeText("3. Iijoentie 1234, 91100 Ii", null)?.placeId)
         assertNull(photon.geocodeText("3. Iijoentie 1234, 91100 Ii", null))
-        // Rivillä ei ole talonumeroa: listan numero ei hylkää kadun taloa.
-        assertEquals("osm:N:21", photon.geocodeText("3. Iijoentie, 91100 Ii", null)?.placeId)
+        // Ilman kadun perässä olevaa numeroa edellä oleva numero tarkistetaan: väärä talo ei kelpaa.
+        assertNull(photon.geocodeText("12 Iijoentie, 91100 Ii", null))
         assertEquals("osm:N:23", photon.geocodeText("Huolto 24 Kemintie 1150 95700 Pello", null)?.placeId)
         // Nelinumeroinen luku on talonumero myös ilman postinumeroa.
         assertNull(photon.geocodeText("Iijoentie 1234, Ii", null))
@@ -458,12 +459,14 @@ class PhotonClientTest {
     fun `rivin alun listan numero ei tee nimirivistä katuosoitetta`() = runTest {
         // Photon tuntee kohteen vain nimellä: listan numero ja sen perässä oleva sana eivät ole toinen katuosoite.
         val rKioski = collection(feature(osmId = 35, name = "R-kioski", street = "Isokatu", housenumber = "20", postcode = "90100", city = "Oulu", lat = 65.012, lon = 25.47))
-        listOf(rKioski, rKioski).forEach { server.enqueue(MockResponse().setBody(it)) }
+        listOf(rKioski, rKioski, rKioski).forEach { server.enqueue(MockResponse().setBody(it)) }
         val photon = client()
 
         assertEquals("osm:N:35", photon.geocodeText("3. Nouto R-kioski, Oulu", null)?.placeId)
         // Ilman listan numeroa sama luku olisi katuosoitteen talonumero.
         assertNull(photon.geocodeText("Noutokatu 3 R-kioski, Oulu", null))
+        // Nimen edellä oleva numero tarkistetaan talonumerona: väärä talo ei kelpaa.
+        assertNull(photon.geocodeText("5 R-kioski, Oulu", null))
     }
 
     @Test
@@ -471,7 +474,7 @@ class PhotonClientTest {
         // Käsivarrentien talonumerot ovat viisinumeroisia: väärä talo ei kelpaa, vaikka rivillä on myös postinumero.
         val wrong = collection(feature(osmId = 41, street = "Käsivarrentie", housenumber = "14206", postcode = "99490", city = "Enontekiö", lat = 69.04, lon = 20.80))
         val right = collection(feature(osmId = 42, street = "Käsivarrentie", housenumber = "14622", postcode = "99490", city = "Enontekiö", lat = 69.05, lon = 20.79))
-        // Photonin tuloksesta voi puuttua postinumero: rivin viimeinen viisinumeroinen on silloin postinumero.
+        // Photonin tuloksesta voi puuttua postinumero: kadun perässä oleva luku on silti talonumero.
         val rightNoPostcode = collection(feature(osmId = 40, street = "Käsivarrentie", housenumber = "14622", city = "Enontekiö", lat = 69.05, lon = 20.79))
         listOf(wrong, wrong, wrong, right, right, wrong, rightNoPostcode).forEach { server.enqueue(MockResponse().setBody(it)) }
         val photon = client()
@@ -485,6 +488,57 @@ class PhotonClientTest {
         // Pelkkä postinumero ilman talonumeroa: kadun talo kelpaa.
         assertEquals("osm:N:41", photon.geocodeText("Käsivarrentie 99490 Kilpisjärvi", null)?.placeId)
         assertEquals("osm:N:40", photon.geocodeText("Käsivarrentie 14622 99490 Enontekiö", null)?.placeId)
+    }
+
+    @Test
+    fun `postinumero ennen katuosoitetta ei vie viisinumeroista talonumeroa`() = runTest {
+        // Photonin postinumero puuttuu tai on toinen: kadun perässä oleva luku on silti talonumero, koska rivillä on
+        // toinen viisinumeroinen luku postinumerona.
+        val wrongNoPostcode = collection(feature(osmId = 36, street = "Käsivarrentie", housenumber = "14624", city = "Enontekiö", lat = 69.05, lon = 20.79))
+        val wrongOtherPostcode = collection(feature(osmId = 37, street = "Käsivarrentie", housenumber = "14624", postcode = "99400", city = "Enontekiö", lat = 69.05, lon = 20.79))
+        val rightNoPostcode = collection(feature(osmId = 38, street = "Käsivarrentie", housenumber = "14622", city = "Enontekiö", lat = 69.05, lon = 20.79))
+        // Väärä talo voi olla myös lyhyempi numero.
+        val shortHouse = collection(feature(osmId = 30, street = "Käsivarrentie", housenumber = "146", postcode = "99490", city = "Enontekiö", lat = 69.05, lon = 20.79))
+        listOf(wrongNoPostcode, wrongOtherPostcode, rightNoPostcode, wrongNoPostcode, shortHouse).forEach { server.enqueue(MockResponse().setBody(it)) }
+        val photon = client()
+
+        assertNull(photon.geocodeText("99490, Enontekiö, Käsivarrentie 14622", null))
+        assertNull(photon.geocodeText("99490, Enontekiö, Käsivarrentie 14622", null))
+        assertEquals("osm:N:38", photon.geocodeText("99490, Enontekiö, Käsivarrentie 14622", null)?.placeId)
+        assertNull(photon.geocodeText("99490 Enontekiö Käsivarrentie 14622", null))
+        assertNull(photon.geocodeText("Käsivarrentie 14622, 99490 Kilpisjärvi", null))
+    }
+
+    @Test
+    fun `viisinumeroinen talonumero ei kelpaa lyhyemmälle talolle eikä asunnon numerolle`() = runTest {
+        val shorter = collection(feature(osmId = 27, street = "Käsivarrentie", housenumber = "1462", postcode = "99490", city = "Enontekiö", lat = 69.05, lon = 20.79))
+        val shorterNoPostcode = collection(feature(osmId = 28, street = "Käsivarrentie", housenumber = "1462", city = "Enontekiö", lat = 69.05, lon = 20.79))
+        val house3 = collection(feature(osmId = 29, street = "Käsivarrentie", housenumber = "3", postcode = "99490", city = "Enontekiö", lat = 69.05, lon = 20.79))
+        listOf(shorter, shorterNoPostcode, house3, house3).forEach { server.enqueue(MockResponse().setBody(it)) }
+        val photon = client()
+
+        assertNull(photon.geocodeText("Käsivarrentie 14622, Enontekiö", null))
+        assertNull(photon.geocodeText("Käsivarrentie 14622, Enontekiö", null))
+        assertNull(photon.geocodeText("Käsivarrentie 14622 A 3, Enontekiö", null))
+        assertNull(photon.geocodeText("Käsivarrentie 14620-14622, Enontekiö", null))
+    }
+
+    @Test
+    fun `nimirivin vieras postinumero hylkää ketjun toisen toimipisteen`() = runTest {
+        server.enqueue(MockResponse().setBody(collection(feature(osmId = 26, name = "K-Market", street = "Kaukovainiontie", housenumber = "12", postcode = "90460", city = "Oulu", lat = 64.99, lon = 25.53))))
+
+        assertNull(client().geocodeText("K-Market 90100 Oulu", null))
+    }
+
+    @Test
+    fun `sana numero on talonumeron merkintä`() = runTest {
+        // Photon tuntee kadun vain nimellä: "numero" kadun ja talonumeron välissä ei tee rivistä toista katuosoitetta.
+        val street = collection(feature(osmId = 39, name = "Kauppakatu", postcode = "90100", city = "Oulu", type = "street", lat = 65.01, lon = 25.47))
+        listOf(street, street).forEach { server.enqueue(MockResponse().setBody(it)) }
+        val photon = client()
+
+        assertEquals("osm:N:39", photon.geocodeText("Kauppakatu numero 5, Oulu", null)?.placeId)
+        assertEquals("osm:N:39", photon.geocodeText("Kauppakatu num. 5, Oulu", null)?.placeId)
     }
 
     @Test
