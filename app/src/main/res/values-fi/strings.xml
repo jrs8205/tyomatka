@@ -569,6 +569,7 @@
     <string name="poi_add_next">Lisää seuraavaksi pysähdykseksi</string>
     <string name="poi_add_next_confirm">Lisätäänkö %1$s seuraavaksi pysähdykseksi? Nykyinen kohde %2$s siirtyy sen jälkeen.</string>
     <string name="poi_add_next_confirm_last">Lisätäänkö %1$s seuraavaksi pysähdykseksi?</string>
+    <string name="poi_add_end_confirm">Lisätäänkö %1$s päivän viimeiseksi stopiksi?</string>
     <string name="poi_added_next">Seuraava pysähdys: %1$s</string>
     <string name="poi_website">Asemasivu</string>
     <string name="poi_source">© OpenStreetMap-tekijät (ODbL)</string>

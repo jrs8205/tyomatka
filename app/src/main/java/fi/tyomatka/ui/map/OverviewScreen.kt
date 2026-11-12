@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -59,6 +60,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.tyomatka.R
 import fi.tyomatka.core.nav.RouteChoice
+import fi.tyomatka.core.poi.PoiServices
 import fi.tyomatka.ui.Tap
 import fi.tyomatka.data.db.StopEntity
 import fi.tyomatka.data.db.StopStatus
@@ -66,6 +68,7 @@ import fi.tyomatka.data.repo.ServiceStopPlacement
 import fi.tyomatka.ui.FullScreenDialog
 import fi.tyomatka.ui.poi.PoiButton
 import fi.tyomatka.ui.poi.PoiCard
+import fi.tyomatka.ui.poi.PoiCardText
 import fi.tyomatka.ui.poi.PoiCategorySheet
 import fi.tyomatka.ui.poi.ReportSheet
 import fi.tyomatka.ui.poi.PoiViewModel
@@ -285,8 +288,10 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
         )
     }
 
-    // Kohdekortti: Kartta-välilehdeltä kohde lisätään päivän listan loppuun.
+    // Kohdekortti: Kartta-välilehdeltä kohde lisätään päivän listan loppuun, ajon aikana vasta varmistuksen jälkeen.
     poiState.selection?.let { selection ->
+        // Kohteen mukaan: kortin sulkeutuessa kesken jäänyt kysymys ei aukea seuraavalle kohteelle.
+        var confirmAdd by remember(selection.item.id) { mutableStateOf(false) }
         // Ilmoita muutos korvaa kortin, kunnes se suljetaan; kortti palaa päivittyneenä.
         if (showPoiFix) {
             ReportSheet(
@@ -299,9 +304,32 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
             PoiCard(
                 selection = selection,
                 primaryText = stringResource(R.string.poi_add_stop),
-                onPrimary = { poiViewModel.addSelectedAsStop(ServiceStopPlacement.END) },
+                onPrimary = {
+                    when (mapPoiAddStep(poiState.driving)) {
+                        MapPoiAddStep.ASK -> confirmAdd = true
+                        MapPoiAddStep.ADD -> poiViewModel.addSelectedAsStop(ServiceStopPlacement.END)
+                    }
+                },
                 onFix = { showPoiFix = true },
                 onDismiss = { poiViewModel.select(null) },
+            )
+        }
+        if (confirmAdd) {
+            val poiName = PoiServices.displayName(selection.item) ?: stringResource(PoiCardText.categoryNameRes(selection.item.category))
+            AlertDialog(
+                onDismissRequest = { confirmAdd = false },
+                text = { Text(stringResource(R.string.poi_add_end_confirm, poiName), style = MaterialTheme.typography.bodyLarge) },
+                confirmButton = {
+                    TextButton(
+                        onClick = Tap {
+                            confirmAdd = false
+                            poiViewModel.addSelectedAsStop(ServiceStopPlacement.END)
+                        },
+                    ) { Text(stringResource(R.string.poi_confirm_yes)) }
+                },
+                dismissButton = {
+                    TextButton(onClick = Tap { confirmAdd = false }) { Text(stringResource(R.string.cancel)) }
+                },
             )
         }
     }

@@ -559,6 +559,7 @@
     <string name="poi_add_next">Lägg till som nästa stopp</string>
     <string name="poi_add_next_confirm">Vill du lägga till %1$s som nästa stopp? Nuvarande mål %2$s flyttas efter det.</string>
     <string name="poi_add_next_confirm_last">Vill du lägga till %1$s som nästa stopp?</string>
+    <string name="poi_add_end_confirm">Vill du lägga till %1$s som dagens sista stopp?</string>
     <string name="poi_added_next">Nästa stopp: %1$s</string>
     <string name="poi_website">Webbsida</string>
     <string name="poi_source">© OpenStreetMap-bidragsgivare (ODbL)</string>

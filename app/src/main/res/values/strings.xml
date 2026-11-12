@@ -569,6 +569,7 @@
     <string name="poi_add_next">Add as next stop</string>
     <string name="poi_add_next_confirm">Add %1$s as your next stop? Your current stop %2$s will come after it.</string>
     <string name="poi_add_next_confirm_last">Add %1$s as your next stop?</string>
+    <string name="poi_add_end_confirm">Add %1$s as the last stop of the day?</string>
     <string name="poi_added_next">Next stop: %1$s</string>
     <string name="poi_website">Station website</string>
     <string name="poi_source">© OpenStreetMap contributors (ODbL)</string>
