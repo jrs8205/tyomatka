@@ -53,13 +53,32 @@ class StopMatchingTest {
     }
 
     @Test
-    fun `talonumeron kirjain on eri talo`() {
-        // Kiinni numerossa oleva kirjain on oma talonsa (jakokirjain, Norjan bokstav); porras on erillinen kirjain.
+    fun `talonumeron kirjain ei erota stoppeja`() {
+        // Numeroon kiinni kirjoitettu kirjain on sama asia kuin erillinen porras: samaan talonumeroon riittää yksi stoppi.
         val oulu = GeoPoint(65.01236, 25.47158)
         val nextDoor = GeoPoint(65.01250, 25.47200)
-        assertFalse(isSameAddress("a", "Kauppakatu 5a, Oulu", oulu, "b", "Kauppakatu 5b, Oulu", nextDoor))
-        assertFalse(isSameAddress("no:1", "Storgata 10A, 9008 Tromsø", oulu, "no:2", "Storgata 10B, 9008 Tromsø", nextDoor))
-        assertFalse(isSameAddress("a", "Kauppakatu 5, Oulu", oulu, "b", "Kauppakatu 5a, Oulu", nextDoor))
+        assertTrue(isSameAddress("a", "Kauppakatu 5a, Oulu", oulu, "b", "Kauppakatu 5b, Oulu", nextDoor))
+        assertTrue(isSameAddress("a", "Kauppakatu 5, Oulu", oulu, "b", "Kauppakatu 5a, Oulu", nextDoor))
+        assertTrue(isSameAddress("a", "Kauppakatu 5a, Oulu", oulu, "b", "Kauppakatu 5 A, Oulu", nextDoor))
+        assertTrue(isSameAddress("a", "Kauppakatu 5b, Oulu", oulu, "b", "Kauppakatu 5 B 12, Oulu", nextDoor))
+        assertTrue(isSameAddress("a", "Kauppakatu 5a 3, Oulu", oulu, "b", "Kauppakatu 5 B, Oulu", nextDoor))
+        assertTrue(isSameAddress("a", "Studio, Kauppakatu 5a, 90100 Oulu", oulu, "b", "Kauppakatu 5b, Oulu", nextDoor))
+    }
+
+    @Test
+    fun `eri talonumero on eri talo, vaikka kirjain olisi sama`() {
+        val oulu = GeoPoint(65.01236, 25.47158)
+        val nextDoor = GeoPoint(65.01250, 25.47200)
+        assertFalse(isSameAddress("a", "Kauppakatu 5a, Oulu", oulu, "b", "Kauppakatu 7a, Oulu", nextDoor))
+        assertFalse(isSameAddress("a", "Kauppakatu 5 A 3, Oulu", oulu, "b", "Kauppakatu 3 A 5, Oulu", nextDoor))
+    }
+
+    @Test
+    fun `kirjaimella erottuvat kohteen nimet eri kaduilla ovat eri stopit`() {
+        val oulu = GeoPoint(65.01236, 25.47158)
+        val nextDoor = GeoPoint(65.01250, 25.47200)
+        assertFalse(isSameAddress("a", "Studio 24a, Hallituskatu, Oulu", oulu, "b", "Studio 24b, Kirkkokatu, Oulu", nextDoor))
+        assertTrue(isSameAddress("a", "Studio 24a, Hallituskatu, Oulu", oulu, "b", "Studio 24b, Hallituskatu, Oulu", nextDoor))
     }
 
     @Test
