@@ -283,6 +283,18 @@ object PoiCardText {
     fun electricPrice(value: String, strings: (Int, Array<out Any>) -> String): String =
         strings(R.string.poi_price_value, arrayOf(strings(R.string.fuel_kind_electric, emptyArray()), localDecimal(value)))
 
+    /**
+     * Huoltoaseman kortin latausrivit lähistön Fintrafficin latauspisteistä: rivi pistettä kohti, liittimet ja samalla
+     * rivillä pisteen hinta, kun Fintraffic kertoo sen. Näin hinta ei näytä koskevan muita pisteitä. Piste ilman
+     * luettavia liittimiä jää pois hintoineen.
+     */
+    fun nearbyChargingLines(chargingNearby: List<PoiItem>, strings: (Int, Array<out Any>) -> String): List<String> =
+        chargingNearby.mapNotNull { point ->
+            val connectors = point.tags["afir:connectors"]?.let { connectors(it, strings) }?.takeIf(String::isNotEmpty)
+                ?: return@mapNotNull null
+            listOfNotNull(connectors, point.tags["afir:price"]?.let { electricPrice(it, strings) }).joinToString(" · ")
+        }
+
     /** Luokan nimi valikossa (monikko) ja nimettömän kohteen varanimi (yksikkö). */
     fun categoryLabelRes(category: PoiCategory): Int = when (category) {
         PoiCategory.FUEL -> R.string.poi_cat_fuel

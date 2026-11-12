@@ -331,6 +331,25 @@ class PoiCardTextTest {
     }
 
     @Test
+    fun `huoltoaseman latausrivillä on pisteen liittimet ja saman pisteen hinta`() {
+        fun charger(id: String, tags: Map<String, String>) =
+            PoiItem(id, PoiCategory.CHARGING, GeoPoint(61.17, 23.67), "Lataus", null, null, false, tags)
+        val priced = charger("c1", mapOf("afir:connectors" to "CCS2:4:150", "afir:price" to "0.64 €/kWh"))
+        val unpriced = charger("c2", mapOf("afir:connectors" to "Type 2:2:22"))
+        val unreadable = charger("c3", mapOf("afir:connectors" to "rikki", "afir:price" to "0.50 €/kWh"))
+        val noConnectors = charger("c4", mapOf("afir:price" to "0.40 €/kWh"))
+        val pricedLine = PoiCardText.connectors("CCS2:4:150", strings) + " · Sähkö 0,64 €/kWh"
+        val unpricedLine = PoiCardText.connectors("Type 2:2:22", strings)
+        assertEquals(
+            listOf(pricedLine, unpricedLine),
+            PoiCardText.nearbyChargingLines(listOf(priced, unpriced, unreadable, noConnectors), strings),
+        )
+        // Hinta pysyy oman pisteensä rivillä, vaikka edellisellä pisteellä ei ole hintaa.
+        assertEquals(listOf(unpricedLine, pricedLine), PoiCardText.nearbyChargingLines(listOf(unpriced, priced), strings))
+        assertEquals(emptyList(), PoiCardText.nearbyChargingLines(emptyList(), strings))
+    }
+
+    @Test
     fun `asema-sana vain asemalla, muualla neutraali tila`() {
         listOf(PoiCategory.FUEL, PoiCategory.GAS).forEach {
             assertEquals(R.string.poi_report_station, PoiCardText.statusHeadingRes(it))

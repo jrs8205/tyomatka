@@ -86,7 +86,7 @@ internal fun StationSections(info: StationInfo, chargingNearby: List<PoiItem>, t
 
     Section(s(R.string.poi_section_shop), PoiCardText.shopLines(info, strings).map(::Line), listOf(info.services[ReportField.SHOP], info.hours[HoursKind.SHOP]), strings)
 
-    val afir = chargingNearby.mapNotNull { point -> point.tags["afir:connectors"]?.let { PoiCardText.connectors(it, strings) } }.filter(String::isNotEmpty)
+    val afir = PoiCardText.nearbyChargingLines(chargingNearby, strings)
     if (afir.isNotEmpty() && PoiCardText.showAfirCharging(info, chargingNearby)) {
         val dates = chargingNearby.mapNotNull { point -> point.tags["afir:date"]?.let { Sourced(Unit, InfoSource.AFIR, epochDay(it)) } }
         Section(s(R.string.poi_section_charging), afir.map(::Line), dates, strings)
