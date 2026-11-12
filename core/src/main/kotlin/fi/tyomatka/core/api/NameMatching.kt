@@ -19,7 +19,7 @@ internal fun similarName(candidate: String, wanted: String, maxTypos: Int): Bool
 /**
  * Katujen tavalliset lyhenteet auki: "Kauppak." → Kauppakatu, "Koulut." → Koulutie, "Pihlajakj." → Pihlajakuja,
  * "Kungsg." → Kungsgatan, "Mannerheimv." → Mannerheimvägen. Pelkkä alku ei kelpaa vertailuun: "Kauppak." osuisi
- * myös Kauppakujaan. Alussa vähintään kolme kirjainta: lyhyet sanat ("rak.", "ent.", Viron "mnt.") eivät ole katuja.
+ * myös Kauppakujaan. Alussa vähintään kolme kirjainta: lyhyet sanat ("rak.", "ent.") eivät ole katuja.
  */
 internal fun expandStreetAbbreviations(text: String): String =
     ABBREVIATION.replace(text) { m -> m.groupValues[1] + STREET_SUFFIXES.getValue(m.groupValues[2].lowercase()) }

@@ -73,7 +73,7 @@ class BusinessPlaceResolver(
 
 private val whitespace = Regex("\\s+")
 private val houseNumber = Regex("^(\\d+)(\\p{L}?)")
-/** Porras tai huoneiston, liiketilan tai kerroksen merkintä: 1–3 kirjainta, piste sallittu ("B", "as", "LH", "lgh", "krs"). */
+/** Porras tai huoneiston, liiketilan tai kerroksen merkintä: 1–3 kirjainta, piste sallittu ("B", "as", "LH", "bst", "krs"). */
 private val unitMark = Regex("^\\p{L}{1,3}\\.?$")
 private val digits = Regex("^\\d+$")
 private val ordinal = Regex("^\\d+\\.$")
@@ -90,7 +90,7 @@ private fun startsWithDigit(word: String) = word.firstOrNull()?.isDigit() == tru
 /**
  * Kadun nimi ja talonumero kirjaimineen ("teollisuustie" ja "3a") osoitteen ensimmäisestä pilkkuosasta; ilman numeroa
  * null. Talonumero luetaan lopusta, jotta kadun nimen numero säilyy nimessä ("Linja 3 4", "3. linja 4"). Sitä ennen pois
- * talonumeron perässä oleva merkintä numeroineen ("12 B 5", "3 as 5", "5 lgh 1102", "4 A", yhteen kirjoitettuna "3 A5"),
+ * talonumeron perässä oleva merkintä numeroineen ("12 B 5", "3 as 5", "5 bst 12", "4 A", yhteen kirjoitettuna "3 A5"),
  * huoneisto kirjaimellisen talonumeron perässä ("3A 5"), kerros ("10 3. krs") ja välin loppu ("2 - 6"; "2-6" on yksi
  * sana). Merkintä poistetaan vain talonumeron perästä, joten "Kustaa III 5" säilyy.
  */

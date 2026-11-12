@@ -51,7 +51,7 @@ class PhotonClient(
 
     /**
      * Sijaintipainotus. Oletuspainolla Photon nostaa tunnetun kohteen kauempaa lähiosuman ohi
-     * (Göteborgissa "Kungsgatan 10" → Marstrand); `location_bias_scale=0` + `zoom=14` painottaa
+     * (kaupungissa haettu katu löytyy naapurikunnasta); `location_bias_scale=0` + `zoom=14` painottaa
      * pelkkää etäisyyttä, eikä kaupungin nimen sisältävä kaukohaku kärsi.
      */
     private fun HttpUrl.Builder.bias(location: GeoPoint?) = apply {
@@ -117,81 +117,52 @@ class PhotonClient(
     }
 
     /**
-     * Tuloksen katu on jossakin rivin osassa (lyhenteet auki, pieni kirjoitusvirhe sallitaan), ja sen vieressä oleva
+     * Tuloksen katu on jossakin rivin osassa (lyhenteet auki, pieni kirjoitusvirhe sallitaan), ja sen perässä oleva
      * talonumero täsmää tuloksen numeroon, jos molemmissa on numero. Photon antaa paikkakunnan sisältä muun kohteen
      * ("Hakatie 2, Piikkiö" → Piikkiön rautatieasema; "Kauppak. 5, Oulu" → Kauppakeskus Valkea) tai saman
      * kadun toisen talon ("Isok. 10, Oulu" → Isokatu 102). Jos katu ei ole rivillä, tuloksen nimi kelpaa vain, kun
      * rivillä ei ole nimen lisäksi katuosoitetta ([hasStreetAddress]): samanniminen ketjukohde tulee muuten väärältä
      * kadulta ("R-kioski, Kauppakatu 5, Oulu" → R-kioski Isokatu 20), ja väärä stoppi on pahempi kuin hylätty rivi.
+     *
+     * Osoitteet ovat suomalaisia: talonumero on kadun perässä ja postinumero viisinumeroinen. Rivin postinumero
+     * ([postcodeAt]) ei ole talonumero, vaikka Photonin postinumero olisi toinen tai puuttuisi ("Mannerheimintie 00100
+     * Helsinki", "Kirkkotie 95100 Suomi"). Kadun nimen numeron pitää täsmätä tarkasti: "3. linja" ei ole "4. linja".
      */
     private fun streetMatches(result: Resolved, line: String): Boolean {
         val street = result.street?.words().orEmpty()
         val name = result.name?.words().orEmpty()
-        val names = listOf(street, name).filter { it.isNotEmpty() }
-        val postcode = result.postcode?.words().orEmpty()
-        val split = line.split(',').map { part ->
-            // Numeroväli alkunsa mukaan ("10-12 Rue de Rivoli" → 10), paitsi väliviivallinen postinumero ("00-950").
-            NUMBER_RANGE.replace(expandStreetAbbreviations(part)) { if (it.value.words() == postcode) it.value else it.groupValues[1] }
-                .words()
-        }
-        // Postinumero poistetaan vain yhdestä esiintymästä, koska talonumero voi olla sama luku. Esiintymä on
-        // postinumero, kun se on kaksiosainen ("411 19"), oma osansa ("Hverfisgata 101 Reykjavík, 101"), tuloksen
-        // paikkakunnan edellä ("Mannerheimintie 00100 Helsinki", "101 Reykjavík, Hverfisgata 101") tai vähintään
-        // nelinumeroisena osan lopussa kadun perässä, kun kadun edellä on numero ("10 Storgata 9008", "Bónus 10
-        // Storgata 9008"), joka ei ole rivin alun listan numero ("3. Storgata 9008": Photon tulkitsisi listan numeron
-        // talonumeroksi). Kolminumeroinen (Islanti) on kadun perässä talonumero, koska siellä talonumero tulee kadun
-        // jälkeen ("Studio 24 Hverfisgata 101", "3. Hverfisgata 101"). Muuten kadun vieressä luku on talonumero
-        // ("Hverfisgata 101, Reykjavík", "101 Hverfisgata", "Reykjavík 101, Hverfisgata 101"). Paikkakunta
-        // tunnistetaan tuloksen tiedoista (kaupunki, kaupunginosa, kylä, seutukunta, maakunta, maa), ei mistä tahansa
-        // luvun perässä olevasta sanasta: porraskirjain, kerros tai rakennus ("Hverfisgata 101 A", "Hverfisgata 101
-        // kjallari") jättää talonumeron paikalleen. Maan nimi kelpaa vain vähintään
-        // nelinumeroisen perässä ("Kirkkotie 95100 Suomi", "10 Storgata 9008 Norge"), koska Islannissa kolminumeroinen
-        // kadun perässä on talonumero myös maan edellä ("Hverfisgata 101 Ísland"). Usean
-        // postinumeroksi tulkitun esiintymän rivillä postinumero on viimeinen ("Hverfisgata 101 Reykjavík, 101").
-        val found = if (postcode.isEmpty()) emptyList() else split.flatMapIndexed { index, words ->
-            words.windowed(postcode.size).withIndex().filter { it.value == postcode }.map { index to it.index }
-        }
         val listNumber = LIST_NUMBER.containsMatchIn(line)
-        val places = result.placeNames().map { it.words() }.filter { it.isNotEmpty() }
-        val countries = result.countryNames().map { it.words() }.filter { it.isNotEmpty() }
-        fun isPostcode(index: Int, at: Int): Boolean {
-            val words = split[index]
-            if (postcode.size > 1 || words.size == postcode.size) return true
-            val rest = words.drop(at + postcode.size)
-            if (rest.isEmpty()) return postcode.single().length >= 4 && names.any { name ->
-                val street = at - name.size
-                street >= 1 && words[street - 1].isNumber() && !(listNumber && index == 0 && street == 1) &&
-                    similarName(words.subList(street, at).joinToString(" "), name.joinToString(" "), maxTypos = 2)
-            }
-            fun follows(place: List<String>) =
-                similarName(rest.take(place.size).joinToString(" "), place.joinToString(" "), maxTypos = 2)
-            return places.any(::follows) || (postcode.single().length >= 4 && countries.any(::follows))
-        }
-        val (postcodePart, postcodeAt) = found.lastOrNull { (index, at) -> isPostcode(index, at) } ?: (-1 to -1)
-        val parts = split.mapIndexed { index, words ->
-            if (index == postcodePart) words.take(postcodeAt) + words.drop(postcodeAt + postcode.size) else words
+        // Numeroväli alkunsa mukaan ("Kauppakatu 5-7" → 5).
+        val parts = line.split(',').map { part ->
+            NUMBER_RANGE.replace(expandStreetAbbreviations(part)) { it.groupValues[1] }.words()
         }
         val house = result.housenumber?.takeWhile { it.isDigit() }?.ifEmpty { null }
         fun matches(number: String?): Boolean {
             val wanted = number?.takeWhile { it.isDigit() }
             return wanted == null || house == null || wanted == house
         }
-        fun indexOf(words: List<String>, wanted: List<String>) = words.windowed(wanted.size).indexOfFirst {
-            similarName(it.joinToString(" "), wanted.joinToString(" "), maxTypos = 2)
+        fun indexOf(words: List<String>, wanted: List<String>) = words.windowed(wanted.size).indexOfFirst { window ->
+            window.indices.all { (!window[it].isNumber() && !wanted[it].isNumber()) || window[it] == wanted[it] } &&
+                similarName(window.joinToString(" "), wanted.joinToString(" "), maxTypos = 2)
+        }
+        // Kadun tai nimen perässä oleva talonumero osassa [index]; rivin postinumero ohitetaan.
+        fun numberAfter(index: Int, at: Int, size: Int, distant: Boolean): Int? {
+            val postcode = postcodeAt(parts, result.postcode, house)
+            return houseNumberAt(parts[index], at, size, distant, postcode?.takeIf { it.first == index }?.second)
         }
         if (street.isNotEmpty()) {
-            for (words in parts) {
+            for ((index, words) in parts.withIndex()) {
                 val at = indexOf(words, street)
-                if (at >= 0) return matches(houseNumberAt(words, at, street.size, distant = true)?.let { words[it] })
+                if (at >= 0) return matches(numberAfter(index, at, street.size, distant = true)?.let { words[it] })
             }
         }
-        // Katu ei ole rivillä: nimi (ketjukohde tai katu, jolle Photon ei tiedä taloa) kelpaa, kun sen vieressä oleva
+        // Katu ei ole rivillä: nimi (ketjukohde tai katu, jolle Photon ei tiedä taloa) kelpaa, kun sen perässä oleva
         // numero täsmää eikä rivillä ole muuta katuosoitetta.
         if (name.isNotEmpty()) {
             for ((index, words) in parts.withIndex()) {
                 val at = indexOf(words, name)
                 if (at < 0) continue
-                val numberAt = houseNumberAt(words, at, name.size, distant = false)
+                val numberAt = numberAfter(index, at, name.size, distant = false)
                 return matches(numberAt?.let { words[it] }) &&
                     !hasStreetAddress(parts, result.city?.words().orEmpty(), listNumber, index, at until at + name.size, numberAt)
             }
@@ -200,28 +171,38 @@ class PhotonClient(
     }
 
     /**
-     * Rivin osan kohdasta [at] alkavan kadun tai nimen talonumeron paikka. Talonumero on nimen vieressä: ensin perässä
-     * ("Straße des 17. Juni 135", "Hauptstraße Nr. 5", listarivi "3. Kungsgatan 10"), sitten edellä ("10 Rue de Rivoli
-     * Apt 2"). Perässä oleva viisinumeroinen on postinumero, kun edellä on numero ("10 Rue de Rivoli 75004 Paris",
-     * vaikka tuloksesta puuttuisi postinumero); nelinumeroinen voi olla maaseudun talonumero ("3. Iijoentie 1234").
-     * Kauempana oleva numero kelpaa vasta sitten ja vain kadulle ([distant]): nimen kohdalla se on toisen kadun
-     * talonumero.
+     * Rivin postinumeron paikka (osa ja sana) tai null. Postinumero on viisinumeroinen luku: tuloksen postinumeroa
+     * vastaava, muuten rivin viimeinen. Rivin ainoa viisinumeroinen on kuitenkin talonumero, kun tuloksen talonumero
+     * on viisinumeroinen ("Käsivarrentie 14622") eikä luku ole tuloksen postinumero.
      */
-    private fun houseNumberAt(words: List<String>, at: Int, size: Int, distant: Boolean): Int? {
-        val after = (at + size until words.size).dropWhile { words[it] in HOUSE_NUMBER_MARKERS }
-        val before = 0 until at
+    private fun postcodeAt(parts: List<List<String>>, postcode: String?, house: String?): Pair<Int, Int>? {
+        val candidates = parts.flatMapIndexed { index, words ->
+            words.indices.filter { words[it].isPostcode() }.map { index to it }
+        }
+        val known = postcode?.trim()
+        candidates.lastOrNull { (part, word) -> parts[part][word] == known }?.let { return it }
+        if (candidates.size == 1 && house?.length == 5) return null
+        return candidates.lastOrNull()
+    }
+
+    /**
+     * Rivin osan kohdasta [at] alkavan kadun tai nimen talonumeron paikka. Talonumero on nimen perässä ("Kauppakatu 5",
+     * "Kauppakatu nro 5", listarivi "3. Iijoentie 1234"): rivin alun listan numero tai kohteen nimen numero kadun
+     * edellä ei ole talonumero, eikä rivin postinumero ([postcode], paikka osassa). Kauempana perässä oleva numero
+     * kelpaa vasta sitten ja vain kadulle ([distant]): nimen kohdalla se on toisen kadun talonumero.
+     */
+    private fun houseNumberAt(words: List<String>, at: Int, size: Int, distant: Boolean, postcode: Int?): Int? {
+        val after = (at + size until words.size).filter { it != postcode }.dropWhile { words[it] in HOUSE_NUMBER_MARKERS }
         val next = after.firstOrNull()?.takeIf { words[it].isNumber() }
-        val previous = before.lastOrNull()?.takeIf { words[it].isNumber() }
-        val near = if (previous != null && next != null && words[next].digits() >= 5) previous else next ?: previous
-        if (near != null || !distant) return near
-        return after.firstOrNull { words[it].isNumber() } ?: before.lastOrNull { words[it].isNumber() }
+        if (next != null || !distant) return next
+        return after.firstOrNull { words[it].isNumber() }
     }
 
     /**
      * Rivillä on nimen ([namePart], [nameRange]) ja sen talonumeron ([numberAt]) lisäksi katuosoite: numero, jonka
-     * vieressä on muu sana kuin paikkakunta tai talonumeron merkintä ("Kauppakatu 5", "10 Storgata"). Postinumero ei
-     * ole katuosoite: viisinumeroinen ("00120 Helsinki", vaikka tuloksen postinumero olisi toinen), paikkakunnan
-     * vieressä oleva ("9008 Tromsø") tai rivin alun listan numero. Epäselvä rivi hylätään mieluummin kuin hyväksytään.
+     * vieressä on muu sana kuin paikkakunta tai talonumeron merkintä ("Kauppakatu 5"). Vähintään viisinumeroinen luku
+     * (postinumero "00120 Helsinki", puhelinnumero) ja rivin alun listan numero eivät ole katuosoitteita. Epäselvä rivi
+     * hylätään mieluummin kuin hyväksytään.
      */
     private fun hasStreetAddress(
         parts: List<List<String>>,
@@ -246,6 +227,9 @@ class PhotonClient(
     private fun String.isNumber() = first().isDigit()
 
     private fun String.digits() = takeWhile { it.isDigit() }.length
+
+    /** Suomen postinumero: tasan viisi numeroa. */
+    private fun String.isPostcode() = length == 5 && all { it.isDigit() }
 
     /** Pienet kirjaimet ilman tarkkeita sanoiksi pilkottuna: "Mänttä-Vilppula" → [mantta, vilppula]. */
     private fun String.words(): List<String> =
@@ -288,11 +272,6 @@ class PhotonClient(
             name = p.name,
             street = p.street,
             housenumber = p.housenumber,
-            district = p.district,
-            locality = p.locality,
-            county = p.county,
-            state = p.state,
-            country = p.country,
             countrycode = p.countrycode,
         )
     }
@@ -306,25 +285,8 @@ class PhotonClient(
         val name: String?,
         val street: String?,
         val housenumber: String?,
-        val district: String? = null,
-        val locality: String? = null,
-        val county: String? = null,
-        val state: String? = null,
-        val country: String? = null,
         val countrycode: String? = null,
-    ) {
-        /** Tuloksen paikkakuntatiedot: kaupunki sekä kaupunginosa, kylä, seutukunta ja maakunta, jos Photon ne antaa. */
-        fun placeNames(): List<String> = listOfNotNull(city, district, locality, county, state)
-
-        /**
-         * Tuloksen maan nimet. Photon antaa maan nimen vain pyydetyllä kielellä, mutta rivillä se voi olla toisella
-         * ("Kirkkotie 95100 Finland"), joten mukana ovat myös maakoodin mukaiset nimet [COUNTRY_NAMES]-taulukosta.
-         * Erillään [placeNames]ista, koska maan nimi kelpaa paikkakuntatiedoksi vain vähintään nelinumeroisen
-         * postinumeron perässä ([streetMatches]).
-         */
-        fun countryNames(): List<String> =
-            listOfNotNull(country) + COUNTRY_NAMES[countrycode?.uppercase(Locale.ROOT)].orEmpty()
-    }
+    )
 
     private companion object {
         val ADDRESS_TYPES = setOf("house", "street")
@@ -333,16 +295,11 @@ class PhotonClient(
         val NOT_WORD = Regex("""[^\p{L}\p{N}]+""")
         val NUMBER_RANGE = Regex("""(\d+)\s*[-–]\s*\d+""")
 
-        /** Listan numero rivin alussa: "3. Storgata 9008", "3) Storgata 9008". */
+        /** Listan numero rivin alussa: "3. Iijoentie 1234", "3) Iijoentie 1234". */
         val LIST_NUMBER = Regex("""^\s*\d+[.)]\s""")
 
-        /** Talonumeron merkinnät kadun ja numeron välissä: "Nr. 5", "nº 10", "n.º 10", "n. 3", "nro 7". */
-        val HOUSE_NUMBER_MARKERS = setOf("nr", "nro", "no", "n", "nº", "º", "num", "numero")
-
-        /** Maan nimi maakoodin mukaan suomeksi ja englanniksi (haku rajataan Suomeen). */
-        val COUNTRY_NAMES = mapOf(
-            "FI" to listOf("Suomi", "Finland"),
-        )
+        /** Talonumeron merkinnät kadun ja numeron välissä: "nro 7", "nr 5", "n:o 3". */
+        val HOUSE_NUMBER_MARKERS = setOf("nro", "nr", "no", "n", "o")
     }
 }
 
@@ -365,10 +322,5 @@ internal data class PhotonProperties(
     val housenumber: String? = null,
     val postcode: String? = null,
     val city: String? = null,
-    val district: String? = null,
-    val locality: String? = null,
-    val county: String? = null,
-    val state: String? = null,
-    val country: String? = null,
     val countrycode: String? = null,
 )

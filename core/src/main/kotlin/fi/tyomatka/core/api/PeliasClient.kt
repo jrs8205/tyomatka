@@ -145,7 +145,7 @@ class PeliasClient(
         val location = GeoPoint(lat = coords[1], lng = coords[0])
         // Labelin osat kantavat paikkakunnan haun kielellä ("Storgatan 1, Uleåborg").
         val placeNames = listOfNotNull(p.locality, p.localadmin, p.region, p.neighbourhood) + p.label?.split(',').orEmpty()
-        // Kadun nimet: street-kenttä sellaisenaan (nimessä voi olla numero: "Straße des 17. Juni") sekä nimen ja
+        // Kadun nimet: street-kenttä sellaisenaan (nimessä voi olla numero: "3. linja") sekä nimen ja
         // labelin alku ilman talonumeroa, sulkeissa oleva kieliversio omana nimenään
         // ("Kuninkaankatu 10 (Kungsgatan 10)" → Kuninkaankatu, Kungsgatan).
         val streetNames = listOfNotNull(p.street) + listOfNotNull(p.name, p.label?.substringBefore(','))
@@ -169,15 +169,14 @@ class PeliasClient(
         listOf(substringBefore('(')) + listOfNotNull(substringAfter('(', "").substringBefore(')').ifBlank { null })
 
     /**
-     * Talonumero pois nimen lopusta tai alusta ("Mannerheimvägen 10", "10 Avenue du 8 Mai 1945"). Ilman
-     * tunnettua numeroa poistetaan lopun numero porraskirjaimineen ("Kauppakatu 5 A 3").
+     * Talonumero pois nimen lopusta ("Mannerheimvägen 10"). Ilman tunnettua numeroa poistetaan lopun numero
+     * porraskirjaimineen ("Kauppakatu 5 A 3").
      */
     private fun String.withoutHouseNumber(housenumber: String?): String {
         val text = trim()
         val number = housenumber?.trim()?.ifBlank { null }
         return when {
             number != null && text.endsWith(" $number", ignoreCase = true) -> text.dropLast(number.length + 1)
-            number != null && text.startsWith("$number ", ignoreCase = true) -> text.drop(number.length + 1)
             else -> text.replace(HOUSE_NUMBER_TAIL, "")
         }.trim()
     }

@@ -245,7 +245,7 @@ class BusinessPlaceResolverTest {
     fun `huoneisto-, liiketila- ja kerrosmerkinnät ohitetaan`() {
         assertTrue(sameStreetNumber("Teollisuustie 3 as 5", "Teollisuustie 3, Askola"))
         assertTrue(sameStreetNumber("Kauppakatu 12 LH 3", "Kauppakatu 12, Porvoo"))
-        assertTrue(sameStreetNumber("Storgatan 5 lgh 1102", "Storgatan 5, Jakobstad"))
+        assertTrue(sameStreetNumber("Storgatan 5 bst 12", "Storgatan 5, Jakobstad"))
         assertTrue(sameStreetNumber("Kauppakatu 10 3. krs", "Kauppakatu 10, Porvoo"))
         assertTrue(sameStreetNumber("Kauppakatu 12 as. 3", "Kauppakatu 12, Porvoo"))
         // Lyhyt sana kadun nimessä ei ole merkintä, kun sitä ei edellä talonumero.

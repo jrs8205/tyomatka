@@ -53,7 +53,7 @@ class FallbackPlaceSearchTest {
         assertEquals("a:1", search.placeDetails("a:1").placeId)
         assertEquals("b:1", search.placeDetails("b:1").placeId)
         assertFailsWith<ApiException> { search.placeDetails("x:1") }
-        assertEquals("b:9", search.geocodeText("Kungsgatan 10 Göteborg", null)?.placeId)
+        assertEquals("b:9", search.geocodeText("Kauppakatu 10 Oulu", null)?.placeId)
         assertNull(FallbackPlaceSearch(listOf(FakeSearch())).geocodeText("xyzzy", null))
     }
 

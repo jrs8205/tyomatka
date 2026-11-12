@@ -359,31 +359,31 @@ class PeliasClientTest {
         server.enqueue(
             MockResponse().setBody(
                 searchResult(
-                    "berlin",
+                    "helsinki",
                     feature(
-                        "gid:1", "Straße des 17. Juni 135", street = "Straße des 17. Juni", housenumber = "135",
-                        locality = "Berlin", label = "Straße des 17. Juni 135, Berlin, Germany", confidence = 0.9,
+                        "gid:1", "3. linja 12", street = "3. linja", housenumber = "12",
+                        locality = "Helsinki", label = "3. linja 12, Helsinki", confidence = 0.9,
                     ),
-                    parsedStreet = "straße des 17. juni",
+                    parsedStreet = "3. linja",
                 )
             )
         )
         server.enqueue(
             MockResponse().setBody(
                 searchResult(
-                    "sevran",
+                    "ii",
                     feature(
-                        "gid:2", "10 Avenue du 8 Mai 1945", street = "Avenue du 8 Mai 1945", housenumber = "10",
-                        locality = "Sevran", label = "10 Avenue du 8 Mai 1945, Sevran, France", confidence = 0.9,
+                        "gid:2", "Tie 866 15", street = "Tie 866", housenumber = "15",
+                        locality = "Ii", label = "Tie 866 15, Ii", confidence = 0.9,
                     ),
-                    parsedStreet = "avenue du 8 mai 1945",
+                    parsedStreet = "tie 866",
                 )
             )
         )
         val c = client()
 
-        assertEquals("gid:1", c.geocodeText("Straße des 17. Juni 135, Berlin")?.placeId)
-        assertEquals("gid:2", c.geocodeText("10 Avenue du 8 Mai 1945, Sevran")?.placeId)
+        assertEquals("gid:1", c.geocodeText("3. linja 12, Helsinki")?.placeId)
+        assertEquals("gid:2", c.geocodeText("Tie 866 15, Ii")?.placeId)
     }
 
     @Test
