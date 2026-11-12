@@ -38,7 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -247,8 +247,8 @@ private fun NearbyContent(
 
 @Composable
 private fun NearbyRowItem(row: NearbyRow, onOpen: () -> Unit, onAdd: () -> Unit) {
-    val context = LocalContext.current
-    val strings: (Int, Array<out Any>) -> String = { id, args -> context.getString(id, *args) }
+    val resources = LocalResources.current
+    val strings: (Int, Array<out Any>) -> String = { id, args -> resources.getString(id, *args) }
     val item = row.item
     val info = row.info
     // Sama nimi kuin kortissa ja lisätyssä stopissa (nimi tai ketju).

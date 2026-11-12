@@ -1,14 +1,17 @@
 package fi.tyomatka.work
 
+import android.Manifest
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -74,7 +77,7 @@ class WorkReminderManager @Inject constructor(
         val day = routeDayDao.byDate(today)
         val hasSegments = day != null && workSegmentDao.forDay(day.id).isNotEmpty()
         val prefs = dataStore.data.first()
-        val notifications = NotificationManagerCompat.from(context).areNotificationsEnabled()
+        val notifications = canPostNotifications()
         if (!shouldRemindWork(hasSegments, today, prefs[SKIPPED_DAY], prefs[NOTIFIED_DAY], notifications)) return
         dataStore.edit { it[NOTIFIED_DAY] = today }
         showNotification()
@@ -91,6 +94,14 @@ class WorkReminderManager @Inject constructor(
     fun cancelReminder() {
         NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID)
     }
+
+    /** Android 13+: ilman POST_NOTIFICATIONS-lupaa areNotificationsEnabled on jo false,
+     *  mutta lupa tarkistetaan myös suoraan. */
+    private fun canPostNotifications(): Boolean =
+        NotificationManagerCompat.from(context).areNotificationsEnabled() &&
+            (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED)
 
     private fun showNotification() {
         val manager = NotificationManagerCompat.from(context)
@@ -125,7 +136,11 @@ class WorkReminderManager @Inject constructor(
             .addAction(0, context.getString(R.string.work_reminder_record), recordIntent)
             .addAction(0, context.getString(R.string.work_reminder_skip), skipIntent)
             .build()
-        manager.notify(NOTIFICATION_ID, notification)
+        try {
+            manager.notify(NOTIFICATION_ID, notification)
+        } catch (_: SecurityException) {
+            // Lupa peruttu tarkistuksen jälkeen: muistutus jää näyttämättä.
+        }
     }
 
     private fun getSystemService(context: Context): NotificationManager =

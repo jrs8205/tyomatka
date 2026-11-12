@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -63,7 +64,8 @@ fun PoiCard(
     maxHeightFraction: Float = 0.9f,
 ) {
     val context = LocalContext.current
-    val strings: (Int, Array<out Any>) -> String = { id, args -> context.getString(id, *args) }
+    val resources = LocalResources.current
+    val strings: (Int, Array<out Any>) -> String = { id, args -> resources.getString(id, *args) }
     val item = selection.item
     val maxHeight = (LocalConfiguration.current.screenHeightDp * maxHeightFraction).dp
     val website = PoiServices.website(item) ?: item.tags["k:url"]?.takeIf { it.startsWith("https://") }

@@ -34,7 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
@@ -87,8 +87,8 @@ fun ReportSheet(
     var hoursField by remember(item.id) { mutableStateOf<ReportField?>(null) }
     var confirm by remember(item.id) { mutableStateOf<Pair<ReportField, String>?>(null) }
     val maxHeight = (LocalConfiguration.current.screenHeightDp * maxHeightFraction).dp
-    val context = LocalContext.current
-    val strings: (Int, Array<out Any>) -> String = { id, args -> context.getString(id, *args) }
+    val resources = LocalResources.current
+    val strings: (Int, Array<out Any>) -> String = { id, args -> resources.getString(id, *args) }
     val today = LocalDate.now().toEpochDay()
     val labels = PoiCardText.hoursLabels(strings)
 
