@@ -4,6 +4,8 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,6 +51,7 @@ import fi.tyomatka.ui.settings.bottomBarVisible
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private data class Tab(val route: String, val labelRes: Int, val icon: @Composable () -> Unit)
@@ -123,7 +127,11 @@ fun TyomatkaNavHost(
 
     Scaffold(
         bottomBar = {
-            if (bottomBarVisible(hideBottomBar, currentRoute, driving)) NavigationBar {
+            // Reunoilla sama 8 dp kuin kohteiden välissä: suurella fontilla uloimpien kohteiden nimet eivät ulotu
+            // näytön reunaan asti.
+            if (bottomBarVisible(hideBottomBar, currentRoute, driving)) NavigationBar(
+                windowInsets = NavigationBarDefaults.windowInsets.add(WindowInsets(left = 8.dp, right = 8.dp)),
+            ) {
                 tabs.forEach { tab ->
                     NavigationBarItem(
                         selected = currentRoute == tab.route,
