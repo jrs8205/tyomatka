@@ -253,7 +253,8 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
                 onClick = Tap { showReorder = true },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                icon = { Icon(Icons.Filled.SwapVert, null) },
+                // Laajennettavan napin teksti ei näy saavutettavuuspalveluille; nimi tulee kuvakkeen kuvauksesta.
+                icon = { Icon(Icons.Filled.SwapVert, contentDescription = stringResource(R.string.reorder_stops)) },
                 text = { Text(stringResource(R.string.reorder_stops)) },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

@@ -162,7 +162,8 @@ fun PlanScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = Tap { showAddSheet = true },
-                icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
+                // Laajennettavan napin teksti ei näy saavutettavuuspalveluille; nimi tulee kuvakkeen kuvauksesta.
+                icon = { Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.add_stop)) },
                 text = { Text(stringResource(R.string.add_stop), fontWeight = FontWeight.Bold) },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
