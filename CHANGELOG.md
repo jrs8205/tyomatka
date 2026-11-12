@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.1.0 (2026-11-12)
+
+A new look for the whole app.
+
+- One shared look on every page, form and dialog, with AAA contrast in the
+  light and dark themes and text up to 150 %.
+- Work Trip: one week, month or year at a time, browsed with arrows or a
+  swipe, with the kilometres, the fuel and its cost at the top and the
+  other periods listed below. A chosen day shows all its drives and
+  fill-ups.
+- The Today card shows the odometer readings from start to end and says
+  "in progress" while the work day continues.
+- Plan: the day's stops as a numbered timeline with the arrival time next to
+  each stop.
+- The app opens on Work Trip; the bottom bar is Work Trip, Plan, Map, Drive.
+- Fastest or Shortest is chosen on the Map page, and Shortest stays for the
+  day it was chosen.
+- Days with a note or a photo are marked in the list.
+- Drive: the speed and the speed limit stay visible above the closed bottom
+  panel.
+- Large font sizes: units stay on the same line as their numbers, the route
+  fits below the route cards on the map, and nearby results stay visible
+  above the keyboard.
+
 ## 1.0.0 (2026-11-03)
 
 First public release.
