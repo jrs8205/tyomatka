@@ -1,10 +1,13 @@
 package fi.tyomatka.ui.poi
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -13,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -37,39 +41,44 @@ fun PoiCategorySheet(
     onRouteOnly: (Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ModalBottomSheet(dragHandle = { AppDragHandle() }, onDismissRequest = onDismiss) {
-        Text(
-            stringResource(R.string.poi_sheet_title),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        )
-        PoiCategory.entries.forEach { category ->
-            SwitchRow(
-                title = stringResource(PoiCardText.categoryLabelRes(category)),
-                hint = null,
-                icon = PoiCardText.categoryIcon(category),
-                checked = category in settings.categories,
-                onChecked = { onToggle(category) },
+    // Avautuu suoraan koko korkeuteensa: puolikorkeana tarkennukset (raskas kalusto, reitin varrella) jäisivät piiloon.
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(sheetState = sheetState, dragHandle = { AppDragHandle() }, onDismissRequest = onDismiss) {
+        // Suurella fontilla sisältö voi olla näyttöä korkeampi: silloin se vierii.
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            Text(
+                stringResource(R.string.poi_sheet_title),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
-        }
-        HorizontalDivider(Modifier.padding(vertical = 8.dp))
-        SwitchRow(
-            title = stringResource(R.string.poi_heavy_only),
-            hint = stringResource(R.string.poi_heavy_only_hint),
-            icon = null,
-            checked = settings.heavyOnly,
-            onChecked = { onHeavyOnly(!settings.heavyOnly) },
-        )
-        if (hasRoute) {
+            PoiCategory.entries.forEach { category ->
+                SwitchRow(
+                    title = stringResource(PoiCardText.categoryLabelRes(category)),
+                    hint = null,
+                    icon = PoiCardText.categoryIcon(category),
+                    checked = category in settings.categories,
+                    onChecked = { onToggle(category) },
+                )
+            }
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SwitchRow(
-                title = stringResource(R.string.poi_route_only),
-                hint = stringResource(R.string.poi_route_only_hint),
+                title = stringResource(R.string.poi_heavy_only),
+                hint = stringResource(R.string.poi_heavy_only_hint),
                 icon = null,
-                checked = settings.routeOnly,
-                onChecked = { onRouteOnly(!settings.routeOnly) },
+                checked = settings.heavyOnly,
+                onChecked = { onHeavyOnly(!settings.heavyOnly) },
             )
+            if (hasRoute) {
+                SwitchRow(
+                    title = stringResource(R.string.poi_route_only),
+                    hint = stringResource(R.string.poi_route_only_hint),
+                    icon = null,
+                    checked = settings.routeOnly,
+                    onChecked = { onRouteOnly(!settings.routeOnly) },
+                )
+            }
+            Spacer(Modifier.height(24.dp))
         }
-        Spacer(Modifier.height(24.dp))
     }
 }
 
