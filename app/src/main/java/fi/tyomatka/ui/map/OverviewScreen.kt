@@ -66,6 +66,7 @@ import fi.tyomatka.data.db.StopEntity
 import fi.tyomatka.data.db.StopStatus
 import fi.tyomatka.data.repo.ServiceStopPlacement
 import fi.tyomatka.ui.FullScreenDialog
+import fi.tyomatka.ui.components.noticeLiveRegion
 import fi.tyomatka.ui.poi.PoiButton
 import fi.tyomatka.ui.poi.PoiCard
 import fi.tyomatka.ui.poi.PoiCardText
@@ -244,7 +245,7 @@ fun OverviewScreen(viewModel: OverviewViewModel = hiltViewModel(), poiViewModel:
 
         poiState.notice?.let { notice ->
             Snackbar(
-                modifier = Modifier.align(Alignment.BottomCenter).padding(start = 16.dp, end = 16.dp, bottom = 96.dp),
+                modifier = Modifier.align(Alignment.BottomCenter).padding(start = 16.dp, end = 16.dp, bottom = 96.dp).noticeLiveRegion(),
                 dismissAction = {
                     TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(poiViewModel::dismissNotice)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) }
                 },

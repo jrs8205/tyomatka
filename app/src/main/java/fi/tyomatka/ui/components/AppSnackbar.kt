@@ -13,9 +13,16 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import fi.tyomatka.R
+import fi.tyomatka.ui.Tap
+
+/** Suoraan näytettävä ilmoitus luetaan ruudunlukijalla sen ilmestyessä, kuten `SnackbarHost`in ilmoitukset. */
+fun Modifier.noticeLiveRegion(): Modifier = semantics { liveRegion = LiveRegionMode.Polite }
 
 /**
  * Ilmoitus käänteisin värein: toiminto lihavoituna `inversePrimary`-värillä ja sulkemisnappi, jolla on oma
@@ -28,14 +35,14 @@ fun AppSnackbar(data: SnackbarData) {
         modifier = Modifier.padding(12.dp),
         action = visuals.actionLabel?.let { label ->
             {
-                TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = { data.performAction() }) {
+                TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap { data.performAction() }) {
                     Text(label, fontWeight = FontWeight.Bold)
                 }
             }
         },
         dismissAction = if (visuals.withDismissAction) {
             {
-                IconButton(onClick = { data.dismiss() }) {
+                IconButton(onClick = Tap { data.dismiss() }) {
                     Icon(
                         Icons.Rounded.Close,
                         contentDescription = stringResource(R.string.notice_dismiss),

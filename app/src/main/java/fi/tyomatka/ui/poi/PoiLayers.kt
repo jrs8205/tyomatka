@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import fi.tyomatka.core.poi.PoiCategory
 import fi.tyomatka.core.poi.PoiItem
+import fi.tyomatka.ui.Tap
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
@@ -36,7 +37,10 @@ import org.maplibre.spatialk.geojson.Position
 @MaplibreComposable
 fun PoiLayers(markers: List<PoiMarker>, onClick: (String) -> Unit) {
     val click: FeaturesClickHandler = { features ->
-        features.firstNotNullOfOrNull { it.properties?.get("id")?.jsonPrimitive?.contentOrNull }?.let(onClick)
+        features.firstNotNullOfOrNull { it.properties?.get("id")?.jsonPrimitive?.contentOrNull }?.let { id ->
+            Tap.now()
+            onClick(id)
+        }
         ClickResult.Consume
     }
     listOf(true, false).forEach { dimmed ->
