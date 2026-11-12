@@ -35,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.graphics.Color
@@ -49,6 +51,7 @@ import fi.tyomatka.core.poi.PoiCategory
 import fi.tyomatka.core.poi.PoiItem
 import fi.tyomatka.core.poi.PoiServices
 import fi.tyomatka.ui.Tap
+import fi.tyomatka.ui.components.noticeLiveRegion
 import fi.tyomatka.ui.poi.PoiCard
 import fi.tyomatka.ui.poi.PoiCardText
 import fi.tyomatka.ui.poi.ReportSheet
@@ -58,6 +61,7 @@ import fi.tyomatka.ui.components.AppFilterChip
 import fi.tyomatka.ui.components.AppButtonDefaults
 import androidx.compose.ui.text.font.FontWeight
 import fi.tyomatka.ui.components.ConnectedChoiceGroup
+import fi.tyomatka.ui.components.searchClearIcon
 
 /** Lajisirujen järjestys. */
 private val CATEGORIES = listOf(PoiCategory.FUEL, PoiCategory.REST, PoiCategory.GAS, PoiCategory.CHARGING)
@@ -65,11 +69,13 @@ private val CATEGORIES = listOf(PoiCategory.FUEL, PoiCategory.REST, PoiCategory.
 /** Kohteet-sivun hakukenttä lisäysikkunan yläpalkissa; ei nosta näppäimistöä itsestään. */
 @Composable
 fun NearbySearchField(query: String, onQueryChange: (String) -> Unit, modifier: Modifier = Modifier) {
+    val focus = remember { FocusRequester() }
     AppTextField(
         value = query,
         onValueChange = onQueryChange,
         label = { Text(stringResource(R.string.nearby_search)) },
-        modifier = modifier,
+        modifier = modifier.focusRequester(focus),
+        trailingIcon = searchClearIcon(query, focus) { onQueryChange("") },
         shape = CircleShape,
         singleLine = true,
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
@@ -100,7 +106,7 @@ fun NearbyPage(state: NearbyUiState, viewModel: NearbyViewModel, onAdd: (PoiItem
         if (state.selection == null || !showFix) {
             state.notice?.let { notice ->
                 Snackbar(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(16.dp).noticeLiveRegion(),
                     dismissAction = { TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(viewModel::dismissNotice)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) } },
                 ) { Text(notice) }
             }

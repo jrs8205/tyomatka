@@ -87,7 +87,9 @@ import fi.tyomatka.core.plan.ServiceStops
 import fi.tyomatka.data.db.RouteTemplateEntity
 import fi.tyomatka.data.repo.OpenMode
 import fi.tyomatka.ui.FullScreenDialog
+import fi.tyomatka.ui.components.noticeLiveRegion
 import fi.tyomatka.ui.plan.nearby.NearbyPage
+import fi.tyomatka.ui.components.searchClearIcon
 import fi.tyomatka.ui.plan.nearby.NearbySearchField
 import fi.tyomatka.ui.plan.nearby.NearbyViewModel
 import kotlinx.coroutines.launch
@@ -145,6 +147,7 @@ fun PlanScreen(
             Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 state.error?.let { error ->
                     Snackbar(
+                        modifier = Modifier.noticeLiveRegion(),
                         dismissAction = {
                             TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(viewModel::dismissError)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) }
                         }
@@ -152,6 +155,7 @@ fun PlanScreen(
                 }
                 templateState.notice?.let { notice ->
                     Snackbar(
+                        modifier = Modifier.noticeLiveRegion(),
                         dismissAction = {
                             TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(templateViewModel::dismissNotice)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) }
                         }
@@ -455,6 +459,7 @@ private fun AddStopOverlay(
                             modifier = Modifier
                                 .weight(1f)
                                 .focusRequester(focusRequester),
+                            trailingIcon = searchClearIcon(state.searchText, focusRequester) { viewModel.onSearchChanged("") },
                             // Hakukentät päistään pyöristettyjä; lomakekentät pysyvät 12 dp:n kulmissa.
                             shape = CircleShape,
                             singleLine = true,
@@ -494,7 +499,7 @@ private fun AddStopOverlay(
                 // Osoitehaun virhe näkyy hakunäkymän sisällä; Suunnittelu-sivun Snackbar jäisi tämän alle.
                 state.error?.let { error ->
                     Snackbar(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(16.dp).noticeLiveRegion(),
                         dismissAction = {
                             TextButton(colors = AppButtonDefaults.snackbarActionColors(), onClick = Tap(viewModel::dismissError)) { Text(stringResource(R.string.ok), fontWeight = FontWeight.Bold) }
                         },
@@ -600,15 +605,7 @@ private fun PasteListPage(
         }
         OutlinedButton(
             onClick = Tap {
-                fileLauncher.launch(
-                    arrayOf(
-                        "text/plain",
-                        "text/csv",
-                        "text/comma-separated-values",
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        "application/octet-stream",
-                    )
-                )
+                fileLauncher.launch(ImportedText.PICKER_MIME_TYPES.toTypedArray())
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -644,6 +641,7 @@ private fun EditStopOverlay(
 ) {
     var label by remember { mutableStateOf(stop.label) }
     var addressText by remember { mutableStateOf(stop.address) }
+    val addressFocus = remember { FocusRequester() }
     // Käsin kirjoitettu nimi säilyy osoitteenvaihdossa; koskematon nimi
     // korvautuu uuden paikan nimellä.
     val customLabel = label.takeIf { it.isNotBlank() && it != stop.label }
@@ -701,6 +699,10 @@ private fun EditStopOverlay(
                             viewModel.onSearchChanged(it)
                         },
                         label = { Text(stringResource(R.string.stop_new_address)) },
+                        trailingIcon = searchClearIcon(addressText, addressFocus, enabled = !addressLocked) {
+                            addressText = ""
+                            viewModel.onSearchChanged("")
+                        },
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                         shape = CircleShape,
                         enabled = !addressLocked,
@@ -709,7 +711,7 @@ private fun EditStopOverlay(
                         } else {
                             null
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().focusRequester(addressFocus),
                         singleLine = true,
                     )
                 }
@@ -750,7 +752,7 @@ private fun SearchRow.key(): String = when (this) {
     is SearchRow.Item -> suggestion.placeId
 }
 
-/** Hakulistan osion otsikko: "Yritykset" tai "Osoitteet" (yrityshaku 28.10.). */
+/** Hakulistan osion otsikko: "Yritykset" tai "Osoitteet". */
 @Composable
 private fun SearchSectionHeader(kind: SuggestionKind) {
     Text(
