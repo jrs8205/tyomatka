@@ -102,6 +102,8 @@ android {
             it.inputs.file("src/main/AndroidManifest.xml").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.dir("src/main/res").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.dir("src/main/java").withPathSensitivity(PathSensitivity.RELATIVE)
+            it.inputs.dir("src/debug").withPathSensitivity(PathSensitivity.RELATIVE)
+            it.inputs.dir("src/release").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.dir("../scripts/rust-crates").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.files(tasks.named("prepareLibraryDefinitionsDebug")).withPathSensitivity(PathSensitivity.RELATIVE)
         }

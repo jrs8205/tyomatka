@@ -161,18 +161,30 @@ class OutlinedButtonStyleTest {
     private fun unparsed(path: String, source: String): List<String> {
         val code = Masker(source, path).masked()
         val known = call.findAll(code).map { it.range.first }.toSet()
-        fun lineOf(start: Int): String {
-            val end = code.indexOf('\n', start).let { if (it < 0) code.length else it }
-            return code.substring(code.lastIndexOf('\n', start) + 1, end).trim().replace(Regex("""\s+"""), " ")
+        // Tuontilause voi jatkua rivinvaihdon yli: lause luetaan import-sanasta nimeen ilman välejä, eikä nimeä saa
+        // seurata as, olipa se samalla tai seuraavalla rivillä.
+        fun isPlainImport(start: Int): Boolean {
+            val end = start + "OutlinedButton".length
+            val keyword = code.lastIndexOf("import", start)
+            if (keyword < 0) return false
+            val statement = code.substring(keyword, end).filterNot { it.isWhitespace() }
+            val aliased = Regex("""^as(?!\w)""").containsMatchIn(code.substring(end).trimStart())
+            return statement == plainImport.filterNot { it.isWhitespace() } && !aliased
         }
         return mention.findAll(code).map { it.range.first }
             .filterNot { it in known }
-            .filterNot { lineOf(it) == plainImport }
+            .filterNot(::isPlainImport)
             .map { start -> "${path.substringAfterLast('/')}:${code.take(start).count { it == '\n' } + 1}" }
             .toList()
     }
 
-    private fun sources(): List<File> = File("src/main/java").walkTopDown().filter { it.extension == "kt" }.sortedBy { it.path }.toList()
+    /** Sovelluksen lähteet kaikista käännösversioista, ei testeistä: toisen version kääre näkyisi muuten vain nimenä. */
+    private fun sources(): List<File> = File("src").listFiles().orEmpty()
+        .filter { it.isDirectory && !it.name.startsWith("test") && !it.name.startsWith("androidTest") }
+        .flatMap { set -> listOf(File(set, "java"), File(set, "kotlin")) }
+        .filter { it.isDirectory }
+        .flatMap { root -> root.walkTopDown().filter { it.extension == "kt" } }
+        .sortedBy { it.path }
 
     private fun outlinedButtons(): List<Call> = sources().flatMap { calls(it.invariantSeparatorsPath, it.readText()) }
 
@@ -292,16 +304,26 @@ class OutlinedButtonStyleTest {
             "val g: @Composable (() -> Unit) -> Unit = { OutlinedButton",
             "    (onClick = it) }",
             "`OutlinedButton`(onClick = {})",
+            "import androidx.compose.material3.OutlinedButton",
+            "    as Viides",
+            "import",
+            "    androidx.compose.material3.OutlinedButton",
+            "import androidx.compose.material3.OutlinedButton;",
         ).joinToString("\n")
         assertEquals(
-            listOf(3, 4, 5, 6, 9, 11).map { "Esimerkki.kt:$it" },
+            listOf(3, 4, 5, 6, 9, 11, 12).map { "Esimerkki.kt:$it" },
             unparsed("ui/Esimerkki.kt", source),
         )
     }
 
     @Test
+    fun `lahteet kattavat kaikki kaannosversiot`() {
+        val sets = sources().map { it.invariantSeparatorsPath.substringAfter("src/").substringBefore('/') }.toSet()
+        assertEquals(setOf("debug", "main", "release"), sets)
+    }
+
+    @Test
     fun `jokainen aariviivanapin maininta lahteissa on tunnistettu kutsu`() {
-        assertTrue("lähteitä on myös kansiossa src/main/kotlin, jota ei käydä läpi", !File("src/main/kotlin").exists())
         assertEquals(emptyList<String>(), sources().flatMap { unparsed(it.invariantSeparatorsPath, it.readText()) })
     }
 
