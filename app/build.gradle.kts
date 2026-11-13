@@ -34,8 +34,8 @@ android {
         minSdk = 26
         targetSdk = 36
         // versionCode = major * 10000 + minor * 100 + patch, jotta jokainen julkaisu on edellistä suurempi.
-        versionCode = 10100
-        versionName = "1.1.0"
+        versionCode = 10101
+        versionName = "1.1.1"
 
         // Vain 64-bittiset ABI:t: karttamoottorin ja navigointiytimen
         // natiivikirjastot tarvitaan vain arm64-laitteille ja x86_64-emulaattorille.

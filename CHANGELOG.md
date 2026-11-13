@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.1.1 (2026-11-13)
+
+Fixes and finishing touches after the new look.
+
+- Large font sizes: all three tabs of the add-stop window fit on the screen,
+  and the bottom bar labels stay off the screen edge.
+- Screen readers read the names of the add-stop and reorder buttons and
+  announce the notices.
+- Search fields have a button that clears the text.
+- The map places menu opens at full height, so the heavy vehicle and
+  along-the-route switches are visible at once.
+- Adding a place from the Map page during a drive asks first.
+- The station card lists each nearby charging point with its connectors and,
+  when the open data has it, its price.
+- A letter after the house number no longer makes a separate stop: 5, 5 A
+  and 5 B are the same building.
+- Imported address lists are checked by Finnish address rules only. .xls and
+  .ods files can be picked and get a notice to save them as xlsx or csv.
+- Money, amounts and kilometres use the same thousands grouping as whole
+  numbers.
+- The day view's add button follows the car: fill-up, charge or refill.
+- Notices and map places give the same tap feedback as other buttons.
+- End drive and the other outlined buttons share one look.
+
 ## 1.1.0 (2026-11-12)
 
 A new look for the whole app.
