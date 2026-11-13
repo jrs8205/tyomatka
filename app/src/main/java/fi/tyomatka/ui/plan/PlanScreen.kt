@@ -607,6 +607,8 @@ private fun PasteListPage(
             onClick = Tap {
                 fileLauncher.launch(ImportedText.PICKER_MIME_TYPES.toTypedArray())
             },
+            colors = AppButtonDefaults.outlinedColors(),
+            border = AppButtonDefaults.border(enabled = true),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(R.string.paste_import_file))

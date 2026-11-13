@@ -219,6 +219,8 @@ fun PhotoSection(
                     error = R.string.photo_no_camera
                 }
             },
+            colors = AppButtonDefaults.outlinedColors(),
+            border = AppButtonDefaults.border(enabled = true),
             modifier = Modifier.weight(1f),
         ) {
             Icon(Icons.Filled.PhotoCamera, contentDescription = null)
@@ -227,6 +229,8 @@ fun PhotoSection(
         }
         OutlinedButton(
             onClick = Tap { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+            colors = AppButtonDefaults.outlinedColors(),
+            border = AppButtonDefaults.border(enabled = true),
             modifier = Modifier.weight(1f),
         ) {
             Icon(Icons.Filled.AddPhotoAlternate, contentDescription = null)

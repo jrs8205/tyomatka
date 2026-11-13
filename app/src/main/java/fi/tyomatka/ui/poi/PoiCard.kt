@@ -46,6 +46,7 @@ import fi.tyomatka.core.poi.PoiServices
 import fi.tyomatka.core.poi.StationInfo
 import fi.tyomatka.ui.Tap
 import java.time.LocalDate
+import fi.tyomatka.ui.components.AppButtonDefaults
 import fi.tyomatka.ui.components.AppDragHandle
 
 /**
@@ -119,14 +120,24 @@ fun PoiCard(
             Button(onClick = Tap(onPrimary), modifier = Modifier.fillMaxWidth()) { Text(primaryText) }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 if (website != null) {
-                    OutlinedButton(onClick = Tap { openStationPage(context, website) }) {
+                    OutlinedButton(
+                        onClick = Tap { openStationPage(context, website) },
+                        colors = AppButtonDefaults.outlinedColors(),
+                        border = AppButtonDefaults.border(enabled = true),
+                    ) {
                         Text(stringResource(R.string.poi_website))
                         Spacer(Modifier.width(6.dp))
                         Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
                     }
                 }
                 if (onFix != null) {
-                    OutlinedButton(onClick = Tap(onFix)) { Text(stringResource(R.string.poi_report)) }
+                    OutlinedButton(
+                        onClick = Tap(onFix),
+                        colors = AppButtonDefaults.outlinedColors(),
+                        border = AppButtonDefaults.border(enabled = true),
+                    ) {
+                        Text(stringResource(R.string.poi_report))
+                    }
                 }
             }
             Spacer(Modifier.height(8.dp))

@@ -101,6 +101,7 @@ android {
             // Testit lukevat nämä polusta: Gradle ei muuten aja niitä uudelleen, kun tiedostot muuttuvat.
             it.inputs.file("src/main/AndroidManifest.xml").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.dir("src/main/res").withPathSensitivity(PathSensitivity.RELATIVE)
+            it.inputs.dir("src/main/java").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.dir("../scripts/rust-crates").withPathSensitivity(PathSensitivity.RELATIVE)
             it.inputs.files(tasks.named("prepareLibraryDefinitionsDebug")).withPathSensitivity(PathSensitivity.RELATIVE)
         }

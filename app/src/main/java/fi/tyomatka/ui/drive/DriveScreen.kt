@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import android.os.SystemClock
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -77,12 +76,12 @@ import androidx.compose.ui.graphics.Color
 /** Bottom sheetin kurkistuskorkeus ennen mittausta — sama arvo nostaa kartan sisällön paneelin yläpuolelle. */
 internal val SHEET_PEEK_HEIGHT = 160.dp
 
-/** Ajon alapaneelin toimintonappien korkeus (Perillä, Ohita, Merkitse käydyksi). */
+/** Ajon alapaneelin toimintonappien korkeus (Perillä, Ohita, Merkitse käydyksi, Lopeta ajo). */
 private val ActionHeight = 56.dp
 
 /**
- * Kurkistuskorkeus mitatusta kahvasta ja kurkistussisällöstä, jotta Perillä ja Ohita eivät jää paneelin alle
- *. Ennen ensimmäistä mittausta oletus, ettei paneeli painu kasaan.
+ * Kurkistuskorkeus mitatusta kahvasta ja kurkistussisällöstä, jotta Perillä ja Ohita eivät jää paneelin alle.
+ * Ennen ensimmäistä mittausta oletus, ettei paneeli painu kasaan.
  */
 internal fun sheetPeekHeight(handle: Dp, content: Dp): Dp = if (content <= 0.dp) SHEET_PEEK_HEIGHT else handle + content
 
@@ -487,16 +486,18 @@ internal fun DriveSheet(state: DriveState, viewModel: DriveViewModel, onPeekCont
         }
 
         var showStopDialog by remember { mutableStateOf(false) }
-        // Reunallinen nappi virhevärillä muiden nappien tyyliin (pelkkä teksti ei erottunut).
+        // Reunallinen nappi virhevärillä muiden nappien tyyliin (pelkkä teksti ei erottunut). Täyskorkea nappi ei tuo
+        // omaa kosketusalueen varaansa, joten väli yllä olevaan sisältöön ja alareunaan annetaan tässä.
+        Spacer(Modifier.height(12.dp))
         OutlinedButton(
             onClick = Tap { showStopDialog = true },
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-            modifier = Modifier.fillMaxWidth(),
+            colors = AppButtonDefaults.dangerOutlinedColors(),
+            border = AppButtonDefaults.dangerBorder(),
+            modifier = Modifier.fillMaxWidth().heightIn(min = ActionHeight),
         ) {
             Text(stringResource(R.string.stop_driving))
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
         if (showStopDialog) {
             AlertDialog(
                 onDismissRequest = { showStopDialog = false },

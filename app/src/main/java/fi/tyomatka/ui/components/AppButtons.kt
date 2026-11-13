@@ -64,10 +64,26 @@ object AppButtonDefaults {
         contentColor = MaterialTheme.colorScheme.inversePrimary,
     )
 
+    /** Ääriviivallinen varoitustoiminto (Lopeta ajo): teksti virhevärillä ilman täyttöä, reunana [dangerBorder]. */
+    @Composable
+    fun dangerOutlinedColors(): ButtonColors = ButtonDefaults.outlinedButtonColors(
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.error,
+        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+
+    /** Yhteisten ääriviivanappien reunan leveys; Tänään-kortin napilla on värillisellä pohjalla oma 2 dp:n reunansa. */
+    val BorderWidth = 1.5.dp
+
     /** Ääriviiva 1,5 dp: käytössä `outline` (≥ 4,5:1), poissa käytöstä `outlineVariant`. */
     @Composable
     fun border(enabled: Boolean): BorderStroke = BorderStroke(
-        1.5.dp,
+        BorderWidth,
         if (enabled) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.outlineVariant,
     )
+
+    /** Varoitustoiminnon ääriviiva: sama leveys, väri `error`. */
+    @Composable
+    fun dangerBorder(): BorderStroke = BorderStroke(BorderWidth, MaterialTheme.colorScheme.error)
 }
