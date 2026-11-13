@@ -7,7 +7,8 @@ import org.junit.Test
 
 /**
  * Ääriviivanapit näyttävät samalta koko sovelluksessa: reuna ja värit tulevat [AppButtonDefaults]ista. Asettelua ei
- * voi piirtää näissä testeissä, joten sääntö tarkistetaan lähdekoodin kutsuista.
+ * voi piirtää näissä testeissä, joten sääntö tarkistetaan lähdekoodin kutsuista. Testi kattaa `OutlinedButton`-kutsut;
+ * muun napin käsin tehty reuna ja ääriviivalliset kuvakenapit eivät kuulu siihen.
  */
 class OutlinedButtonStyleTest {
 
@@ -50,10 +51,12 @@ class OutlinedButtonStyleTest {
                     at("\"\"\"") -> { blank(3); string(raw = true) }
                     at("\"") -> { blank(1); string(raw = false) }
                     at("'") -> charLiteral()
-                    // Takahipsuissa oleva nimi saa sisältää lainausmerkkejä ja sulkuja.
+                    // Takahipsuissa oleva nimi saa sisältää lainausmerkkejä ja sulkuja; tavallinen nimi jää näkyviin.
                     at("`") -> {
+                        val end = source.indexOf('`', i + 1).takeIf { it >= 0 } ?: open("takahipsunimi")
+                        val plain = Regex("""[A-Za-z_]\w*""").matches(source.substring(i + 1, end))
                         i++
-                        while (i < source.length && source[i] != '`') blank(1)
+                        if (plain) i = end else while (i < end) blank(1)
                         i++
                     }
                     at("{") -> { depth++; i++ }
@@ -135,15 +138,38 @@ class OutlinedButtonStyleTest {
         error("$name: sulku jää auki riviltä ${code.take(open).count { it == '\n' } + 1}")
     }
 
+    /** Kutsu: nimen ja avaussulun välissä saa olla samalla rivillä välejä tai kommentti. Muut muodot ilmoittaa [unparsed]. */
+    private val call = Regex("""(?<!\w)OutlinedButton[ \t]*\(""")
+    private val mention = Regex("""(?<!\w)OutlinedButton(?!\w)""")
+    private val plainImport = "import androidx.compose.material3.OutlinedButton"
+
     private fun calls(path: String, source: String): List<Call> {
         val code = Masker(source, path).masked()
-        return Regex("""(?<!\w)OutlinedButton\(""").findAll(code).map { match ->
+        return call.findAll(code).map { match ->
             val open = match.range.last
             val close = closing(code, open, path)
             val next = (close + 1 until code.length).firstOrNull { !code[it].isWhitespace() }
             val content = if (next != null && code[next] == '{') code.substring(next, closing(code, next, path) + 1) else ""
             Call(path, code.take(open).count { it == '\n' } + 1, code.substring(open, close + 1), content)
         }.toList()
+    }
+
+    /**
+     * Paikat, joissa nimi esiintyy koodissa muuten kuin tunnistettuna kutsuna tai tavallisena tuontina. Toisella
+     * nimellä tuotu nappi jäisi kutsujen haulta näkemättä, joten sekin ilmoitetaan.
+     */
+    private fun unparsed(path: String, source: String): List<String> {
+        val code = Masker(source, path).masked()
+        val known = call.findAll(code).map { it.range.first }.toSet()
+        fun lineOf(start: Int): String {
+            val end = code.indexOf('\n', start).let { if (it < 0) code.length else it }
+            return code.substring(code.lastIndexOf('\n', start) + 1, end).trim().replace(Regex("""\s+"""), " ")
+        }
+        return mention.findAll(code).map { it.range.first }
+            .filterNot { it in known }
+            .filterNot { lineOf(it) == plainImport }
+            .map { start -> "${path.substringAfterLast('/')}:${code.take(start).count { it == '\n' } + 1}" }
+            .toList()
     }
 
     private fun sources(): List<File> = File("src/main/java").walkTopDown().filter { it.extension == "kt" }.sortedBy { it.path }.toList()
@@ -205,9 +231,11 @@ class OutlinedButtonStyleTest {
             "OutlinedButton(onClick = { g(')') /* ) */ }, colors = X) { Text(\"a)\") }",
             "fun `c'd \"`() = 2",
             "androidx.compose.material3.OutlinedButton(onClick = {})",
+            "OutlinedButton (onClick = {})",
+            "OutlinedButton /* väli */ (onClick = {})",
         ).joinToString("\n")
         val found = calls("Esimerkki.kt", source)
-        assertEquals(listOf(5, 7), found.map { it.line })
+        assertEquals(listOf(5, 7, 8, 9), found.map { it.line })
         assertEquals("(onClick = { g(   )         }, colors = X)", found[0].args)
         assertEquals("{ Text(    ) }", found[0].content)
         assertEquals("", found[1].content)
@@ -251,9 +279,30 @@ class OutlinedButtonStyleTest {
     }
 
     @Test
-    fun `aariviivanappia ei tuoda toisella nimella`() {
-        val alias = Regex("""import\s+androidx\.compose\.material3\.OutlinedButton\s+as\b""")
-        assertEquals(emptyList<String>(), sources().filter { alias.containsMatchIn(it.readText()) }.map { it.name })
+    fun `nimen muu kaytto kuin tunnistettu kutsu tai tuonti ilmoitetaan`() {
+        val source = listOf(
+            "import androidx.compose.material3.OutlinedButton",
+            "import\tandroidx.compose.material3.OutlinedButton",
+            "import androidx.compose.material3.OutlinedButton as Toinen",
+            "import androidx.compose.material3.OutlinedButton /* väli */ as Kolmas",
+            "import androidx.compose.material3.`OutlinedButton` as Neljas",
+            "val f = ::OutlinedButton",
+            "OutlinedButton(onClick = {})",
+            "// OutlinedButton kommentissa",
+            "val g: @Composable (() -> Unit) -> Unit = { OutlinedButton",
+            "    (onClick = it) }",
+            "`OutlinedButton`(onClick = {})",
+        ).joinToString("\n")
+        assertEquals(
+            listOf(3, 4, 5, 6, 9, 11).map { "Esimerkki.kt:$it" },
+            unparsed("ui/Esimerkki.kt", source),
+        )
+    }
+
+    @Test
+    fun `jokainen aariviivanapin maininta lahteissa on tunnistettu kutsu`() {
+        assertTrue("lähteitä on myös kansiossa src/main/kotlin, jota ei käydä läpi", !File("src/main/kotlin").exists())
+        assertEquals(emptyList<String>(), sources().flatMap { unparsed(it.invariantSeparatorsPath, it.readText()) })
     }
 
     @Test
