@@ -140,8 +140,8 @@ fun WorkEndFormScreen(
 
 /**
  * Vaihda auto: vanhan auton lopetuslukema, uuden auton rekkari ja aloituslukema. [prefillPlate]: Autot-näkymästä
- * valittu uusi auto valmiiksi täytettynä ja [prefillStartKm] sen viimeisin tunnettu lukema
- *; vanhan auton lopetuslukema syötetään kuten muutenkin. [latestReadings]: rekisterinumero →
+ * valittu uusi auto valmiiksi täytettynä ja [prefillStartKm] sen viimeisin tunnettu lukema;
+ * vanhan auton lopetuslukema syötetään kuten muutenkin. [latestReadings]: rekisterinumero →
  * auton viimeisin lukema, jotta uuden auton valinta chipistä vaihtaa koskemattoman esitäytön ([SwitchCarForm.withNewPlate]).
  */
 @Composable

@@ -11,8 +11,8 @@ sealed interface SpeechGate {
  * Milloin puheohje saa kuulua. Reitiltä kokonaan poikenneena ja uudelleenreitityksen aikana vanhan reitin ohjeet
  * olisivat vääriä, joten ne hylätään. Heti reitin vaihdon jälkeen ydin laukaisee uuden reitin ensimmäisen ohjeen, kun
  * sen hakutila ja vanha poikkeama ovat vielä voimassa: ohje lykätään [QUIET_AFTER_REPLACE_MS]:n päähän ja arvioidaan
- * silloin uudelleen, jotta se ei huku. Jakso on merkkiäänen mittainen, jotta uuden reitin ohje kuuluu heti sen perään
- *. Ajat ovat laitteen käynnistyskellosta.
+ * silloin uudelleen, jotta se ei huku. Jakso on merkkiäänen mittainen, jotta uuden reitin ohje kuuluu heti sen perään.
+ * Ajat ovat laitteen käynnistyskellosta.
  */
 object VoicePolicy {
     const val QUIET_AFTER_REPLACE_MS = 1_000L

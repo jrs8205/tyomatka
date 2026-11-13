@@ -19,8 +19,8 @@ sealed interface FillupSave {
 /**
  * Lomake on kiireinen: tallennus on kesken tai valmis mutta lomake ei ole vielä sulkeutunut. Tallenna, sulkeminen ja
  * Poista ovat silloin pois käytöstä, ja ViewModel hylkää uuden tallennuksen. Done-vaiheen kehyksessä lomake piirtyy
- * vielä kerran ennen sulkeutumista, ja pelkkä Saving-tarkistus päästi tuplanapautuksen toiseksi kirjaukseksi
- *. Uusi tallennus sallitaan vain, kun lomake ei ole kiireinen.
+ * vielä kerran ennen sulkeutumista, ja pelkkä Saving-tarkistus päästi tuplanapautuksen toiseksi kirjaukseksi.
+ * Uusi tallennus sallitaan vain, kun lomake ei ole kiireinen.
  */
 val FillupSave?.busy: Boolean
     get() = this == FillupSave.Saving || this == FillupSave.Done

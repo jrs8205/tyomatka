@@ -252,8 +252,7 @@ fun FuelFormScreen(
                 Switch(checked = form.fullTank, onCheckedChange = null)
             }
             val symbol = currencySymbol(form.currency)
-            // Kokonaishinta vasemmalla ja yksikköhinta oikealla: yksikköhinta syntyy määrästä ja kokonaishinnasta
-            //.
+            // Kokonaishinta vasemmalla ja yksikköhinta oikealla: yksikköhinta syntyy määrästä ja kokonaishinnasta.
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 DecimalField(
                     form.prices.total,
